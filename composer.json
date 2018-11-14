@@ -2,7 +2,7 @@
     "name": "astuteo/astuteo-toolkit",
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "keywords": [
         "craft",
         "cms",
