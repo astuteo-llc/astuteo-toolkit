@@ -1,0 +1,43 @@
+{
+    "name": "astuteo/astuteo-toolkit",
+    "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "astuteo toolkit"
+    ],
+    "support": {
+        "docs": "https://github.com/astuteo-llc/astuteo-toolkit/blob/master/README.md",
+        "issues": "https://github.com/astuteo-llc/astuteo-toolkit/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Astuteo",
+            "homepage": "https://astuteo.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "astuteo\\astuteotoolkit\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Astuteo Toolkit",
+        "handle": "astuteo-toolkit",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/astuteo-llc/astuteo-toolkit/master/CHANGELOG.md",
+        "components": {
+            "astuteoToolkitService": "astuteo\\astuteotoolkit\\services\\AstuteoToolkitService"
+        },
+        "class": "astuteo\\astuteotoolkit\\AstuteoToolkit"
+    }
+}
