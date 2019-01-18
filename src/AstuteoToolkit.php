@@ -72,6 +72,16 @@ class AstuteoToolkit extends Plugin
         // Add in our Twig extensions
         Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
 
+        // Register our variables
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('astuteoToolkit', AstuteoToolkitVariable::class);
+            }
+        );
 
 
 
