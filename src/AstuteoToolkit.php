@@ -11,9 +11,13 @@
 namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
+use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
 
 use Craft;
 use craft\base\Plugin;
+use craft\services\Plugins;
+use craft\events\PluginEvent;
+use craft\web\twig\variables\CraftVariable;
 
 use yii\base\Event;
 

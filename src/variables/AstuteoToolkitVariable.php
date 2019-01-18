@@ -1,6 +1,6 @@
 <?php
 namespace astuteo\astuteotoolkit\variables;
-
+use astuteo\astuteotoolkit\AstuteoToolkit;
 use Craft;
 
 class AstuteoToolkitVariable
