@@ -13,6 +13,8 @@ namespace astuteo\astuteotoolkit\twigextensions;
 use astuteo\astuteotoolkit\AstuteoToolkit;
 
 use Craft;
+use craft\base\Component;
+
 
 /**
  * Twig can be extended in many ways; you can add extra tags, filters, tests, operators,
@@ -82,7 +84,9 @@ class AstuteoToolkitTwigExtension extends \Twig_Extension
     {
         static $manifest = null;
 
-        $asset_path     = '/site-assets/';
+        $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
+
+
 
         $path           = $this->preparePath($file, $asset_path);
         $manifest_path  = $_SERVER['DOCUMENT_ROOT'];

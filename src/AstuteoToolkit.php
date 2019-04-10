@@ -12,6 +12,7 @@ namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
+use astuteo\astuteotoolkit\models\Settings;
 
 use Craft;
 use craft\base\Plugin;
