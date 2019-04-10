@@ -23,8 +23,5 @@
  */
 
 return [
-
-    // This controls blah blah blah
     "assetPath" => '/site-assets/',
-
 ];
