@@ -337,7 +337,7 @@ class AstuteoToolkitVariable
     public function futureEvents($limit = null, $section = 'events') {
         $events = Entry::find()
             ->section($section)
-            ->orderBy('startDate desc')
+            ->orderBy('startDate asc')
             ->limit($limit);
 
         $now = DateTimeHelper::toDateTime(DateTimeHelper::currentTimeStamp())->format('Ymd');
@@ -360,6 +360,7 @@ class AstuteoToolkitVariable
         $futureEvents = Entry::find()
             ->section($section)
             ->id($futureEntries)
+            ->orderBy('startDate asc')
             ->limit($limit);
 
         return $futureEvents;
