@@ -2,6 +2,8 @@
 namespace astuteo\astuteotoolkit\variables;
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use Craft;
+use craft\elements\Entry;
+use craft\helpers\DateTimeHelper;
 
 class AstuteoToolkitVariable
 {
