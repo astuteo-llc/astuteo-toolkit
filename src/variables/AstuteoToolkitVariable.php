@@ -327,4 +327,39 @@ class AstuteoToolkitVariable
         );
         return $provinces;
     }
+    
+    // Standardized way to pull future events.
+    // Assumptions made:
+    // End date field handle is "endDate"
+    // Start date field handle is "startDate"
+    public function futureEvents($limit = null, $section = 'events') {
+        $events = Entry::find()
+            ->section($section)
+            ->orderBy('startDate desc')
+            ->limit($limit);
+
+        $now = DateTimeHelper::toDateTime(DateTimeHelper::currentTimeStamp())->format('Ymd');
+        $futureEntries = array();
+
+        foreach ($events as $event) {
+            if ( !empty($event->endDate) ) {
+                // if end date set let's use that to compare
+                $compareDate = DateTimeHelper::toDateTime( $event->endDate)->format('Ymd');
+            } else {
+                // otherwise let's use the start date
+                $compareDate = DateTimeHelper::toDateTime( $event->startDate)->format('Ymd');
+            }
+            // now let's see if that's today or in the future, and if so merge the IDs
+            if( $compareDate >= $now ) {
+                $futureEntries[] = $event->id;
+            }
+        }
+
+        $futureEvents = Entry::find()
+            ->section($section)
+            ->id($futureEntries)
+            ->limit($limit);
+
+        return $futureEvents;
+    }
 }
