@@ -329,16 +329,19 @@ class AstuteoToolkitVariable
         );
         return $provinces;
     }
-    
+
     // Standardized way to pull future events.
     // Assumptions made:
     // End date field handle is "endDate"
     // Start date field handle is "startDate"
     public function futureEvents($limit = null, $section = 'events') {
+        if($limit['limit']) {
+            $limit = $limit['limit'];
+        }
+
         $events = Entry::find()
             ->section($section)
             ->orderBy('startDate asc')
-            ->limit($limit)
             ->all();
 
         $now = DateTimeHelper::toDateTime(DateTimeHelper::currentTimeStamp())->format('Ymd');
