@@ -330,6 +330,18 @@ class AstuteoToolkitVariable
         return $provinces;
     }
 
+    /**
+	 * Returns true or false if user client supports
+	 * webp.
+	 * {{ craft.astuteoToolkit.clientSupportsWebp }}
+	 * @return bool
+	 */
+	public function clientSupportsWebp(): bool
+	{
+		$request = Craft::$app->getRequest();
+		return $request->accepts('image/webp');
+	}
+    
     // Standardized way to pull future events.
     // Assumptions made:
     // End date field handle is "endDate"
