@@ -5,8 +5,6 @@ Various tools that we use across client sites. Only useful for Astuteo projects
 ## What it does
 Currently it only does one thing -- provide a way to read in our manifest.json file to cache bust assets. This isn't even configurable yet and expects the json file to reside in /site-assets/
 
-![Screenshot](resources/img/plugin-logo.png)
-
 ## Usage 
 {{ '/site-assets/css/global.css' | astuteoRev }}
 
