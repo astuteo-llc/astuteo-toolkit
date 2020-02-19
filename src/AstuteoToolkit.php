@@ -13,6 +13,8 @@ namespace astuteo\astuteotoolkit;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
 use astuteo\astuteotoolkit\models\Settings;
+use astuteo\astuteotoolkit\services\ToolkitService;
+use astuteo\astuteotoolkit\services\LocationService;
 
 use Craft;
 use craft\base\Plugin;
@@ -76,6 +78,12 @@ class AstuteoToolkit extends Plugin
 
         // Add in our Twig extensions
         Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
+
+        // Register services
+		$this->setComponents([
+			'toolkit' => ToolkitService::class,
+			'location' => LocationService::class,
+		]);
 
         // Register our variables
         Event::on(
