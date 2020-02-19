@@ -14,6 +14,9 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 
 use Craft;
 use craft\base\Component;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 
 /**
@@ -27,7 +30,7 @@ use craft\base\Component;
  * @package   AstuteoToolkit
  * @since     1.0.0
  */
-class AstuteoToolkitTwigExtension extends \Twig_Extension
+class AstuteoToolkitTwigExtension extends AbstractExtension
 {
     private $base_path;
     // Public Methods
@@ -53,7 +56,7 @@ class AstuteoToolkitTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFilter('astuteoRev', [$this, 'astuteoRev']),
         ];
     }
 
@@ -67,7 +70,7 @@ class AstuteoToolkitTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFunction('astuteoRev', [$this, 'astuteoRev']),
         ];
     }
 
