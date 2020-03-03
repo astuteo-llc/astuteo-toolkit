@@ -5,7 +5,7 @@
  * Various tools that we use across client sites. Only useful for Astuteo projects
  *
  * @link      https://astuteo.com
- * @copyright Copyright (c) 2018 Astuteo
+ * @copyright Copyright (c) 2020 Astuteo
  */
 
 /**
@@ -24,4 +24,5 @@
 
 return [
     "assetPath" => '/site-assets/',
+	"loadCpTweaks" => false
 ];

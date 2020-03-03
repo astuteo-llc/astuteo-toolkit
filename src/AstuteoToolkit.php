@@ -10,6 +10,7 @@
 
 namespace astuteo\astuteotoolkit;
 
+use astuteo\astuteotoolkit\assetbundles\cptweaks\AstuteoToolkitCPAsset;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
 use astuteo\astuteotoolkit\models\Settings;
@@ -17,11 +18,12 @@ use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
 
 use Craft;
+use craft\web\View;
 use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
 use craft\web\twig\variables\CraftVariable;
-
+use craft\events\TemplateEvent;
 use yii\base\Event;
 
 /**
@@ -85,7 +87,28 @@ class AstuteoToolkit extends Plugin
 			'location' => LocationService::class,
 		]);
 
-        // Register our variables
+
+
+		// Load our AssetBundle
+		if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {
+			Event::on(
+				View::class,
+				View::EVENT_BEFORE_RENDER_TEMPLATE,
+				function (TemplateEvent $event) {
+					try {
+						Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+					} catch (InvalidConfigException $e) {
+						Craft::error(
+							'Error registering AssetBundle - '.$e->getMessage(),
+							__METHOD__
+						);
+					}
+				}
+			);
+		}
+
+
+		// Register our variables
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_INIT,
