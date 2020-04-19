@@ -8,6 +8,18 @@ use craft\helpers\DateTimeHelper;
 
 class AstuteoToolkitVariable
 {
+    /**
+     * @param $name
+     * @param bool $default
+     * @return bool|mixed
+     */
+    public function unsecureCookie($name, $default = false) {
+        if(!isset($_COOKIE[$name])) {
+            return $default;
+        } else {
+            return $_COOKIE[$name];
+        }
+    }
 
 	/**
 	 * @return array
