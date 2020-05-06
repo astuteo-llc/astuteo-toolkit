@@ -2,6 +2,7 @@
 namespace astuteo\astuteotoolkit\variables;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
+use astuteo\astuteotoolkit\services\TransformService;
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
@@ -19,6 +20,10 @@ class AstuteoToolkitVariable
         } else {
             return $_COOKIE[$name];
         }
+    }
+
+    public function imgixTransformMap($image, $options, $serviceOptions) {
+        return (new \astuteo\astuteotoolkit\services\TransformService)->imgix($image,$options,$serviceOptions);
     }
 
 	/**

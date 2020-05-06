@@ -11,6 +11,7 @@
 namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\assetbundles\cptweaks\AstuteoToolkitCPAsset;
+use astuteo\astuteotoolkit\services\TransformService;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
 use astuteo\astuteotoolkit\models\Settings;
@@ -85,6 +86,7 @@ class AstuteoToolkit extends Plugin
 		$this->setComponents([
 			'toolkit' => ToolkitService::class,
 			'location' => LocationService::class,
+            'transform' => TransformService::class,
 		]);
 
 

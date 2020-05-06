@@ -12,4 +12,5 @@ class Settings extends Model
 {
     public $assetPath = '/site-assets/';
 	public $loadCpTweaks = false;
+	public $imgixUrl = '';
 }
