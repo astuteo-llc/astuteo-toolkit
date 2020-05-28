@@ -73,9 +73,16 @@ class AstuteoToolkitVariable
     // Assumptions made:
     // End date field handle is "endDate"
     // Start date field handle is "startDate"
-    public function futureEvents($limit = null, $section = 'events') {
-        if($limit['limit']) {
-            $limit = $limit['limit'];
+    public function futureEvents($options) {
+        if($options['limit']) {
+            $limit = $options['limit'];
+        } else {
+            $limit = 10;
+        }
+        if($options['section']) {
+            $section = $options['section'];
+        } else {
+            $section = 'events';
         }
 
         $events = Entry::find()
@@ -90,9 +97,11 @@ class AstuteoToolkitVariable
             if ( !empty($event->endDate) ) {
                 // if end date set let's use that to compare
                 $compareDate = DateTimeHelper::toDateTime( $event->endDate)->format('Ymd');
-            } else {
+            } elseif(!empty($event->startDate)) {
                 // otherwise let's use the start date
                 $compareDate = DateTimeHelper::toDateTime( $event->startDate)->format('Ymd');
+            } else {
+                return null;
             }
             // now let's see if that's today or in the future, and if so merge the IDs
             if( $compareDate >= $now ) {
