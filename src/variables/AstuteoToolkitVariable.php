@@ -74,12 +74,12 @@ class AstuteoToolkitVariable
     // End date field handle is "endDate"
     // Start date field handle is "startDate"
     public function futureEvents($options = null) {
-        if($options and $options['limit']) {
+        if(isset($options['limit'])) {
             $limit = $options['limit'];
         } else {
             $limit = 10;
         }
-        if($options and $options['section']) {
+        if(isset($options['section'])) {
             $section = $options['section'];
         } else {
             $section = 'events';
