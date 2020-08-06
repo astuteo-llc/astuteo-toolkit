@@ -41,6 +41,18 @@ class AstuteoToolkitVariable
 		return LocationService::states();
     }
 
+
+    public function testUpdates() {
+        $message = 'Up-to-date';
+        $totalupdates = Craft::$app->getUpdates()->getTotalAvailableUpdates();
+        if($totalupdates != 0) {
+            $message = $totalupdates . ' Updates';
+        }
+        if(Craft::$app->getUpdates()->getIsCriticalUpdateAvailable()) {
+            $message = 'CRITICAL UPDATE ' . $message;
+        }
+        return $message;
+    }
 	/**
 	 * @return array
 	 */

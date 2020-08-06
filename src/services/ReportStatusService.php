@@ -32,7 +32,6 @@ class ReportStatusService {
     {
         // We've checked recently enough, bail out
         if (Craft::$app->cache->get(self::$_cacheKey) !== false) return;
-
         Craft::$app->queue->push(new ReportJob());
     }
 
@@ -107,7 +106,9 @@ class ReportStatusService {
             'PHP Version' => App::phpVersion(),
             'DB Version' => self::_dbDriver(),
             'Plugins' => self::_plugins(),
+            'Updates' => self::_updates(),
             'Modules' => self::_modules(),
+            'Deprecation Notices' => self::_deprecations(),
         ];
     }
 
@@ -141,6 +142,30 @@ class ReportStatusService {
         return implode(PHP_EOL, array_map(function($plugin) {
             return "{$plugin->name} ({$plugin->developer}): {$plugin->version}";
         }, $plugins));
+    }
+
+
+
+    private static function _updates(): string {
+        $message = 'Up-to-date';
+        $totalupdates = Craft::$app->getUpdates()->getTotalAvailableUpdates();
+        if($totalupdates != 0) {
+            $message = $totalupdates . ' Updates';
+        }
+        if(Craft::$app->getUpdates()->getIsCriticalUpdateAvailable()) {
+            $message = 'CRITICAL UPDATE ' . $message;
+        }
+        return $message;
+    }
+
+    /**
+     * Returns Deprecation count
+     * @return string
+     */
+
+    private static function _deprecations(): string
+    {
+        return Craft::$app->getDeprecator()->getTotalLogs();
     }
 
     /**
