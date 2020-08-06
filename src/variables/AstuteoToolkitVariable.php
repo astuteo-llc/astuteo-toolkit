@@ -23,7 +23,7 @@ class AstuteoToolkitVariable
     }
 
     public function imgixTransformMap($image, $options, $serviceOptions) {
-        return (new \astuteo\astuteotoolkit\services\TransformService)->imgix($image,$options,$serviceOptions);
+        return (new TransformService)->imgix($image,$options,$serviceOptions);
     }
 
 	/**
@@ -90,7 +90,10 @@ class AstuteoToolkitVariable
             ->orderBy('startDate asc')
             ->all();
 
-        $now = DateTimeHelper::toDateTime(DateTimeHelper::currentTimeStamp())->format('Ymd');
+        try {
+            $now = DateTimeHelper::toDateTime(DateTimeHelper::currentTimeStamp())->format('Ymd');
+        } catch (\Exception $e) {
+        }
         $futureEntries = array();
 
         foreach ($events as $event) {
@@ -109,13 +112,11 @@ class AstuteoToolkitVariable
             }
         }
 
-        $futureEvents = Entry::find()
+        return Entry::find()
             ->section($section)
             ->id($futureEntries)
             ->orderBy('startDate asc')
             ->limit($limit)
             ->all();
-
-        return $futureEvents;
     }
 }

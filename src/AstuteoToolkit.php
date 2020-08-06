@@ -17,15 +17,22 @@ use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
 use astuteo\astuteotoolkit\models\Settings;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
+use astuteo\astuteotoolkit\services\CpNavService;
 
 use Craft;
+use craft\base\Model;
 use craft\web\View;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
 use craft\web\twig\variables\CraftVariable;
+use craft\events\RegisterCpNavItemsEvent;
+use craft\web\twig\variables\Cp;
 use craft\events\TemplateEvent;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use yii\base\Event;
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
 
 /**
  *
@@ -63,17 +70,6 @@ class AstuteoToolkit extends Plugin
     // Public Methods
     // =========================================================================
 
-    /**
-     * Set our $plugin static property to this class so that it can be accessed via
-     * AstuteoToolkit::$plugin
-     *
-     * Called after the plugin class is instantiated; do any one-time initialization
-     * here such as hooks and events.
-     *
-     * If you have a '/vendor/autoload.php' file, it will be loaded for you automatically;
-     * you do not need to load it in your init() method.
-     *
-     */
     public function init()
     {
         parent::init();
@@ -82,14 +78,17 @@ class AstuteoToolkit extends Plugin
         // Add in our Twig extensions
         Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
 
+        if (Craft::$app->request->getIsCpRequest()) {
+            $this->_bindCpEvents();
+        }
+
         // Register services
 		$this->setComponents([
 			'toolkit' => ToolkitService::class,
 			'location' => LocationService::class,
             'transform' => TransformService::class,
+            'cpnav' => CpNavService::class,
 		]);
-
-
 
 		// Load our AssetBundle
 		if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {
@@ -109,7 +108,6 @@ class AstuteoToolkit extends Plugin
 			);
 		}
 
-
 		// Register our variables
         Event::on(
             CraftVariable::class,
@@ -123,6 +121,9 @@ class AstuteoToolkit extends Plugin
 
 
 
+
+
+
 /**
  * Logging in Craft involves using one of the following methods:
  *
@@ -130,16 +131,6 @@ class AstuteoToolkit extends Plugin
  * Craft::info(): record a message that conveys some useful information.
  * Craft::warning(): record a warning message that indicates something unexpected has happened.
  * Craft::error(): record a fatal error that should be investigated as soon as possible.
- *
- * Unless `devMode` is on, only Craft::warning() & Craft::error() will log to `craft/storage/logs/web.log`
- *
- * It's recommended that you pass in the magic constant `__METHOD__` as the second parameter, which sets
- * the category to the method (prefixed with the fully qualified class name) where the constant appears.
- *
- * To enable the Yii debug toolbar, go to your user account in the AdminCP and check the
- * [] Show the debug toolbar on the front end & [] Show the debug toolbar on the Control Panel
- *
- * http://www.yiiframework.com/doc-2.0/guide-runtime-logging.html
  */
         Craft::info(
             Craft::t(
@@ -151,13 +142,32 @@ class AstuteoToolkit extends Plugin
         );
     }
 
+
+    // Private Methods
+    // =========================================================================
+    private function _bindCpEvents()
+    {
+        if(!AstuteoToolkit::$plugin->getSettings()->devCpNav && !Craft::$app->config->general->devMode) {
+            return;
+        }
+
+        Event::on(
+            Cp::class,
+            Cp::EVENT_REGISTER_CP_NAV_ITEMS,
+            function (RegisterCpNavItemsEvent $event) {
+                $event->navItems = cpNavService::instance()->addNav($event->navItems);
+                AstuteoToolkit::$plugin->getSettings()->loadCpTweaks;
+            }
+        );
+    }
+
     // Protected Methods
     // =========================================================================
 
     /**
      * Creates and returns the model used to store the plugin’s settings.
      *
-     * @return \craft\base\Model|null
+     * @return Model|null
      */
     protected function createSettingsModel()
     {
@@ -167,16 +177,20 @@ class AstuteoToolkit extends Plugin
     /**
      * Returns the rendered settings HTML, which will be inserted into the content
      * block on the settings page.
-     *
-     * @return string The rendered settings HTML
      */
     protected function settingsHtml(): string
     {
-        return Craft::$app->view->renderTemplate(
-            'astuteo-toolkit/settings',
-            [
-                'settings' => $this->getSettings()
-            ]
-        );
+        try {
+            return Craft::$app->view->renderTemplate(
+                'astuteo-toolkit/settings',
+                [
+                    'settings' => $this->getSettings()
+                ]
+            );
+        } catch (LoaderError $e) {
+        } catch (RuntimeError $e) {
+        } catch (SyntaxError $e) {
+        } catch (Exception $e) {
+        }
     }
 }
