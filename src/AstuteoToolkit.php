@@ -11,6 +11,8 @@
 namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\assetbundles\cptweaks\AstuteoToolkitCPAsset;
+use astuteo\astuteotoolkit\assetbundles\astuteotoolkit\AstuteoToolkitAsset;
+use astuteo\astuteotoolkit\services\ReportStatusService;
 use astuteo\astuteotoolkit\services\TransformService;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
@@ -80,35 +82,42 @@ class AstuteoToolkit extends Plugin
 
         if (Craft::$app->request->getIsCpRequest()) {
             $this->_bindCpEvents();
+            if (!Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
+                Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+            }
+        }
+
+        if (Craft::$app->request->getIsSiteRequest()) {
+            $this->_bindFrontEndEvents();
         }
 
         // Register services
-		$this->setComponents([
-			'toolkit' => ToolkitService::class,
-			'location' => LocationService::class,
+        $this->setComponents([
+            'toolkit' => ToolkitService::class,
+            'location' => LocationService::class,
             'transform' => TransformService::class,
             'cpnav' => CpNavService::class,
-		]);
+        ]);
 
-		// Load our AssetBundle
-		if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {
-			Event::on(
-				View::class,
-				View::EVENT_BEFORE_RENDER_TEMPLATE,
-				function (TemplateEvent $event) {
-					try {
-						Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
-					} catch (InvalidConfigException $e) {
-						Craft::error(
-							'Error registering AssetBundle - '.$e->getMessage(),
-							__METHOD__
-						);
-					}
-				}
-			);
-		}
+        // Load our AssetBundle
+        if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {
+            Event::on(
+                View::class,
+                View::EVENT_BEFORE_RENDER_TEMPLATE,
+                function (TemplateEvent $event) {
+                    try {
+                        Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+                    } catch (InvalidConfigException $e) {
+                        Craft::error(
+                            'Error registering AssetBundle - ' . $e->getMessage(),
+                            __METHOD__
+                        );
+                    }
+                }
+            );
+        }
 
-		// Register our variables
+        // Register our variables
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_INIT,
@@ -120,18 +129,14 @@ class AstuteoToolkit extends Plugin
         );
 
 
-
-
-
-
-/**
- * Logging in Craft involves using one of the following methods:
- *
- * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
- * Craft::info(): record a message that conveys some useful information.
- * Craft::warning(): record a warning message that indicates something unexpected has happened.
- * Craft::error(): record a fatal error that should be investigated as soon as possible.
- */
+        /**
+         * Logging in Craft involves using one of the following methods:
+         *
+         * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
+         * Craft::info(): record a message that conveys some useful information.
+         * Craft::warning(): record a warning message that indicates something unexpected has happened.
+         * Craft::error(): record a fatal error that should be investigated as soon as possible.
+         */
         Craft::info(
             Craft::t(
                 'astuteo-toolkit',
@@ -145,9 +150,50 @@ class AstuteoToolkit extends Plugin
 
     // Private Methods
     // =========================================================================
+
+    private function _shouldLoadAssets() {
+        $currentUser = Craft::$app->getUser()->identity ?? null;
+        if( Craft::$app->config->general->devMode ||
+            ($currentUser && $currentUser->can('accessCp'))) {
+            return true;
+        }
+        return false;
+    }
+
+    private function _bindFrontEndEvents() {
+        // Add edit entry link to front-end templates
+        Event::on(
+            View::class,
+            View::EVENT_END_BODY,
+            function (Event $e)
+            {
+                $element = Craft::$app->getUrlManager()->getMatchedElement();
+                if (!$element) return;
+
+                if (
+                    $this->_shouldLoadAssets()
+                ) {
+                    echo '<a
+                            href="' . $element->cpEditUrl . '"
+                            class="astuteo-edit-entry"
+                            target="_blank"
+                            rel="noopener"
+                          >Edit Entry</a>';
+                }
+            }
+        );
+        if ($this->_shouldLoadAssets() && !Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
+            Craft::$app->getView()->registerAssetBundle(AstuteoToolkitAsset::class);
+        }
+    }
+
     private function _bindCpEvents()
     {
-        if(!AstuteoToolkit::$plugin->getSettings()->devCpNav && !Craft::$app->config->general->devMode) {
+        // Phone home for Airtable inventory
+        if (!Craft::$app->request->getIsAjax() && !Craft::$app->config->general->devMode) {
+            ReportStatusService::makeReport();
+        }
+        if(!AstuteoToolkit::$plugin->getSettings()->devCpNav || !Craft::$app->config->general->devMode) {
             return;
         }
 

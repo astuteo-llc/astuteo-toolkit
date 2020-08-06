@@ -20,11 +20,9 @@ class AstuteoToolkitCPAsset extends AssetBundle
         $this->depends = [
             CpAsset::class,
         ];
-        //$this->js = [
-        //    'js/reports.js',
-        //];
         $this->css = [
             'css/astuteo-cp-tweaks.css',
+            'css/style.css'
         ];
         parent::init();
     }

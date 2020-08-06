@@ -1,11 +1,27 @@
 /**
- * Astuteo Toolkit plugin for Craft CMS
- *
- * Astuteo Toolkit CSS
- *
  * @author    Astuteo
  * @copyright Copyright (c) 2018 Astuteo
  * @link      https://astuteo.com
  * @package   AstuteoToolkit
- * @since     1.0.0
+ * @since     2.0.0
  */
+
+.astuteo-edit-entry {
+    position: fixed;
+    font-family: futura-pt,arial,sans-serif;
+    bottom: 10px;
+    left: 10px;
+    opacity: 0.3;
+    padding: 10px 20px;
+    line-height: 1;
+    font-size: 12px;
+    font-weight: bold;
+    background: #ff0030;
+    color: white;
+    transition: opacity 100ms;
+}
+.astuteo-edit-entry:hover {
+    opacity: 1;
+    background: #e5002b;
+    text-decoration: none;
+}
