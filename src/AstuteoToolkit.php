@@ -12,7 +12,6 @@ namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\assetbundles\cptweaks\AstuteoToolkitCPAsset;
 use astuteo\astuteotoolkit\assetbundles\astuteotoolkit\AstuteoToolkitAsset;
-use astuteo\astuteotoolkit\services\ReportStatusService;
 use astuteo\astuteotoolkit\services\TransformService;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
@@ -67,7 +66,7 @@ class AstuteoToolkit extends Plugin
      *
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public $schemaVersion = '2.0.4';
 
     // Public Methods
     // =========================================================================
@@ -189,10 +188,6 @@ class AstuteoToolkit extends Plugin
 
     private function _bindCpEvents()
     {
-        // Phone home for Airtable inventory
-        if (!Craft::$app->request->getIsAjax() && !Craft::$app->config->general->devMode) {
-            ReportStatusService::makeReport();
-        }
         if(!AstuteoToolkit::$plugin->getSettings()->devCpNav || !Craft::$app->config->general->devMode) {
             return;
         }

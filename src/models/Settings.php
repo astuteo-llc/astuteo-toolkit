@@ -9,7 +9,7 @@ use craft\base\Model;
 class Settings extends Model
 {
     public $assetPath = '/site-assets/';
-	public $loadCpTweaks = false;
-	public $devCpNav = true;
-	public $imgixUrl = '';
+    public $loadCpTweaks = false;
+    public $devCpNav = true;
+    public $imgixUrl = '';
 }

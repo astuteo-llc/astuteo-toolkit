@@ -24,6 +24,6 @@
 
 return [
     "assetPath" => '/site-assets/',
-    "imgixUrl" => 'https://standardimaging.imgix.net',
+    "imgixUrl" => '',
 	"loadCpTweaks" => false
 ];
