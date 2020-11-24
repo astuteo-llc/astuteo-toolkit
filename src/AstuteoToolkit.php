@@ -28,6 +28,7 @@ use craft\web\twig\variables\CraftVariable;
 use craft\events\RegisterCpNavItemsEvent;
 use craft\web\twig\variables\Cp;
 use craft\events\TemplateEvent;
+use craft\services\Plugins;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -77,19 +78,18 @@ class AstuteoToolkit extends Plugin
         self::$plugin = $this;
 
         // Add in our Twig extensions
-        Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
-
-        if (Craft::$app->request->getIsCpRequest()) {
-            $this->_bindCpEvents();
-            if (!Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
-                Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+        Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
+            Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
+            if (Craft::$app->request->getIsCpRequest()) {
+                $this->_bindCpEvents();
+                if (!Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
+                    Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+                }
             }
-        }
-
-        if (Craft::$app->request->getIsSiteRequest()) {
-            $this->_bindFrontEndEvents();
-        }
-
+            if (Craft::$app->request->getIsSiteRequest()) {
+                $this->_bindFrontEndEvents();
+            }
+        });
         // Register services
         $this->setComponents([
             'toolkit' => ToolkitService::class,
@@ -170,7 +170,7 @@ class AstuteoToolkit extends Plugin
                 if (!$element) return;
 
                 if (
-                    $this->_shouldLoadAssets()
+                $this->_shouldLoadAssets()
                 ) {
                     echo '<a
                             href="' . $element->cpEditUrl . '"
