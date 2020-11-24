@@ -84,10 +84,16 @@ class AstuteoToolkitVariable
         } else {
             $section = 'events';
         }
+        if(isset($options['relatedTo'])) {
+            $related = $options['relatedTo'];
+        } else {
+            $related = '';
+        }
 
         $events = Entry::find()
             ->section($section)
             ->orderBy('startDate asc')
+            ->relatedTo($related)
             ->all();
 
         try {
