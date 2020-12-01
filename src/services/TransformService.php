@@ -6,20 +6,36 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
 
-
+/**
+ * Class TransformService
+ *
+ * @package astuteo\astuteotoolkit\services
+ */
 class TransformService extends Component {
 
+    /**
+     * @param $image
+     * @param null $options
+     * @param null $serviceOptions
+     * @return string|null
+     */
     public function imgix($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
            return null;
         }
         $path = $this->prepUrl($image->url, $image->volumeId,AstuteoToolkit::$plugin->getSettings()->imgixUrl);
         $mappedOptions = $this->imgixMap($options,$serviceOptions,$image->focalPoint);
-        $assembled = $path . $mappedOptions;
-        return $assembled;
+        return $path . $mappedOptions;
     }
 
     // Processes Imgix to Craft Native where possible
+
+    /**
+     * @param $options
+     * @param $serviceOptions
+     * @param null $focalPoint
+     * @return false|string
+     */
     public function imgixMap($options, $serviceOptions, $focalPoint = null) {
         $params = '';
         if(!$options) {
@@ -57,7 +73,11 @@ class TransformService extends Component {
         return $params;
     }
 
-    // Function to return cropped with focalpoint mapped
+    /**
+     * @param $focalPoint
+     * Function to return cropped with focal point mapped
+     * @return string
+     */
     private function imgixMapCrop($focalPoint) {
         $param = 'fit=crop';
         // Default, no need to do more
@@ -71,7 +91,12 @@ class TransformService extends Component {
         return $param;
     }
 
-
+    /**
+     * @param $url
+     * @param $volumeId
+     * @param $updateUrl
+     * @return string|string[]
+     */
     private function prepUrl($url, $volumeId, $updateUrl) {
         $volume = Craft::$app->volumes->getVolumeById($volumeId);
         $volumeUrl = Craft::parseEnv($volume->url);

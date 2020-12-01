@@ -4,7 +4,11 @@ namespace astuteo\astuteotoolkit\services;
 use craft\base\Component;
 use Craft;
 
-
+/**
+ * Class CpNavService
+ *
+ * @package astuteo\astuteotoolkit\services
+ */
 class CpNavService extends Component {
     // Add CP sidebar links to admin in dev mode
     // https://github.com/vigetlabs/craft-viget-base/

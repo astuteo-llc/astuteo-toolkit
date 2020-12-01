@@ -9,6 +9,11 @@ use craft\elements\Asset;
 use craft\helpers\FileHelper;
 use Imagine\Image\ImageInterface;
 
+/**
+ * Class ToolkitService
+ *
+ * @package astuteo\astuteotoolkit\services
+ */
 class ToolkitService extends Component
 {
 	public static $imageDriver = 'gd';

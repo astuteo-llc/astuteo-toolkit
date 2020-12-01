@@ -3,7 +3,7 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "2.0.8",
+    "version": "2.1.0",
     "keywords": [
         "craft",
         "cms",
@@ -24,8 +24,7 @@
     ],
     "require": {
         "craftcms/cms": "^3.5.0",
-        "ext-json": "*",
-        "sleiman/airtable-php": "^2.4"
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

@@ -23,7 +23,8 @@
  */
 
 return [
-    "assetPath" => '/site-assets/',
-    "imgixUrl" => '',
-	"loadCpTweaks" => false
+    "assetPath" => "/site-assets/",
+    "imgixUrl" => "",
+	"loadCpTweaks" => false,
+    "devCpNav" => true,
 ];

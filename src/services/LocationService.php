@@ -4,7 +4,11 @@ namespace astuteo\astuteotoolkit\services;
 
 use craft\base\Component;
 
-
+/**
+ * Class LocationService
+ *
+ * @package astuteo\astuteotoolkit\services
+ */
 class LocationService extends Component {
 
 	public static function provinces() {
