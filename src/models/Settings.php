@@ -12,6 +12,7 @@ class Settings extends Model
     public $loadCpTweaks = false;
     public $devCpNav = true;
     public $imgixUrl = '';
+    public $projectVars = [];
     public $countries = [
         "US" => "United States",
         "CA" => "Canada",

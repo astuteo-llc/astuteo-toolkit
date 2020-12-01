@@ -1,5 +1,6 @@
 <?php
 namespace astuteo\astuteotoolkit\variables;
+use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\TransformService;
@@ -46,6 +47,10 @@ class AstuteoToolkitVariable
 	 */
     public function provinces() {
 		return LocationService::provinces();
+    }
+
+    public function projectVars() {
+        return AstuteoToolkit::$plugin->getSettings()->projectVars;
     }
 
     /**
