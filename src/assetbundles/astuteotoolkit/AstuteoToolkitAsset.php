@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2018 Astuteo
  */
 
-namespace astuteo\astuteotoolkit\assetbundles\AstuteoToolkit;
+namespace astuteo\astuteotoolkit\assetbundles\astuteotoolkit;
 
 use Craft;
 use craft\web\AssetBundle;
