@@ -45,6 +45,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     {
         return [
             new TwigFilter('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFilter('astuteoMarks', [$this, 'astuteoMarks']),
         ];
     }
 
@@ -53,13 +54,28 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
      *
      *      {% set this = someFunction('something') %}
      *
-    * @return array
+     * @return array
      */
     public function getFunctions()
     {
         return [
             new TwigFunction('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFunction('astuteoMarks', [$this, 'astuteoMarks']),
         ];
+    }
+    public function astuteoMarks($text) {
+        $marks = [
+            '®',
+            '™',
+            '©'
+        ];
+        $replace = [
+            '<sup class="mark mark-r">®</sup>',
+            '<sup class="mark mark-tm">™</sup>',
+            '<sup class="mark mark-c">©</sup>'
+        ];
+        $string = str_replace($marks, $replace, $text);
+        return $string;
     }
 
     /**
