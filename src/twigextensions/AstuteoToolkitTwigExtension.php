@@ -84,10 +84,16 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
      * @param $file
      * @return string
      */
-    public function astuteoRev($file)
+    public function astuteoRev($param)
     {
+        if(is_array($param)) {
+            $file = $param[0];
+            $asset_path = $param[1];
+        } else {
+            $file = $param;
+            $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
+        }
         static $manifest = null;
-        $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
         $path           = $this->_preparePath($file, $asset_path);
         $manifest_path  = $_SERVER['DOCUMENT_ROOT'];
         $manifest_path .= $asset_path . '/rev-manifest.json';
