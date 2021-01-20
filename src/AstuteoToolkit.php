@@ -160,27 +160,30 @@ class AstuteoToolkit extends Plugin
     }
 
     private function _bindFrontEndEvents() {
-        // Add edit entry link to front-end templates
-        Event::on(
-            View::class,
-            View::EVENT_END_BODY,
-            function (Event $e)
-            {
-                $element = Craft::$app->getUrlManager()->getMatchedElement();
-                if (!$element) return;
+        // Add edit entry link to front-end templatesincludeFeEdit
 
-                if (
-                $this->_shouldLoadAssets()
-                ) {
-                    echo '<a
-                            href="' . $element->cpEditUrl . '"
-                            class="astuteo-edit-entry"
-                            target="_blank"
-                            rel="noopener"
-                          >Edit Entry</a>';
+        if(AstuteoToolkit::$plugin->getSettings()->includeFeEdit) {
+            Event::on(
+                View::class,
+                View::EVENT_END_BODY,
+                function (Event $e)
+                {
+                    $element = Craft::$app->getUrlManager()->getMatchedElement();
+                    if (!$element) return;
+
+                    if (
+                    $this->_shouldLoadAssets()
+                    ) {
+                        echo '<a
+                                href="' . $element->cpEditUrl . '"
+                                class="astuteo-edit-entry"
+                                target="_blank"
+                                rel="noopener"
+                              >Edit Entry</a>';
+                    }
                 }
-            }
-        );
+            );
+        }
         if ($this->_shouldLoadAssets() && !Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
             Craft::$app->getView()->registerAssetBundle(AstuteoToolkitAsset::class);
         }
