@@ -12,6 +12,7 @@ class Settings extends Model
     public $loadCpTweaks = false;
     public $devCpNav = true;
     public $includeFeEdit = true;
+    public $cacheVideoEmbeds = true;
     public $imgixUrl = '';
     public $projectVars = [];
     public $countries = [

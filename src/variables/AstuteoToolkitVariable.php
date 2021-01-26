@@ -4,6 +4,7 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\TransformService;
+use astuteo\astuteotoolkit\services\VideoEmbedService;
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
@@ -64,6 +65,12 @@ class AstuteoToolkitVariable
 		return $request->accepts('image/webp');
 	}
 
+
+    public function getVideoEmbedInfo($url): array
+    {
+        return (new VideoEmbedService)->getEmbedInfo($url);
+    }
+
 	/**
 	 * Checks for webp support in image driver
 	 *
@@ -73,6 +80,7 @@ class AstuteoToolkitVariable
 	{
 		return ToolkitService::hasSupportForWebP();
 	}
+
 
     // Standardized way to pull future events.
     // Assumptions made:

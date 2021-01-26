@@ -19,6 +19,7 @@ use astuteo\astuteotoolkit\models\Settings;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\CpNavService;
+use astuteo\astuteotoolkit\services\VideoEmbedService;
 
 use Craft;
 use craft\base\Model;
