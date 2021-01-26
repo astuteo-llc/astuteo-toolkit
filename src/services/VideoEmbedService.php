@@ -29,14 +29,16 @@ class VideoEmbedService extends Component {
             $embedInfo = [
               'id' => $videoId,
               'url' => $this->createYouTubeEmbed($videoId),
-              'thumbnail' => $this->createYouTubeThumbnail($videoId)
+              'thumbnail' => $this->createYouTubeThumbnail($videoId),
+              'thumbnailMaxRes' => $this->createYouTubeThumbnailMax($videoId)
             ];
         } elseif($this->isVimeo($url)) {
             $videoId = $this->getVimeoId($url);
             $embedInfo = [
                 'id' => $videoId,
                 'url' => $this->createVimeoEmbed($videoId),
-                'thumbnail' => ''
+                'thumbnail' => '',
+                'thumbnailMaxRes' => ''
             ];
         }
 
@@ -60,6 +62,10 @@ class VideoEmbedService extends Component {
     public function createYouTubeThumbnail($id): string
     {
         return 'https://i.ytimg.com/vi/' . $id . '/mqdefault.jpg';
+    }
+    public function createYouTubeThumbnailMax($id): string
+    {
+        return 'https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg';
     }
 
     /**

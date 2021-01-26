@@ -66,6 +66,14 @@ class AstuteoToolkitVariable
 	}
 
 
+    /**
+     * Call it like this:
+     *
+     *     {{ craft.astuteoToolkit.getVideoEmbedInfo(url) }}
+     *
+     * @param $url
+     * @return array $url, $id, $thumbnail
+     */
     public function getVideoEmbedInfo($url): array
     {
         return (new VideoEmbedService)->getEmbedInfo($url);
