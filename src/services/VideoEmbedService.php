@@ -4,6 +4,12 @@ namespace astuteo\astuteotoolkit\services;
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
+use craft\elements\Asset;
+
+use craft\base\Model;
+use craft\errors\ElementNotFoundException;
+use yii\base\Exception;
+use craft\helpers\Assets;
 
 
 /**
@@ -21,24 +27,38 @@ class VideoEmbedService extends Component {
         $embedInfo = [
             'id' => '',
             'url' => '',
-            'thumbnail' => ''
+            'thumbnail' => '',
+            'staticThumb' => true
         ];
-
         if($this->isYouTube($url)) {
             $videoId = $this->getYouTubeId($url);
+            if(AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbs && AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbsVolumeId) {
+                $volumeId = AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbsVolumeId;
+                $this->storeThumbnail($this->createYouTubeThumbnailMax($videoId), $videoId, $volumeId);
+                $thumb = $this->getThumbAsset($videoId . '.jpg', $volumeId);
+                $staticThumb = false;
+            } else {
+                $thumb = [
+                    'url' => $this->createYouTubeThumbnailMax($videoId)
+                ];
+                $staticThumb = true;
+            }
             $embedInfo = [
               'id' => $videoId,
               'url' => $this->createYouTubeEmbed($videoId),
-              'thumbnail' => $this->createYouTubeThumbnail($videoId),
-              'thumbnailMaxRes' => $this->createYouTubeThumbnailMax($videoId)
+              'thumbnail' => $thumb,
+              'staticThumb' => $staticThumb
             ];
+
         } elseif($this->isVimeo($url)) {
             $videoId = $this->getVimeoId($url);
             $embedInfo = [
                 'id' => $videoId,
                 'url' => $this->createVimeoEmbed($videoId),
-                'thumbnail' => '',
-                'thumbnailMaxRes' => ''
+                'thumbnail' => [
+                    'url' => '',
+                ],
+                'staticThumb' => true
             ];
         }
 
@@ -58,7 +78,6 @@ class VideoEmbedService extends Component {
         return 'https://player.vimeo.com/video/' . $id;
     }
 
-
     public function createYouTubeThumbnail($id): string
     {
         return 'https://i.ytimg.com/vi/' . $id . '/mqdefault.jpg';
@@ -66,6 +85,44 @@ class VideoEmbedService extends Component {
     public function createYouTubeThumbnailMax($id): string
     {
         return 'https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg';
+    }
+
+
+    private function getThumbAsset($filename, $volumeId) {
+        $folderId = Craft::$app->assets->getRootFolderByVolumeId($volumeId)['id'];
+        return Asset::findOne(['folderId' => $folderId, 'filename' => $filename]);
+    }
+
+    private function storeThumbnail($url, $id, $volumeId) {
+        $filename = $id . '.jpg';
+        $folderId = Craft::$app->assets->getRootFolderByVolumeId($volumeId)['id'];
+        $existing = $this->getThumbAsset($filename, $volumeId);
+        if(is_object($existing)) {
+            return $existing;
+        }
+        $filepath = CRAFT_BASE_PATH . '/storage/runtime/temp/';
+        $fileContents = file_get_contents($url);
+        file_put_contents($filepath . $filename,$fileContents);
+        $this->saveThumbAsAsset($filepath . $filename, $filename, $folderId, $volumeId);
+    }
+
+    public function saveThumbAsAsset($tempPath, $filename, $folderId, $volumeId)
+    {
+        $asset = new Asset();
+        $asset->tempFilePath = $tempPath;
+        $asset->filename = $filename;
+        $asset->newFolderId = $folderId;
+        $asset->volumeId = $volumeId;
+        $asset->avoidFilenameConflicts = false;
+        $asset->setScenario(Asset::SCENARIO_CREATE);
+
+        $result = Craft::$app->getElements()->saveElement($asset);
+
+        if (!$result) {
+            return ['message' => 'Error'];
+        }
+
+        return ['success' => true];
     }
 
     /**

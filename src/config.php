@@ -27,5 +27,5 @@ return [
     "imgixUrl" => "",
 	"loadCpTweaks" => false,
     "devCpNav" => true,
-    "includeFeEdit" => true
+    "includeFeEdit" => true,
 ];

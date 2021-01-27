@@ -13,6 +13,8 @@ class Settings extends Model
     public $devCpNav = true;
     public $includeFeEdit = true;
     public $cacheVideoEmbeds = true;
+    public $uploadVideoThumbs;
+    public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
     public $projectVars = [];
     public $countries = [
