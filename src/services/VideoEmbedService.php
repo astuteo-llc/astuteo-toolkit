@@ -5,12 +5,11 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
 use craft\elements\Asset;
-use craft\services\Path;
+use astuteo\astuteotoolkit\helpers\UploadHelper;
 
 use craft\base\Model;
 use craft\errors\ElementNotFoundException;
 use yii\base\Exception;
-use craft\helpers\Assets;
 
 
 /**
@@ -96,35 +95,17 @@ class VideoEmbedService extends Component {
 
     private function storeThumbnail($url, $id, $volumeId) {
         $filename = $id . '.jpg';
-        $folderId = Craft::$app->assets->getRootFolderByVolumeId($volumeId)['id'];
         $existing = $this->getThumbAsset($filename, $volumeId);
         if(is_object($existing)) {
             return $existing;
         }
-        $filepath = Craft::$app->path->getTempPath();
-        $fileContents = file_get_contents($url);
-        file_put_contents($filepath . $filename,$fileContents);
-        $this->saveThumbAsAsset($filepath . $filename, $filename, $folderId, $volumeId);
-    }
-
-    public function saveThumbAsAsset($tempPath, $filename, $folderId, $volumeId)
-    {
-        $asset = new Asset();
-        $asset->tempFilePath = $tempPath;
-        $asset->filename = $filename;
-        $asset->newFolderId = $folderId;
-        $asset->volumeId = $volumeId;
-        $asset->avoidFilenameConflicts = false;
-        $asset->setScenario(Asset::SCENARIO_CREATE);
-
-        $result = Craft::$app->getElements()->saveElement($asset);
-
-        if (!$result) {
-            return ['message' => 'Error'];
+        $tempPath = Craft::$app->path->getTempPath();
+        $tempFilePath = UploadHelper::downloadFile($url, $tempPath . $filename);
+        if($tempFilePath) {
+            return UploadHelper::uploadToVolume($volumeId, $tempPath . $filename, $filename);
         }
-
-        return ['success' => true];
     }
+
 
     /**
      * Is the url a youtube url
