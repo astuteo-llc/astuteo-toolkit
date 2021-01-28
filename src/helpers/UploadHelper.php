@@ -7,9 +7,7 @@ use Craft;
 
 class UploadHelper {
     public function downloadFile($src, $dest) {
-
         $ch = curl_init($src);
-
         $fp = fopen($dest, 'wb');
         curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -18,12 +16,10 @@ class UploadHelper {
         curl_close($ch);
         fclose($fp);
         if($response == 200) {
-            return true;
+            return $dest;
         }
         return false;
     }
-
-
 
     public function uploadToVolume($volumeId, $src, $filename): bool
     {

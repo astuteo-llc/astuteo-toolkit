@@ -60,6 +60,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     {
         return [
             new TwigFunction('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFunction('astuteoMix', [$this, 'astuteoMix']),
             new TwigFunction('astuteoMarks', [$this, 'astuteoMarks']),
         ];
     }
@@ -79,7 +80,8 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     }
 
     /**
-     * Our function called via Twig; it can do anything you want
+     * Append or rename static files from our
+     * build system
      *
      * @param $file
      * @return string
@@ -107,15 +109,47 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
         $path = $this->_addBasePath($path);
         return $asset_path . $path;
     }
+
+    public function astuteoMix($param)
+    {
+        if(is_array($param)) {
+            $file = $param[0];
+            $asset_path = $param[1];
+        } else {
+            $file = $param;
+            $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
+        }
+        static $manifest = null;
+        $path           = $this->_preparePath($file, $asset_path, 'mix');
+        $manifest_path  = $_SERVER['DOCUMENT_ROOT'];
+        $manifest_path .= $asset_path . '/mix-manifest.json';
+
+
+        if (is_null($manifest) && file_exists($manifest_path)) {
+            $manifest = json_decode(file_get_contents($manifest_path), true);
+        }
+
+        if (isset($manifest[$path])) {
+            $path = $manifest[$path];
+            $path;
+        }
+        $path = $this->_addBasePath($path);
+        return $asset_path . $path;
+    }
+
     private function _addBasePath($path)
     {
         return $this->base_path . $path;
     }
 
-    private function _preparePath($path, $asset_path) {
+    private function _preparePath($path, $asset_path, $version = 'blendid') {
         $updatePath = str_replace($asset_path, '', $path);
         $updatePath = $this->_stripBasePath($updatePath);
-        return $updatePath;
+        if($version === 'blendid') {
+            return $updatePath;
+        } elseif ($version === 'mix') {
+            return '/' . $updatePath;
+        }
     }
 
     private function _stripBasePath($path)
