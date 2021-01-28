@@ -5,6 +5,7 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
 use craft\elements\Asset;
+use craft\services\Path;
 
 use craft\base\Model;
 use craft\errors\ElementNotFoundException;
@@ -100,7 +101,7 @@ class VideoEmbedService extends Component {
         if(is_object($existing)) {
             return $existing;
         }
-        $filepath = CRAFT_BASE_PATH . '/storage/runtime/temp/';
+        $filepath = Craft::$app->path->getTempPath();
         $fileContents = file_get_contents($url);
         file_put_contents($filepath . $filename,$fileContents);
         $this->saveThumbAsAsset($filepath . $filename, $filename, $folderId, $volumeId);
