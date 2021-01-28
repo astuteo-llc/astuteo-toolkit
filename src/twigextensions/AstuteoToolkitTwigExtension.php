@@ -46,6 +46,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     {
         return [
             new TwigFilter('astuteoRev', [$this, 'astuteoRev']),
+            new TwigFilter('astuteoRev', [$this, 'astuteoMix']),
             new TwigFilter('astuteoMarks', [$this, 'astuteoMarks']),
         ];
     }
