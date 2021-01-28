@@ -15,6 +15,7 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Craft;
 
 /**
  * @author    Astuteo
@@ -88,53 +89,48 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
      */
     public function astuteoRev($param)
     {
-        if(is_array($param)) {
-            $file = $param[0];
-            $asset_path = $param[1];
-        } else {
-            $file = $param;
-            $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
-        }
-        static $manifest = null;
-        $path           = $this->_preparePath($file, $asset_path);
-        $manifest_path  = $_SERVER['DOCUMENT_ROOT'];
-        $manifest_path .= $asset_path . '/rev-manifest.json';
-
-        if (is_null($manifest) && file_exists($manifest_path)) {
-            $manifest = json_decode(file_get_contents($manifest_path), true);
-        }
-        if (isset($manifest[$path])) {
-            $path = $manifest[$path];
-        }
-        $path = $this->_addBasePath($path);
-        return $asset_path . $path;
+        $file = $this->getAssetFile($param);
+        return $this->_processManifest($file, $this->getAssetPathFile($param), 'blendid');
     }
 
     public function astuteoMix($param)
     {
-        if(is_array($param)) {
-            $file = $param[0];
-            $asset_path = $param[1];
-        } else {
-            $file = $param;
-            $asset_path = AstuteoToolkit::$plugin->getSettings()->assetPath;
+        $file = $this->getAssetFile($param);
+        if(Craft::$app->cache->exists($file)) {
+            return Craft::$app->cache->get($file);
         }
-        static $manifest = null;
-        $path           = $this->_preparePath($file, $asset_path, 'mix');
-        $manifest_path  = $_SERVER['DOCUMENT_ROOT'];
-        $manifest_path .= $asset_path . '/mix-manifest.json';
+        $revUrl = $this->_processManifest($file, $this->getAssetPathFile($param), 'mix');
+        Craft::$app->cache->set($file, $revUrl, 'P1Y');
+        return $revUrl;
 
+    }
 
-        if (is_null($manifest) && file_exists($manifest_path)) {
+    private function getAssetFile($param) {
+        if(is_array($param)) {
+            return $param[0];
+        }
+        return $param;
+    }
+    private function getAssetPathFile($param) {
+        if(is_array($param)) {
+            return $param[1];
+        }
+        return AstuteoToolkit::$plugin->getSettings()->assetPath;
+    }
+
+    private function _processManifest($file, $asset_path, $version = 'blendid') {
+        $manifest = null;
+        $path = $this->_preparePath($file, $asset_path, $version);
+        $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/';
+        $manifest_path .= ($version === 'blendid') ? 'rev-manifest.json' : 'mix-manifest.json';
+        if(is_null($manifest) && file_exists($manifest_path)) {
             $manifest = json_decode(file_get_contents($manifest_path), true);
         }
-
-        if (isset($manifest[$path])) {
+        if(isset($manifest[$path])) {
             $path = $manifest[$path];
-            $path;
         }
         $path = $this->_addBasePath($path);
-        return $asset_path . $path;
+        return $this->_cleanPath($asset_path . $path);
     }
 
     private function _addBasePath($path)
@@ -150,6 +146,10 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
         } elseif ($version === 'mix') {
             return '/' . $updatePath;
         }
+    }
+
+    private function _cleanPath($path) {
+        return str_replace('//', '/', $path);
     }
 
     private function _stripBasePath($path)

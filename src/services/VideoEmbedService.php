@@ -72,6 +72,8 @@ class VideoEmbedService extends Component {
          */
         if(
             AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds
+            && isset($videoId)
+            && isset($volumeId)
             && AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbs
             && AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbsVolumeId)
             {
