@@ -28,9 +28,4 @@ To install the plugin, follow these instructions.
 
 ## Astuteo Toolkit Roadmap
 
-Some things to do, and ideas for potential features:
-
-* Add path configuration
-* Add our logo area calculator 
-
-Brought to you by [Astuteo](https://astuteo.com)
+1. [astuteoMix and astuteoRev](docs/rev.md) 

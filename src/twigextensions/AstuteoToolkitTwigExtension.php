@@ -103,7 +103,6 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
         $revUrl = $this->_processManifest($file, $this->getAssetPathFile($param), 'mix');
         Craft::$app->cache->set($file, $revUrl, 'P1Y');
         return $revUrl;
-
     }
 
     private function getAssetFile($param) {
