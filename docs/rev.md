@@ -31,4 +31,4 @@ On occasion, such as a multi-site project, you may want to set the path _just_ f
 - By default, we are caching the result site-wide. Currently, that is not configurable. 
 
 
-[back to docs](../README.MD) 
+[back to index](../README.md) 
