@@ -1,7 +1,7 @@
 ## futureEvents
 
 ### What does this do?
-It takes a query of entries that have a startDate and endDate date field and returns events that are still in the future.
+Returns entries that have a startDate and endDate date field and returns events that are still in the future.
 
 ### How to Use
 ```
@@ -12,7 +12,6 @@ It takes a query of entries that have a startDate and endDate date field and ret
     })
 }}
 ```
-
 
 Example:
 ```{% set futureEvents = craft.astuteoToolkit.futureEvents({section: 'events'}) %}```
