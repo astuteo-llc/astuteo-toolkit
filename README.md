@@ -5,3 +5,4 @@
 5. Future Events - [futureEvents](docs/future-events.md)
 6. Image - [imgixTransformMap](docs/imgix-map.md)
 7. Video Embed Helper - [getVideoEmbedInfo](docs/video-embed.md)
+8. [Admin Helpers](docs/admin-helpers.md)
