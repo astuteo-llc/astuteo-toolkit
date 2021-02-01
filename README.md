@@ -4,3 +4,4 @@
 4. Country and States Listing - [countries and states](docs/country-states.md)
 5. Future Events - [futureEvents](docs/future-events.md)
 6. Image - [imgixTransformMap](docs/imgix-map.md)
+7. Video Embed Helper - [getVideoEmbedInfo](docs/video-embed.md)

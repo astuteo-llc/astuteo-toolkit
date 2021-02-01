@@ -3,6 +3,17 @@
 ### What does this do?
 Attempts to map Craft's built-in transform functions with corresponding Imgix's URL based API. It's meant to be used in conjunction with a site-wide image macro or similar. 
 
+### Configuration
+In `config/astuteo-toolkit.php` create a key of `imgixUrl` and set to the URL at .imgix.net.
+
+```php
+<?php
+    return [
+        "imgixUrl" => 'https://client-name.imgix.net',
+    ];
+```
+
+
 ### Simple Example
 ```html
 {% import 'transforms.twig' as transform %}
