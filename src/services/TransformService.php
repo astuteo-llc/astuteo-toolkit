@@ -73,6 +73,37 @@ class TransformService extends Component {
         return $params;
     }
 
+
+
+    /**
+     * Calculate Width and Height from target area
+     */
+    public function areaToDimensions($image, $area, $maxWidth, $maxHeight) {
+        if(!isset($image['width']) || !isset($image['height'])) {
+            return false;
+        }
+        $ratio = $image['width'] / $image['height'];
+        $y = sqrt($area/$ratio);
+        $height = round($y);
+        $width = round($ratio * $y);
+
+        if($maxWidth && $maxWidth < $width) {
+            $scale = $maxWidth / $width;
+            $height = round($height * $scale);
+            $width =  round($width * $scale);
+        }
+        if($maxHeight && $maxHeight < $height) {
+            $scale = $maxHeight / $height;
+            $height = round($height * $scale);
+            $width =  round($width * $scale);
+        }
+        return [
+            'width' => $width,
+            'height' => $height
+        ];
+    }
+
+
     /**
      * @param $focalPoint
      * Function to return cropped with focal point mapped

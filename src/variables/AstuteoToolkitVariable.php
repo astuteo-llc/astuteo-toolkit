@@ -89,6 +89,16 @@ class AstuteoToolkitVariable
 		return ToolkitService::hasSupportForWebP();
 	}
 
+    /**
+     * @param $image
+     * @param $area
+     * @return array|false
+     */
+	public function areaToDimensions($image, $area, $maxWidth = null, $maxHeight = null) {
+        return TransformService::areaToDimensions($image, $area, $maxWidth, $maxHeight);
+    }
+
+
 
     // Standardized way to pull future events.
     // Assumptions made:

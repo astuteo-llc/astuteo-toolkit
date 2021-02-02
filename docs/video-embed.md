@@ -23,7 +23,7 @@ The following values can be set in `config/astuteo-toolkit.php`.
 
 If the video exists, videoEmbed will contain:
 - `staticThumb` (boolean - true if a static URL, false if a Craft image)
-- `url` (YouTube embed URL URL
+- `url` (YouTube embed URL)
 - `thumbnail`: `url` if static, or full asset model if Craft
 - `id` (YouTube's ID)
 
