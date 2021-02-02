@@ -14,15 +14,20 @@ class AstuteoToolkitVariable
     /**
      * @param $name
      * @param bool $default
-     * @return bool|mixed
+     * @return mixed
      */
-    public function unsecureCookie($name, $default = false) {
+    public function insecureCookie($name, $default = false) {
         if(!isset($_COOKIE[$name])) {
             return $default;
         } else {
             return $_COOKIE[$name];
         }
     }
+
+    public function unsecureCookie($name, $default = false) {
+        $this->insecureCookie($name, $default);
+    }
+
 
     public function imgixTransformMap($image, $options, $serviceOptions) {
         return (new TransformService)->imgix($image,$options,$serviceOptions);

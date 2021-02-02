@@ -6,3 +6,5 @@
 6. Image - [imgixTransformMap](docs/imgix-map.md)
 7. Video Embed Helper - [getVideoEmbedInfo](docs/video-embed.md)
 8. [Admin Helpers](docs/admin-helpers.md)
+9. Area to Dimensions - [areaToDimensions](docs/area-to-dimensions.md)
+10. Insecure Cookie - [insecureCookie](docs/insecure-cookie.md)
