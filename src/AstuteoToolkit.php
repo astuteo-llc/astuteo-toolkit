@@ -26,6 +26,7 @@ use craft\base\Model;
 use craft\web\View;
 use craft\base\Plugin;
 use craft\web\twig\variables\CraftVariable;
+use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterCpNavItemsEvent;
 use craft\web\twig\variables\Cp;
 use craft\events\TemplateEvent;
@@ -77,6 +78,12 @@ class AstuteoToolkit extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        // Add in our console commands
+        if (Craft::$app instanceof ConsoleApplication) {
+            $this->controllerNamespace = 'astuteo\astuteotoolkit\console\controllers';
+        }
+
 
         // Add in our Twig extensions
         Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
