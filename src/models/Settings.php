@@ -16,6 +16,24 @@ class Settings extends Model
     public $uploadVideoThumbs;
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
+    public $productionDefaults = [
+        "user" => "forge",
+        "ip" => "ip.add.ress",
+        "dbname" => "",
+        "dbuser" => "",
+        "backup" => "/full/backup/dir",
+        "path" => "/full/project/root",
+        "php" => "8.0"
+    ];
+    public $stagingDefaults = [
+        "user" => "staging",
+        "ip" => "ip.add.ress",
+        "dbname" => "",
+        "dbuser" => "",
+        "backup" => "/full/backup/dir",
+        "path" => "/full/project/root",
+        "php" => "8.0"
+    ];
     public $projectVars = [];
     public $countries = [
         "US" => "United States",

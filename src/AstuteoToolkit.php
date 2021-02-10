@@ -19,6 +19,7 @@ use astuteo\astuteotoolkit\models\Settings;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\CpNavService;
+use astuteo\astuteotoolkit\services\AstuteoBuildService;
 use astuteo\astuteotoolkit\services\VideoEmbedService;
 
 use Craft;
@@ -104,6 +105,7 @@ class AstuteoToolkit extends Plugin
             'location' => LocationService::class,
             'transform' => TransformService::class,
             'cpnav' => CpNavService::class,
+            'build' => AstuteoBuildService::class,
         ]);
 
         // Load our AssetBundle
