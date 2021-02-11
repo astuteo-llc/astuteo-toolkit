@@ -54,7 +54,7 @@ class AstuteoBuildService extends Component {
             "reference/scripts/example.local.env.sh" => "scripts/.env.sh"
         ]
     ];
-    
+
     public function addAll() {
         Console::clearScreen();
         Console::outputWarning('Continuing could remove existing mix, src, deploy or script files. Be sure to commit changes.');
