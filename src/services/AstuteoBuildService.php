@@ -37,6 +37,12 @@ class AstuteoBuildService extends Component {
             "reference/bin/deploy" => "bin/deploy",
             "reference/config/deploy.conf" => "config/deploy.conf",
         ],
+        "npm" => [
+            "@astuteo/prettier-config",
+            "@astuteo/build-config@latest",
+            "tailwindcss",
+            "alpinejs"
+        ],
         "src" => [
             "reference/src" => "./src",
             "reference/templates" => "./templates"
@@ -48,8 +54,7 @@ class AstuteoBuildService extends Component {
             "reference/scripts/example.local.env.sh" => "scripts/.env.sh"
         ]
     ];
-
-
+    
     public function addAll() {
         Console::clearScreen();
         Console::outputWarning('Continuing could remove existing mix, src, deploy or script files. Be sure to commit changes.');
@@ -61,6 +66,9 @@ class AstuteoBuildService extends Component {
             self::addSource();
             self::addDeploy();
             self::addScripts();
+            if(Console::prompt('Do you want to add our NPM packages now? [y/n]: ') === 'y') {
+                self::addNpmPackages();
+            }
             self::_cleanUp();
         }
         return false;
@@ -88,6 +96,10 @@ class AstuteoBuildService extends Component {
         self::_cloneReference();
         self::addScripts();
         self::_cleanUp();
+    }
+
+    public function addNpmOnly() {
+        self::addNpmPackages();
     }
 
     public function addSource() {
@@ -159,6 +171,19 @@ class AstuteoBuildService extends Component {
             return $path;
         }
         return $path . '/';
+    }
+
+
+    public function addNpmPackages() {
+        $packages= self::$examplePaths['npm'];
+        shell_exec('nvm use');
+        foreach ($packages as $package) {
+            Console::stdout( PHP_EOL . 'Adding ' . $package . PHP_EOL, Console::FG_GREEN);
+            $accept = Console::prompt('Add ' . $package . ' ? [y/n]: '. PHP_EOL);
+            if($accept === 'y') {
+                shell_exec('yarn add ' . $package);
+            }
+        }
     }
 
     public function addDeploy() {

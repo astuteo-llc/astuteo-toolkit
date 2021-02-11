@@ -130,6 +130,23 @@ class AddController extends Controller
         return true;
     }
 
+    /**
+     * Adds our Build config package
+     *
+     * The first line of this method docblock is displayed as the description
+     * of the Console Command in ./craft help
+     *
+     * @return mixed
+     */
+    public function actionNpm()
+    {
+        if(!$this->_canRun()) {
+            return false;
+        }
+        AstuteoBuildService::addNpmOnly();
+        return true;
+    }
+
 
     /**
      * Attempts to migrate our old Blendid project-config.json to Mix version
