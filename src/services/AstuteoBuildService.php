@@ -7,6 +7,7 @@ use astuteo\astuteotoolkit\models\Settings;
 use craft\base\Component;
 use Craft;
 use craft\helpers\Console;
+use craft\test\console\ConsoleTest;
 use craft\helpers\FileHelper;
 use craft\helpers\App;
 
@@ -145,7 +146,7 @@ class AstuteoBuildService extends Component {
         $remoteDb = Console::prompt('Remote database name: ', $options = [ "default" => $productionDefaults["dbname"]]);
         $remoteUser = Console::prompt('Remote username: ', $options = [ "default" => $productionDefaults["dbuser"]]);
         $remotePassword = Console::prompt('Remote database password: ');
-        $remoteBackup = Console::prompt('Full-path remote backup: ', $options = [ "default" => $productionDefaults["backup"]]);
+        $remoteBackup = Console::prompt('Full-path remote backup: ', $options = [ "default" => self::_checkEndSlash($remotePath) . 'backups']);
 
         $replace = [
             "localPassword" => $localPassword,
