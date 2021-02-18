@@ -163,6 +163,7 @@ class AstuteoBuildService extends Component {
         ];
         $files = self::$examplePaths['scripts'];
         self::_addFiles($files, $replace);
+        shell_exec('chmod +x ./scripts/*');
         self::_doneMessage('Scripts copied to /scripts');
     }
 
