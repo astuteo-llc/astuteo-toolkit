@@ -28,7 +28,18 @@ class AstuteoBuildService extends Component {
             "example.webpack.mix.js" => "webpack.mix.js",
             "example.package.json" => "package.json",
             "reference/.nvmrc" => ".nvmrc",
-            "reference/.browserslistrc" => ".browserslistrc",
+            "example.tailwind.config.js" => "tailwind.config.js",
+        ],
+        "editorFiles" => [
+            "reference/.csscomb.json" => ".csscomb.json",
+            "reference/.editorconfig" => ".editorconfig",
+            "reference/.eslintrc.yml" => ".eslintrc.yml",
+            "reference/babel.config.js" => "babel.config.js",
+            "reference/stylelint.config.js" => "stylelint.config.js",
+            "reference/.prettierignore" => ".prettierignore",
+        ],
+        "github" => [
+            "reference/.github" => ".github",
         ],
         "migrateBlendid" => [
           "reference/config/mix/migrate.blendid.text" => "config/mix/project-config.js"
@@ -81,11 +92,24 @@ class AstuteoBuildService extends Component {
         self::_cleanUp();
     }
 
+    public function onlyAddEditorFiles() {
+        self::_cloneReference();
+        self::addEditorFiles();
+        self::_cleanUp();
+    }
+
     public function onlyAddDeploy() {
         self::_cloneReference();
         self::addDeploy();
         self::_cleanUp();
     }
+
+    public function onlyAddGithub() {
+        self::_cloneReference();
+        self::addGithub();
+        self::_cleanUp();
+    }
+
 
     public function onlyAddSource() {
         self::_cloneReference();
@@ -188,6 +212,16 @@ class AstuteoBuildService extends Component {
         }
     }
 
+
+    public function addGithub() {
+        $dirs = self::$examplePaths['github'];
+        foreach ($dirs as $key => $value) {
+            self::_checkDir($value);
+            self::_copyDirs($key, $value);
+        }
+        self::_doneMessage('Deploy files added to bin/deploy and config/deploy.conf');
+    }
+
     public function addDeploy() {
         self::_sectionMessage('CONFIG BIN/DEPLOY');
         self::_checkDir('config', false);
@@ -228,6 +262,14 @@ class AstuteoBuildService extends Component {
         $files = self::$examplePaths['mix'];
         self::_addFiles($files, $replace);
         self::_doneMessage('Laravel Mix files added');
+    }
+
+
+    public function addEditorFiles() {
+            self::_sectionMessage('ADD EDITOR FILES');
+            $files = self::$examplePaths['editorFiles'];
+            self::_addFiles($files);
+            self::_doneMessage('Editor files added');
     }
 
     public function migrateBlendid() {
@@ -325,7 +367,7 @@ class AstuteoBuildService extends Component {
     }
 
 
-    private function _addFiles($files, $replace) {
+    private function _addFiles($files, $replace = []) {
         foreach ($files as $key => $value) {
             $file = self::$referencePath . $key;
             $result = self::_replaceTemplate($file, $replace);

@@ -95,6 +95,43 @@ class AddController extends Controller
         return true;
     }
 
+    /**
+     * Adds our .github/ files to project
+     *
+     * The first line of this method docblock is displayed as the description
+     * of the Console Command in ./craft help
+     *
+     * @return mixed
+     */
+    public function actionGithub()
+    {
+        if(!$this->_canRun()) {
+            return false;
+        }
+        AstuteoBuildService::onlyAddGithub();
+        return true;
+    }
+
+    /**
+     * Adds our dot files (.eslintrc.yml, .csscomb.json, etc) for IDE to project
+     *
+     * The first line of this method docblock is displayed as the description
+     * of the Console Command in ./craft help
+     *
+     * @return mixed
+     */
+    public function actionEditorFiles()
+    {
+        if(!$this->_canRun()) {
+            return false;
+        }
+        AstuteoBuildService::onlyAddEditorFiles();
+        return true;
+    }
+
+
+
+
 
     /**
      * Adds and configures /scripts
