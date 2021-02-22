@@ -220,7 +220,8 @@ class AstuteoBuildService extends Component {
             self::_checkDir($value);
             self::_copyDirs($key, $value);
         }
-        self::_doneMessage('Deploy files added to bin/deploy and config/deploy.conf');
+        self::_doneMessage('Github files copied to .github');
+        Console::outputWarning( 'NOTE: Currently the deploy files sample content must be manually updated with server credentials', Console::FG_RED);
     }
 
     public function addDeploy() {
