@@ -29,6 +29,7 @@ class AstuteoBuildService extends Component {
             "example.package.json" => "package.json",
             "reference/.nvmrc" => ".nvmrc",
             "example.tailwind.config.js" => "tailwind.config.js",
+            "reference/.browserslistrc" => ".browserslistrc"
         ],
         "editorFiles" => [
             "reference/.csscomb.json" => ".csscomb.json",
