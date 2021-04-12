@@ -17,4 +17,9 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Astuteo Toolkit.
 
+or
+
+run
+`./craft plugin/install astuteo-toolkit`
+
 [back to index](../README.md) 
