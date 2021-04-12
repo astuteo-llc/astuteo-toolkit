@@ -25,7 +25,7 @@ class AstuteoToolkitVariable
     }
 
     public function unsecureCookie($name, $default = false) {
-        $this->insecureCookie($name, $default);
+        return $this->insecureCookie($name, $default);
     }
 
 
