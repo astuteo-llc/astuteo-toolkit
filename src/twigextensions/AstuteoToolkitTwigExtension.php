@@ -121,8 +121,12 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     private function _processManifest($file, $asset_path, $version = 'blendid') {
         $manifest = null;
         $path = $this->_preparePath($file, $asset_path, $version);
-        $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/';
-        $manifest_path .= ($version === 'blendid') ? 'rev-manifest.json' : 'mix-manifest.json';
+        if($version === 'blendid') {
+            $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/rev-manifest.json';
+        } elseif($version === 'mix') {
+            $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . '/mix-manifest.json';
+        }
+
         if(is_null($manifest) && file_exists($manifest_path)) {
             $manifest = json_decode(file_get_contents($manifest_path), true);
         }
@@ -139,12 +143,12 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     }
 
     private function _preparePath($path, $asset_path, $version = 'blendid') {
-        $updatePath = str_replace($asset_path, '', $path);
-        $updatePath = $this->_stripBasePath($updatePath);
         if($version === 'blendid') {
+            $updatePath = str_replace($asset_path, '', $path);
+            $updatePath = $this->_stripBasePath($updatePath);
             return $updatePath;
         } elseif ($version === 'mix') {
-            return '/' . $updatePath;
+            return $path;
         }
     }
 
