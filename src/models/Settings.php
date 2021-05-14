@@ -16,6 +16,12 @@ class Settings extends Model
     public $uploadVideoThumbs;
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
+    public $phoneFormat =  [
+        'countryCode' => '+{number} ',
+        'areaCode' => '({number}) ',
+        'prefix' => '{number}-',
+        'lastFour' => '{number}'
+    ];
     public $productionDefaults = [
         "user" => "forge",
         "ip" => "ip.add.ress",

@@ -48,6 +48,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             new TwigFilter('astuteoRev', [$this, 'astuteoRev']),
             new TwigFilter('astuteoMix', [$this, 'astuteoMix']),
             new TwigFilter('astuteoMarks', [$this, 'astuteoMarks']),
+            new TwigFilter('astuteoPhone', [$this, 'astuteoPhone']),
         ];
     }
 
@@ -64,8 +65,37 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             new TwigFunction('astuteoRev', [$this, 'astuteoRev']),
             new TwigFunction('astuteoMix', [$this, 'astuteoMix']),
             new TwigFunction('astuteoMarks', [$this, 'astuteoMarks']),
+            new TwigFilter('astuteoPhone', [$this, 'astuteoPhone']),
         ];
     }
+    public function astuteoPhone($string) {
+        $string = trim($string);
+        $update = preg_replace_callback('/[+\(]?(\d{1,3})?[ -\)]?[- \(]?(\d{3})[-\)]{0,2}?[ .-x]?(\d{3})[ .-]?(\d{4})/', function($match) {
+           return $this->buildPhone($match);
+        }, $string);
+        return trim($update);
+    }
+
+    private function buildPhone($result) {
+        $format = AstuteoToolkit::$plugin->getSettings()->phoneFormat;
+        $string = '';
+        if($result[1]) {
+            $string = preg_replace('/{number}/', $result[1], $format['countryCode']);
+//            $string = $result[1] . ' ';
+        }
+        if($result[2]) {
+            $string = $string. preg_replace('/{number}/', $result[2], $format['areaCode']);
+        }
+        if($result[3]) {
+            $string = $string. preg_replace('/{number}/', $result[3], $format['prefix']);
+        }
+        if($result[4]) {
+            $string = $string. preg_replace('/{number}/', $result[4], $format['lastFour']);
+        }
+
+        return $string;
+    }
+
     public function astuteoMarks($text) {
         $marks = [
             '®',
@@ -121,12 +151,8 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     private function _processManifest($file, $asset_path, $version = 'blendid') {
         $manifest = null;
         $path = $this->_preparePath($file, $asset_path, $version);
-        if($version === 'blendid') {
-            $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/rev-manifest.json';
-        } elseif($version === 'mix') {
-            $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . '/mix-manifest.json';
-        }
-
+        $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/';
+        $manifest_path .= ($version === 'blendid') ? 'rev-manifest.json' : 'mix-manifest.json';
         if(is_null($manifest) && file_exists($manifest_path)) {
             $manifest = json_decode(file_get_contents($manifest_path), true);
         }
@@ -143,12 +169,12 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     }
 
     private function _preparePath($path, $asset_path, $version = 'blendid') {
+        $updatePath = str_replace($asset_path, '', $path);
+        $updatePath = $this->_stripBasePath($updatePath);
         if($version === 'blendid') {
-            $updatePath = str_replace($asset_path, '', $path);
-            $updatePath = $this->_stripBasePath($updatePath);
             return $updatePath;
         } elseif ($version === 'mix') {
-            return $path;
+            return '/' . $updatePath;
         }
     }
 

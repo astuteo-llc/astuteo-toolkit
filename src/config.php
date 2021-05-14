@@ -28,4 +28,10 @@ return [
 	"loadCpTweaks" => false,
     "devCpNav" => true,
     "includeFeEdit" => true,
+    "phoneFormat" =>  [
+        'countryCode' => '+{number} ',
+        'areaCode' => '({number}) ',
+        'prefix' => '{number}-',
+        'lastFour' => '{number}'
+    ]
 ];
