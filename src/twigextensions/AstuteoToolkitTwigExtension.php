@@ -71,7 +71,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     public function astuteoPhone($string) {
         $string = trim($string);
         $update = preg_replace_callback('/[+\(]?(\d{1,3})?[ -\)]?[- \(]?(\d{3})[-\)]{0,2}?[ .-x]?(\d{3})[ .-]?(\d{4})/', function($match) {
-           return $this->buildPhone($match);
+            return $this->buildPhone($match);
         }, $string);
         return trim($update);
     }
@@ -81,7 +81,6 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
         $string = '';
         if($result[1]) {
             $string = preg_replace('/{number}/', $result[1], $format['countryCode']);
-//            $string = $result[1] . ' ';
         }
         if($result[2]) {
             $string = $string. preg_replace('/{number}/', $result[2], $format['areaCode']);
@@ -121,6 +120,8 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
     public function astuteoRev($param)
     {
         $file = $this->getAssetFile($param);
+
+
         return $this->_processManifest($file, $this->getAssetPathFile($param), 'blendid');
     }
 
@@ -150,12 +151,21 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
 
     private function _processManifest($file, $asset_path, $version = 'blendid') {
         $manifest = null;
-        $path = $this->_preparePath($file, $asset_path, $version);
         $manifest_path  = $_SERVER['DOCUMENT_ROOT'] . $asset_path . '/';
         $manifest_path .= ($version === 'blendid') ? 'rev-manifest.json' : 'mix-manifest.json';
+
         if(is_null($manifest) && file_exists($manifest_path)) {
             $manifest = json_decode(file_get_contents($manifest_path), true);
         }
+        // if the file is set directly at the correct path, let's process it
+        // and stop
+        if(isset($manifest[$file])) {
+            return $manifest[$file];
+        }
+
+        // otherwise, let's try and clean the path and find it based on our
+        // base setting
+        $path = $this->_preparePath($file, $asset_path, $version);
         if(isset($manifest[$path])) {
             $path = $manifest[$path];
         }
