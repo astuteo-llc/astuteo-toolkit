@@ -3,7 +3,7 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "2.6.12",
+    "version": "2.6.13",
     "keywords": [
         "craft",
         "cms",
