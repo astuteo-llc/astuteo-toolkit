@@ -33,8 +33,6 @@ class AstuteoBuildService extends Component {
         ],
         "editorFiles" => [
             "reference/.csscomb.json" => ".csscomb.json",
-            "reference/.editorconfig" => ".editorconfig",
-            "reference/.eslintrc.yml" => ".eslintrc.yml",
             "reference/babel.config.js" => "babel.config.js",
             "reference/stylelint.config.js" => "stylelint.config.js",
             "reference/.prettierignore" => ".prettierignore",
