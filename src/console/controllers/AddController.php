@@ -57,7 +57,7 @@ class AddController extends Controller
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::addAll();
+        (new AstuteoBuildService)->addAll();
         return true;
     }
 
@@ -67,14 +67,14 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionMix()
+    public function actionMix(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::onlyAddMix();
+        (new AstuteoBuildService)->onlyAddMix();
         return true;
     }
 
@@ -84,14 +84,14 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionDeploy()
+    public function actionDeploy(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::onlyAddDeploy();
+        (new AstuteoBuildService)->onlyAddDeploy();
         return true;
     }
 
@@ -101,14 +101,14 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionGithub()
+    public function actionGithub(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::onlyAddGithub();
+        (new AstuteoBuildService)->onlyAddGithub();
         return true;
     }
 
@@ -118,20 +118,16 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionEditorFiles()
+    public function actionEditorFiles(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::onlyAddEditorFiles();
+        (new AstuteoBuildService)->onlyAddEditorFiles();
         return true;
     }
-
-
-
-
 
     /**
      * Adds and configures /scripts
@@ -139,14 +135,14 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionScripts()
+    public function actionScripts(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::OnlyAddScripts();
+        (new AstuteoBuildService)->OnlyAddScripts();
         return true;
     }
 
@@ -156,14 +152,14 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionSource()
+    public function actionSource(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::onlyAddSource();
+        (new AstuteoBuildService)->onlyAddSource();
         return true;
     }
 
@@ -173,17 +169,16 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionNpm()
+    public function actionNpm(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::addNpmOnly();
+        (new AstuteoBuildService)->addNpmOnly();
         return true;
     }
-
 
     /**
      * Attempts to migrate our old Blendid project-config.json to Mix version
@@ -191,18 +186,19 @@ class AddController extends Controller
      * The first line of this method docblock is displayed as the description
      * of the Console Command in ./craft help
      *
-     * @return mixed
+     * @return bool
      */
-    public function actionMigrateBlendid()
+    public function actionMigrateBlendid(): bool
     {
         if(!$this->_canRun()) {
             return false;
         }
-        AstuteoBuildService::migrateBlendid();
+        (new AstuteoBuildService)->migrateBlendid();
         return true;
     }
 
-    private function _canRun() {
+    private function _canRun(): bool
+    {
         if(!Craft::$app->config->general->devMode) {
             return false;
         };

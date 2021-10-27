@@ -86,8 +86,8 @@ class LocationService extends Component {
         ];
 	}
 
-	public static function countries()
-	{
+	public static function countries(): array
+    {
 		return AstuteoToolkit::$plugin->getSettings()->countries;
 	}
 }

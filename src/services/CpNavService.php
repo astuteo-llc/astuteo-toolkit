@@ -12,7 +12,8 @@ use Craft;
 class CpNavService extends Component {
     // Add CP sidebar links to admin in dev mode
     // https://github.com/vigetlabs/craft-viget-base/
-    public function addNav(array $items =[]) {
+    public function addNav(array $items =[]): array
+    {
         $items[] = [
             'url' => 'settings/sections',
             'label' => Craft::t('app', 'Sections'),
