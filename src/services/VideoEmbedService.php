@@ -126,14 +126,12 @@ class VideoEmbedService extends Component {
             return $existing;
         }
         $tempPath = Craft::$app->path->getTempPath();
-        $tempFilePath = UploadHelper::downloadFile($url, $tempPath . '/' . $filename);
+        $tempFilePath = (new UploadHelper)->downloadFile($url, $tempPath . '/' . $filename);
         if($tempFilePath) {
-            return UploadHelper::uploadToVolume($volumeId,  $tempFilePath, $filename);
+            return (new UploadHelper)->uploadToVolume($volumeId,  $tempFilePath, $filename);
         }
         return false;
     }
-
-
 
     /**
      * Is the url a youtube url
