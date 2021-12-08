@@ -37,7 +37,7 @@ class TransformService extends Component {
      * @return false|string
      */
     public function imgixMap($options, $serviceOptions, $focalPoint = null) {
-        $params = '';
+        $params = '?';
         if(!$options) {
             return false;
         }
