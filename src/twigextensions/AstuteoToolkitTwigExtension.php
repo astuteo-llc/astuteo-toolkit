@@ -11,11 +11,13 @@
 namespace astuteo\astuteotoolkit\twigextensions;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\services\MixService;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Craft;
+
 
 /**
  * @author    Astuteo
@@ -127,13 +129,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
 
     public function astuteoMix($param)
     {
-        $file = $this->getAssetFile($param);
-        if(Craft::$app->cache->exists($file)) {
-            return Craft::$app->cache->get($file);
-        }
-        $revUrl = $this->_processManifest($file, $this->getAssetPathFile($param), 'mix');
-        Craft::$app->cache->set($file, $revUrl);
-        return $revUrl;
+        return MixService::getManifestUrl($param);
     }
 
     private function getAssetFile($param) {
