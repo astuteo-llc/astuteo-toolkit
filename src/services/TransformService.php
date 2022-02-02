@@ -36,7 +36,7 @@ class TransformService extends Component {
      * @param null $focalPoint
      * @return false|string
      */
-    public function imgixMap($options, $serviceOptions, $focalPoint = null) {
+    public static function imgixMap($options, $serviceOptions, $focalPoint = null) {
         $params = '?';
         if(!$options) {
             return false;
@@ -45,7 +45,7 @@ class TransformService extends Component {
             switch ($key) {
                 case 'mode':
                     if($option == 'crop') {
-                        $imgixParam = $this->imgixMapCrop($focalPoint);
+                        $imgixParam = self::imgixMapCrop($focalPoint);
                         break;
                     }
                 case 'format':
@@ -78,7 +78,7 @@ class TransformService extends Component {
     /**
      * Calculate Width and Height from target area
      */
-    public function areaToDimensions($image, $area, $maxWidth, $maxHeight) {
+    public static function areaToDimensions($image, $area, $maxWidth, $maxHeight) {
         if(!isset($image['width']) || !isset($image['height'])) {
             return false;
         }
@@ -109,7 +109,7 @@ class TransformService extends Component {
      * Function to return cropped with focal point mapped
      * @return string
      */
-    private function imgixMapCrop($focalPoint) {
+    private static function imgixMapCrop($focalPoint) {
         $param = 'fit=crop';
         // Default, no need to do more
         if($focalPoint['x'] == 0.5 && $focalPoint['y'] == 0.5) {
