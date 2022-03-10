@@ -70,7 +70,7 @@ class AstuteoToolkit extends Plugin
      *
      * @var string
      */
-    public $schemaVersion = '2.0.4';
+    public string $schemaVersion = '2.0.4';
 
     // Public Methods
     // =========================================================================
@@ -223,7 +223,7 @@ class AstuteoToolkit extends Plugin
      *
      * @return Model|null
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
@@ -232,7 +232,7 @@ class AstuteoToolkit extends Plugin
      * Returns the rendered settings HTML, which will be inserted into the content
      * block on the settings page.
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         try {
             return Craft::$app->view->renderTemplate(

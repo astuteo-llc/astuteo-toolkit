@@ -23,7 +23,7 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^3.5.0",
+        "craftcms/cms": "^3.7.35",
         "ext-json": "*"
     },
     "autoload": {
@@ -41,5 +41,15 @@
             "astuteoToolkitService": "astuteo\\astuteotoolkit\\services\\AstuteoToolkitService"
         },
         "class": "astuteo\\astuteotoolkit\\AstuteoToolkit"
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    },
+    "require-dev": {
+        "craftcms/rector": "dev-main"
     }
 }
