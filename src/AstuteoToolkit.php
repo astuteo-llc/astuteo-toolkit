@@ -51,26 +51,8 @@ use yii\base\InvalidConfigException;
  */
 class AstuteoToolkit extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
-    /**
-     * Static property that is an instance of this plugin class so that it can be accessed via
-     * AstuteoToolkit::$plugin
-     *
-     * @var AstuteoToolkit
-     */
     public static $plugin;
-
-    // Public Properties
-    // =========================================================================
-
-    /**
-     * To execute your plugin’s migrations, you’ll need to increase its schema version.
-     *
-     * @var string
-     */
-    public string $schemaVersion = '2.0.4';
+    public string $schemaVersion = '4.0.0';
 
     // Public Methods
     // =========================================================================
