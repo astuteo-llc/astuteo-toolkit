@@ -11,13 +11,14 @@ use craft\helpers\Json;
  * @package astuteo\astuteotoolkit\services
  */
 class CookieService extends Component {
-    public static function setInsecureCookie($name, $value, $key = null) {
+    public static function setInsecureCookie($name, $value, $key = null, $expiration = null) {
+        $expiration = $expiration ? $expiration : strtotime("+1 year");
         if(!$key) {
             $result = setcookie($name, $value, time()+36000, '/');
             return;
         }
         if(!isset($_COOKIE[$name])) {
-            setcookie($name, '{}', time()+36000, '/');
+            setcookie($name, '{}',  $expiration, '/');
         }
         $encodedCookie = self::insecureCookie($name);
         // if we are setting a key, make sure we don't override
@@ -25,7 +26,7 @@ class CookieService extends Component {
         $cookieObject = Json::decodeIfJson($encodedCookie);
         $cookieObject[$key] = $value;
         $updated = json_encode($cookieObject);
-        $result = setcookie($name, $updated, time()+36000, '/');
+        $result = setcookie($name, $updated,  $expiration, '/');
         return;
     }
 

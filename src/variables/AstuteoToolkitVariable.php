@@ -26,8 +26,8 @@ class AstuteoToolkitVariable
         return CookieService::insecureCookieWithKey($name, $key);
     }
 
-    public function setInsecureCookie($name, $value, $key = null) {
-        return CookieService::setInsecureCookie($name, $value, $key);
+    public function setInsecureCookie($name, $value, $key = null, $expiration = null) {
+        return CookieService::setInsecureCookie($name, $value, $key, $expiration);
     }
 
     public function unsecureCookie($name, $default = false) {
