@@ -23,7 +23,11 @@ class CookieService extends Component {
         $encodedCookie = self::insecureCookie($name);
         // if we are setting a key, make sure we don't override
         // existing keys
+        if(!Json::isJsonObject($encodedCookie)) {
+            $encodedCookie = '{}';
+        }
         $cookieObject = Json::decodeIfJson($encodedCookie);
+
         $cookieObject[$key] = $value;
         $updated = json_encode($cookieObject);
         $result = setcookie($name, $updated,  $expiration, '/');
