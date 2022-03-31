@@ -8,6 +8,7 @@ use astuteo\astuteotoolkit\services\VideoEmbedService;
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
+use craft\helpers\Json;
 
 class AstuteoToolkitVariable
 {
@@ -22,6 +23,17 @@ class AstuteoToolkitVariable
         } else {
             return $_COOKIE[$name];
         }
+    }
+
+    public function insecureCookieWithKey($name, $key) {
+        if(!isset($_COOKIE[$name])) {
+            return null;
+        }
+        $cookie = Json::decodeIfJson($_COOKIE[$name]);
+        if(!isset($cookie[$key])) {
+            return null;
+        }
+        return $cookie[$key];
     }
 
     public function unsecureCookie($name, $default = false) {
