@@ -1,6 +1,7 @@
 <?php
 namespace astuteo\astuteotoolkit\variables;
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\services\CookieService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\TransformService;
@@ -18,26 +19,19 @@ class AstuteoToolkitVariable
      * @return mixed
      */
     public function insecureCookie($name, $default = false) {
-        if(!isset($_COOKIE[$name])) {
-            return $default;
-        } else {
-            return $_COOKIE[$name];
-        }
+        return CookieService::insecureCookie($name, $default);
     }
 
     public function insecureCookieWithKey($name, $key) {
-        if(!isset($_COOKIE[$name])) {
-            return null;
-        }
-        $cookie = Json::decodeIfJson($_COOKIE[$name]);
-        if(!isset($cookie[$key])) {
-            return null;
-        }
-        return $cookie[$key];
+        return CookieService::insecureCookieWithKey($name, $key);
+    }
+
+    public function setInsecureCookie($name, $value, $key = null) {
+        return CookieService::setInsecureCookie($name, $value, $key);
     }
 
     public function unsecureCookie($name, $default = false) {
-        return $this->insecureCookie($name, $default);
+        return self::insecureCookie($name, $default);
     }
 
 
