@@ -30,7 +30,9 @@ use craft\web\twig\variables\CraftVariable;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterCpNavItemsEvent;
 use craft\web\twig\variables\Cp;
+use craft\web\UrlManager;
 use craft\events\TemplateEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\Plugins;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -67,6 +69,13 @@ class AstuteoToolkit extends Plugin
             $this->controllerNamespace = 'astuteo\astuteotoolkit\console\controllers';
         }
 
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['astuteologin'] = 'astuteo-toolkit/auto-login';
+            }
+        );
 
         // Add in our Twig extensions
         Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
