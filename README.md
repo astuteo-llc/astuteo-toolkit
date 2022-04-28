@@ -8,3 +8,4 @@
 8. [Admin Helpers](docs/admin-helpers.md)
 9. Area to Dimensions - [areaToDimensions](docs/area-to-dimensions.md)
 10. Insecure Cookie - [insecureCookie](docs/insecure-cookie.md)
+11. Autologin - [how to](docs/autologin.md)
