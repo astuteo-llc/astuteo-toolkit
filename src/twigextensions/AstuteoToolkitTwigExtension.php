@@ -12,6 +12,8 @@ namespace astuteo\astuteotoolkit\twigextensions;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\services\MixService;
+use astuteo\astuteotoolkit\services\ExternalUrlService;
+
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -51,6 +53,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             new TwigFilter('astuteoMix', [$this, 'astuteoMix']),
             new TwigFilter('astuteoMarks', [$this, 'astuteoMarks']),
             new TwigFilter('astuteoPhone', [$this, 'astuteoPhone']),
+            new TwigFilter('astuteoExternalUrl', [$this, 'astuteoExternalUrl']),
         ];
     }
 
@@ -68,8 +71,14 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             new TwigFunction('astuteoMix', [$this, 'astuteoMix']),
             new TwigFunction('astuteoMarks', [$this, 'astuteoMarks']),
             new TwigFilter('astuteoPhone', [$this, 'astuteoPhone']),
+            new TwigFilter('astuteoExternalUrl', [$this, 'astuteoExternalUrl']),
         ];
     }
+
+    public function astuteoExternalUrl($string) : string {
+        return ExternalUrlService::cleanUrl($string);
+    }
+
     public function astuteoPhone($string) {
         $string = trim($string);
         $update = preg_replace_callback('/[+\(]?(\d{1,3})?[ -\)]?[- \(]?(\d{3})[-\)]{0,2}?[ .-x]?(\d{3})[ .-]?(\d{4})/', function($match) {
