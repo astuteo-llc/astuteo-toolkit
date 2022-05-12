@@ -9,6 +9,7 @@ use craft\base\Model;
 class Settings extends Model
 {
     public $assetPath = '/site-assets/';
+    public $cacheBustDev = false;
     public $loadCpTweaks = false;
     public $devCpNav = true;
     public $includeFeEdit = true;

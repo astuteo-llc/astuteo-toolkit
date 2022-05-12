@@ -26,6 +26,7 @@ return [
     "assetPath" => "/site-assets/",
     "imgixUrl" => "",
 	"loadCpTweaks" => false,
+    "cacheBustDev" => false,
     "devCpNav" => true,
     "includeFeEdit" => true,
     "phoneFormat" =>  [
