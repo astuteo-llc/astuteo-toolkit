@@ -21,7 +21,7 @@ class TransformService extends Component {
      */
     public function imgix($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
-           return null;
+            return null;
         }
         $path = $this->prepUrl($image, AstuteoToolkit::$plugin->getSettings()->imgixUrl);
         $mappedOptions = $this->imgixMap($options,$serviceOptions,$image->focalPoint);
@@ -41,6 +41,7 @@ class TransformService extends Component {
         if(!$options) {
             return false;
         }
+
         foreach ($options as  $key => $option) {
             switch ($key) {
                 case 'mode':
@@ -52,10 +53,20 @@ class TransformService extends Component {
                     $imgixParam = 'fm=' . $option;
                     break;
                 case 'width':
-                    $imgixParam = 'w=' . $option;
+                    $imgixParam = 'w=' . self::handleUnit($option);
                     break;
                 case 'height':
-                    $imgixParam = 'h=' . $option;
+                    $imgixParam = 'h=' . self::handleUnit($option);
+                    break;
+                case 'ratio':
+                    if(key_exists('width', $options)) {
+                        $imgixParam = 'h=' . self::handleUnit($option * $options['width']);
+                        break;
+                    }
+                    if(key_exists('height', $options)) {
+                        $imgixParam = 'w=' . self::handleUnit($option * $options['height']);
+                        break;
+                    }
                     break;
                 default:
                     $imgixParam = $key . '=' . $option;
@@ -74,6 +85,10 @@ class TransformService extends Component {
     }
 
 
+
+    public static function handleUnit($value) {
+        return round($value);
+    }
 
     /**
      * Calculate Width and Height from target area
