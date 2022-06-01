@@ -23,7 +23,7 @@ class TransformService extends Component {
         if (empty($image)) {
            return null;
         }
-        $path = $this->prepUrl($image->url, $image->volumeId,AstuteoToolkit::$plugin->getSettings()->imgixUrl);
+        $path = $this->prepUrl($image, AstuteoToolkit::$plugin->getSettings()->imgixUrl);
         $mappedOptions = $this->imgixMap($options,$serviceOptions,$image->focalPoint);
         return $path . $mappedOptions;
     }
@@ -128,9 +128,9 @@ class TransformService extends Component {
      * @param $updateUrl
      * @return string|string[]
      */
-    private function prepUrl($url, $volumeId, $updateUrl) {
-        $volume = Craft::$app->volumes->getVolumeById($volumeId);
-        $volumeUrl = Craft::parseEnv($volume->url);
-        return str_replace($volumeUrl,$updateUrl,$url);
+    private function prepUrl($image, $updateUrl) {
+        $basePath = $image->volume->fs->subfolder;
+        $imagePath =  $image->path;
+        return trim("{$updateUrl}/{$basePath}/{$imagePath}");
     }
 }
