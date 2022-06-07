@@ -39,6 +39,10 @@ class AstuteoToolkitVariable
         return (new TransformService)->imgix($image,$options,$serviceOptions);
     }
 
+    public function imgixParams($options, $serviceOptions = null) {
+        return (new TransformService)->imgixMap($options, $serviceOptions);
+    }
+
 	/**
 	 * @return array
 	 */
