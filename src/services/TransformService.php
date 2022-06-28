@@ -41,6 +41,11 @@ class TransformService extends Component {
         if(!$options) {
             return false;
         }
+        /*
+         * Mirror Craft's default transform mode: 'crop', if not set;
+         */
+        $mode = array_key_exists('mode', $options) ? $options['mode'] : 'crop';
+        $options['mode'] = $mode;
 
         foreach ($options as  $key => $option) {
             switch ($key) {
