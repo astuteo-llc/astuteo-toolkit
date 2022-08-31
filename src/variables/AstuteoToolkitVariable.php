@@ -38,31 +38,34 @@ class AstuteoToolkitVariable
     public function imgixTransformMap($image, $options, $serviceOptions = null) {
         return (new TransformService)->imgix($image,$options,$serviceOptions);
     }
+    public function imgixUpgradeSettings($settings) {
+        return (new TransformService)->imgixUpgradeSettings($settings);
+    }
 
     public function imgixParams($options, $serviceOptions = null) {
         return (new TransformService)->imgixMap($options, $serviceOptions);
     }
 
-	/**
-	 * @return array
-	 */
+    /**
+     * @return array
+     */
     public function countries()
     {
-		return LocationService::countries();
+        return LocationService::countries();
     }
 
-	/**
-	 * @return array
-	 */
+    /**
+     * @return array
+     */
     public function states() {
-		return LocationService::states();
+        return LocationService::states();
     }
 
-	/**
-	 * @return array
-	 */
+    /**
+     * @return array
+     */
     public function provinces() {
-		return LocationService::provinces();
+        return LocationService::provinces();
     }
 
     public function projectVars() {
@@ -70,15 +73,15 @@ class AstuteoToolkitVariable
     }
 
     /**
-	 * Returns true or false if user client supports
-	 * webp.
-	 * @return bool
-	 */
-	public function clientSupportsWebp(): bool
-	{
-		$request = Craft::$app->getRequest();
-		return $request->accepts('image/webp');
-	}
+     * Returns true or false if user client supports
+     * webp.
+     * @return bool
+     */
+    public function clientSupportsWebp(): bool
+    {
+        $request = Craft::$app->getRequest();
+        return $request->accepts('image/webp');
+    }
 
 
     /**
@@ -94,22 +97,22 @@ class AstuteoToolkitVariable
         return (new VideoEmbedService)->getEmbedInfo($url);
     }
 
-	/**
-	 * Checks for webp support in image driver
-	 *
-	 * @return bool
-	 */
-	public function serverSupportsWebp(): bool
-	{
-		return ToolkitService::hasSupportForWebP();
-	}
+    /**
+     * Checks for webp support in image driver
+     *
+     * @return bool
+     */
+    public function serverSupportsWebp(): bool
+    {
+        return ToolkitService::hasSupportForWebP();
+    }
 
     /**
      * @param $image
      * @param $area
      * @return array|false
      */
-	public function areaToDimensions($image, $area, $maxWidth = null, $maxHeight = null) {
+    public function areaToDimensions($image, $area, $maxWidth = null, $maxHeight = null) {
         return TransformService::areaToDimensions($image, $area, $maxWidth, $maxHeight);
     }
 

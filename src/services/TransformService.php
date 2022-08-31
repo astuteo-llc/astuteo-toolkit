@@ -5,6 +5,7 @@ namespace astuteo\astuteotoolkit\services;
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
+use craft\helpers\StringHelper;
 
 /**
  * Class TransformService
@@ -121,6 +122,24 @@ class TransformService extends Component {
             'width' => $width,
             'height' => $height
         ];
+    }
+
+    /*
+     * Takes the older format string and converts it to
+     * an object that our image map expects
+     */
+    public static function imgixUpgradeSettings($settings) {
+        if(!is_string($settings)) {
+            return [];
+        }
+        $settings = StringHelper::trim($settings);
+        $updated = StringHelper::split($settings, '&');
+        $remap = [];
+        foreach($updated as $value) {
+            list($k, $v) = StringHelper::explode($value,'=');
+            $remap[ $k ] = $v;
+        }
+        return  $remap;
     }
 
 
