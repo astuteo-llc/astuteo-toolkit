@@ -24,19 +24,19 @@ class MixService extends Component {
             return $filePath;
         }
         $json = self::decodeJsonFile($manifest);
-        return self::checkMultiplePathsForKey($json, $filePath) . $append;
+        return self::checkMultiplePathsForKey($json, $filePath, $append);
     }
     private static function decodeJsonFile($file) {
         $contents = file_get_contents($file);
         return Json::decodeIfJson($contents);
     }
 
-    private static function checkMultiplePathsForKey($json, $key) {
+    private static function checkMultiplePathsForKey($json, $key, $append = '') {
         if(isset($json[$key])) {
-            return $json[$key];
+            return $json[$key] . $append;
         }
         if(isset($json['/' . $key])) {
-            return $json['/' . $key];
+            return $json['/' . $key] . $append;
         }
         return $key;
     }
