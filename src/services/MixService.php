@@ -33,11 +33,20 @@ class MixService extends Component {
 
     private static function checkMultiplePathsForKey($json, $key, $append = '') {
         if(isset($json[$key])) {
-            return $json[$key] . $append;
+            $match = $json[$key];
+            return self::hasParameter($match) ? $match . $append : $match;
         }
         if(isset($json['/' . $key])) {
-            return $json['/' . $key] . $append;
+            $match = $json['/' . $key];
+            return self::hasParameter($match) ? $match . $append : $match;
         }
         return $key;
+    }
+
+    private static function hasParameter($string) {
+        if(strpos($string, '?')) {
+            return true;
+        }
+        return false;
     }
 }
