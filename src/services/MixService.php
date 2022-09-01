@@ -10,14 +10,21 @@ use craft\helpers\StringHelper;
 
 class MixService extends Component {
     public static function getManifestUrl($reference) {
+        $append = '';
+        if(is_array($reference)) {
+            $filePath = $reference['file'];
+            $append = $reference['append'] ?? '';
+        } else {
+            $filePath = $reference;
+        }
         $web = Craft::getAlias('@webroot');
         $web = StringHelper::trimRight($web, '/');
         $manifest = $web . '/mix-manifest.json';
         if(!file_exists($manifest)) {
-            return $reference;
+            return $filePath;
         }
         $json = self::decodeJsonFile($manifest);
-        return self::checkMultiplePathsForKey($json, $reference);
+        return self::checkMultiplePathsForKey($json, $filePath) . $append;
     }
     private static function decodeJsonFile($file) {
         $contents = file_get_contents($file);
@@ -31,6 +38,6 @@ class MixService extends Component {
         if(isset($json['/' . $key])) {
             return $json['/' . $key];
         }
-       return $key;
+        return $key;
     }
 }
