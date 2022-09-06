@@ -55,6 +55,12 @@ class TransformService extends Component {
                         $imgixParam = self::imgixMapCrop($focalPoint);
                         break;
                     }
+                    if($option == 'fill' || $option == 'fillmax' ) {
+                        $imgixParam = 'fit=' . $option;
+                        break;
+                    }
+                    $imgixParam = 'mode=' . $option;
+                    break;
                 case 'format':
                     $imgixParam = 'fm=' . $option;
                     break;
