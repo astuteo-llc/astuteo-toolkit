@@ -171,6 +171,9 @@ class VideoEmbedService extends Component {
     public static function getVimeoId($url)
     {
         preg_match('%^https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)(?:[?]?.*)$%im', $url, $matches);
+        if(!array_key_exists(3, $matches)) {
+            return false;
+        }
         return $matches[3];
     }
 
