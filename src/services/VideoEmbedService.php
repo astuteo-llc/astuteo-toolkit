@@ -79,13 +79,13 @@ class VideoEmbedService extends Component {
             {
                 {
                     if($this->getThumbAsset($videoId . 'jpg', $volumeId)) {
-                        Craft::$app->cache->set($url, $embedInfo, 'P1Y');
+                        Craft::$app->cache->set($url, $embedInfo);
                     }
                 }
             }
         elseif(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds)
             {
-                Craft::$app->cache->set($url, $embedInfo, 'P1Y');
+                Craft::$app->cache->set($url, $embedInfo);
             }
         return $embedInfo;
     }
