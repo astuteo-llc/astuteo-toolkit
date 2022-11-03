@@ -6,6 +6,7 @@ use craft\base\Component;
 use Craft;
 use craft\elements\Asset;
 use astuteo\astuteotoolkit\helpers\UploadHelper;
+use craft\helpers\Json;
 
 /**
  * Class VideoEmbedService
@@ -44,10 +45,10 @@ class VideoEmbedService extends Component {
                 $staticThumb = true;
             }
             $embedInfo = [
-              'id' => $videoId,
-              'url' => self::createYouTubeEmbed($videoId),
-              'thumbnail' => $thumb,
-              'staticThumb' => $staticThumb
+                'id' => $videoId,
+                'url' => self::createYouTubeEmbed($videoId),
+                'thumbnail' => $thumb,
+                'staticThumb' => $staticThumb
             ];
 
         } elseif(self::isVimeo($url)) {
@@ -56,7 +57,7 @@ class VideoEmbedService extends Component {
                 'id' => $videoId,
                 'url' => self::createVimeoEmbed($videoId),
                 'thumbnail' => [
-                    'url' => '',
+                    'url' => self::createVimeoThumbnail($videoId),
                 ],
                 'staticThumb' => true
             ];
@@ -76,17 +77,17 @@ class VideoEmbedService extends Component {
             && isset($volumeId)
             && AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbs
             && AstuteoToolkit::$plugin->getSettings()->uploadVideoThumbsVolumeId)
+        {
             {
-                {
-                    if(self::getThumbAsset($videoId . 'jpg', $volumeId)) {
-                        Craft::$app->cache->set($url, $embedInfo);
-                    }
+                if(self::getThumbAsset($videoId . 'jpg', $volumeId)) {
+                    Craft::$app->cache->set($url, $embedInfo);
                 }
             }
+        }
         elseif(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds)
-            {
-                Craft::$app->cache->set($url, $embedInfo);
-            }
+        {
+            Craft::$app->cache->set($url, $embedInfo);
+        }
         return $embedInfo;
     }
 
@@ -100,15 +101,34 @@ class VideoEmbedService extends Component {
         return 'https://player.vimeo.com/video/' . $id;
     }
 
-    public static function createYouTubeThumbnail($id): string
-    {
-        return 'https://i.ytimg.com/vi/' . $id . '/mqdefault.jpg';
-    }
+
     public static function createYouTubeThumbnailMax($id): string
     {
-        return 'https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg';
+        $url = 'https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg';
+        $headers = @get_headers($url);
+        if($headers && strpos( $headers[0], '200')) {
+            return $url;
+        }
+        $url = 'https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg';
+        $headers = @get_headers($url);
+        if($headers && strpos( $headers[0], '200')) {
+            return $url;
+        }
+        return 'https://i.ytimg.com/vi/' . $id . '/default.jpg';
     }
 
+
+    public static function createVimeoThumbnail($id) : string {
+        $api = self::getVimeoApi($id);
+        return $api['thumbnail_url'];
+    }
+
+
+    private static function getVimeoApi($id) {
+        $url = "https://vimeo.com/api/oembed.json?url=https://vimeo.com/" . $id;
+        $data = file_get_contents($url);
+        return Json::decodeIfJson($data);
+    }
 
     private static function getThumbAsset($filename, $volumeId) {
         $folderId = Craft::$app->assets->getRootFolderByVolumeId($volumeId)['id'];
