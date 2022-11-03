@@ -119,15 +119,16 @@ class VideoEmbedService extends Component {
 
 
     public static function createVimeoThumbnail($id) : string {
-        $api = self::getVimeoApi($id);
-        return $api['thumbnail_url'];
+        return '';
+//        $api = self::getVimeoApi($id);
+//        return $api['thumbnail_url'];
     }
 
 
     private static function getVimeoApi($id) {
-        $url = "https://vimeo.com/api/oembed.json?url=https://vimeo.com/" . $id;
-        $data = file_get_contents($url);
-        return Json::decodeIfJson($data);
+//        $url = "https://vimeo.com/api/oembed.json?url=https://vimeo.com/" . $id;
+//        $data = file_get_contents($url);
+//        return Json::decodeIfJson($data);
     }
 
     private static function getThumbAsset($filename, $volumeId) {
