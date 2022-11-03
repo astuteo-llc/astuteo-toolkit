@@ -17,9 +17,9 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class VideoEmbedService extends Component {
     public static function getEmbedInfo($url) {
-//        if(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds && Craft::$app->cache->exists($url)) {
-//            return Craft::$app->cache->get($url);
-//        }
+        if(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds && Craft::$app->cache->exists($url)) {
+            return Craft::$app->cache->get($url);
+        }
         $embedInfo = [
             'id' => '',
             'url' => '',
