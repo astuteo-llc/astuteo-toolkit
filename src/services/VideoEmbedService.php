@@ -7,6 +7,8 @@ use Craft;
 use craft\elements\Asset;
 use astuteo\astuteotoolkit\helpers\UploadHelper;
 use craft\helpers\Json;
+use craft\helpers\StringHelper;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class VideoEmbedService
@@ -15,9 +17,9 @@ use craft\helpers\Json;
  */
 class VideoEmbedService extends Component {
     public static function getEmbedInfo($url) {
-        if(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds && Craft::$app->cache->exists($url)) {
-            return Craft::$app->cache->get($url);
-        }
+//        if(AstuteoToolkit::$plugin->getSettings()->cacheVideoEmbeds && Craft::$app->cache->exists($url)) {
+//            return Craft::$app->cache->get($url);
+//        }
         $embedInfo = [
             'id' => '',
             'url' => '',
@@ -104,31 +106,50 @@ class VideoEmbedService extends Component {
 
     public static function createYouTubeThumbnailMax($id): string
     {
-        $url = 'https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg';
-        $headers = @get_headers($url);
-        if($headers && strpos( $headers[0], '200')) {
-            return $url;
+        $thumbnail = self::thumbnailExists('https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg');
+        if($thumbnail) return $thumbnail;
+        $thumbnail = self::thumbnailExists('https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg');
+        if($thumbnail) return $thumbnail;
+        $thumbnail = self::thumbnailExists('https://i.ytimg.com/vi/' . $id . '/default.jpg');
+        if($thumbnail) return $thumbnail;
+    }
+
+    private static function thumbnailExists($url) {
+        try {
+            $response = Craft::$app->api->client->get($url);
+            $code = $response->getStatusCode();
+            if($code == 200) {
+                return $url;
+            }
+        } catch (GuzzleException $e) {
+            return false;
         }
-        $url = 'https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg';
-        $headers = @get_headers($url);
-        if($headers && strpos( $headers[0], '200')) {
-            return $url;
-        }
-        return 'https://i.ytimg.com/vi/' . $id . '/default.jpg';
+        return false;
     }
 
 
     public static function createVimeoThumbnail($id) : string {
+        $api = self::getVimeoApi($id);
+        if(!$api) {
+            return '';
+        }
+        if (array_key_exists('thumbnail_url', $api)) {
+            return $api['thumbnail_url'];
+        }
         return '';
-//        $api = self::getVimeoApi($id);
-//        return $api['thumbnail_url'];
     }
 
 
     private static function getVimeoApi($id) {
-//        $url = "https://vimeo.com/api/oembed.json?url=https://vimeo.com/" . $id;
-//        $data = file_get_contents($url);
-//        return Json::decodeIfJson($data);
+        $url = "//vimeo.com/api/oembed.json?url=https://vimeo.com/" . $id;
+        try {
+            $response = Craft::$app->api->client->get($url);
+            $body = $response->getBody();
+            $string = StringHelper::toString($body);
+            return Json::decodeIfJson($string);
+        } catch (GuzzleException $e) {
+            return false;
+        }
     }
 
     private static function getThumbAsset($filename, $volumeId) {
