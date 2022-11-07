@@ -95,7 +95,9 @@ class TransformService extends Component {
         $defaults = AstuteoToolkit::$plugin->getSettings()->imgixDefaultParams;
         if($defaults) {
             foreach ($defaults as $key => $option) {
-                $params = $params . '&' . $key . '=' . $option;
+                if (!key_exists( $key, $options) && !key_exists( $key, $serviceOptions)) {
+                    $params = $params . '&' . $key . '=' . $option;
+                }
             }
         }
         return $params;
@@ -147,7 +149,7 @@ class TransformService extends Component {
         $updated = StringHelper::split($settings, '&');
         $remap = [];
         foreach($updated as $value) {
-            list($k, $v) = StringHelper::explode($value,'=');
+            [$k, $v] = StringHelper::explode($value,'=');
             $remap[ $k ] = $v;
         }
         return  $remap;
