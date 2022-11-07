@@ -25,6 +25,11 @@
 return [
     "assetPath" => "/site-assets/",
     "imgixUrl" => "",
+    "imgixDefaultParams" => [
+        "auto" => "format",
+        "lossless" => "1",
+        "fm" => "png"
+    ],
 	"loadCpTweaks" => false,
     "cacheBustDev" => false,
     "devCpNav" => true,

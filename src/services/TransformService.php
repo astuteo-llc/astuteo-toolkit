@@ -92,7 +92,12 @@ class TransformService extends Component {
                 $params = $params . '&' . $key . '=' . $option;
             }
         }
-
+        $defaults = AstuteoToolkit::$plugin->getSettings()->imgixDefaultParams;
+        if($defaults) {
+            foreach ($defaults as $key => $option) {
+                $params = $params . '&' . $key . '=' . $option;
+            }
+        }
         return $params;
     }
 

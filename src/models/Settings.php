@@ -17,6 +17,11 @@ class Settings extends Model
     public $uploadVideoThumbs;
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
+    public $imgixDefaultParams =  [
+        "auto" => "format",
+        "lossless" => "1",
+        "fm" => "png"
+    ];
     public $phoneFormat =  [
         'countryCode' => '+{number} ',
         'areaCode' => '({number}) ',
