@@ -17,6 +17,7 @@ class Settings extends Model
     public $uploadVideoThumbs;
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
+    // https://docs.imgix.com/tutorials/improved-compression-auto-content-negotiation
     public $imgixDefaultParams =  [
         "auto" => "format",
         "lossless" => "1",
