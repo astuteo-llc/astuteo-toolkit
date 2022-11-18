@@ -95,7 +95,10 @@ class TransformService extends Component {
         $defaults = AstuteoToolkit::$plugin->getSettings()->imgixDefaultParams;
         if($defaults) {
             foreach ($defaults as $key => $option) {
-                if (!key_exists( $key, $options) && !key_exists( $key, $serviceOptions)) {
+                if (is_array($options)
+                    && is_array($serviceOptions)
+                    && !key_exists( $key, $options)
+                    && !key_exists( $key, $serviceOptions)) {
                     $params = $params . '&' . $key . '=' . $option;
                 }
             }
