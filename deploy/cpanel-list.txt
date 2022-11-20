@@ -1,0 +1,13 @@
+/access-logs
+/etc
+/logs
+/mail
+/patches
+/perl5
+/php.ini
+/public_ftp
+/ssl
+/tmp
+/var
+/www
+/public_html/php.ini
