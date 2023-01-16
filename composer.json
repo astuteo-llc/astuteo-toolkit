@@ -3,14 +3,15 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "4.2.6",
-    "keywords": [
-        "craft",
-        "cms",
-        "craftcms",
-        "craft-plugin",
-        "astuteo toolkit"
-    ],
+    "version": "4.2.7",
+    "keywords": [],
+    "scripts": {
+        "changelog": "conventional-changelog",
+        "release": "conventional-changelog --commit",
+        "release:patch": "conventional-changelog --patch --commit",
+        "release:minor": "conventional-changelog --minor --commit",
+        "release:major": "conventional-changelog --major --commit"
+    },
     "support": {
         "docs": "https://github.com/astuteo-llc/astuteo-toolkit/blob/master/README.md",
         "issues": "https://github.com/astuteo-llc/astuteo-toolkit/issues"
@@ -32,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-          "astuteo\\astuteotoolkit\\": "src/"
+            "astuteo\\astuteotoolkit\\": "src/"
         }
     },
     "extra": {
