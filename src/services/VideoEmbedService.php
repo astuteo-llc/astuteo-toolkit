@@ -24,7 +24,8 @@ class VideoEmbedService extends Component {
             'id' => '',
             'url' => '',
             'thumbnail' => '',
-            'staticThumb' => true
+            'staticThumb' => true,
+            'provider' => 'unknown'
         ];
         if(self::isYouTube($url)) {
             $videoId = self::getYouTubeId($url);
@@ -50,7 +51,8 @@ class VideoEmbedService extends Component {
                 'id' => $videoId,
                 'url' => self::createYouTubeEmbed($videoId),
                 'thumbnail' => $thumb,
-                'staticThumb' => $staticThumb
+                'staticThumb' => $staticThumb,
+                'provider' => 'youtube'
             ];
 
         } elseif(self::isVimeo($url)) {
@@ -61,7 +63,8 @@ class VideoEmbedService extends Component {
                 'thumbnail' => [
                     'url' => self::createVimeoThumbnail($videoId),
                 ],
-                'staticThumb' => true
+                'staticThumb' => true,
+                'provider' => 'vimeo'
             ];
         }
         /*

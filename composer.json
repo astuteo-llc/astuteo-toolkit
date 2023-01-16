@@ -27,6 +27,9 @@
         "craftcms/cms": "^4.0.0",
         "ext-json": "*"
     },
+    "require-dev": {
+        "marcocesarato/php-conventional-changelog": "^1.16"
+    },
     "autoload": {
         "psr-4": {
           "astuteo\\astuteotoolkit\\": "src/"
