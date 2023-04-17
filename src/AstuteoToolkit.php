@@ -1,12 +1,4 @@
 <?php
-/**
- * Astuteo Toolkit plugin for Craft CMS 3.x
- *
- * Various tools that we use across client sites. Only useful for Astuteo projects
- *
- * @link      https://astuteo.com
- * @copyright Copyright (c) 2018 Astuteo
- */
 
 namespace astuteo\astuteotoolkit;
 
@@ -20,7 +12,6 @@ use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\CpNavService;
 use astuteo\astuteotoolkit\services\AstuteoBuildService;
-use astuteo\astuteotoolkit\services\VideoEmbedService;
 
 use Craft;
 use craft\base\Model;
@@ -34,37 +25,42 @@ use craft\web\UrlManager;
 use craft\events\TemplateEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Plugins;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 use yii\base\Event;
-use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
-/**
- *
- * @author    Astuteo
- * @package   AstuteoToolkit
- * @since     1.0.0
- *
- * @property  AstuteoToolkitServiceService $astuteoToolkitService
- * @property  Settings $settings
- * @method    Settings getSettings()
- */
 class AstuteoToolkit extends Plugin
 {
     public static $plugin;
     public string $schemaVersion = '4.0.0';
-
-    // Public Methods
-    // =========================================================================
 
     public function init()
     {
         parent::init();
         self::$plugin = $this;
 
-        // Add in our console commands
+        Craft::$app->onInit(function() {
+            $this->attachEventHandlers();
+        });
+
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                $variable = $event->sender;
+                $variable->set('astuteoToolkit', AstuteoToolkitVariable::class);
+            }
+        );
+
+        Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
+            Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
+            if (Craft::$app->request->getIsCpRequest()) {
+                $this->_bindCpEvents();
+                if (!Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
+                    Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
+                }
+            }
+        });
+
         if (Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'astuteo\astuteotoolkit\console\controllers';
         }
@@ -77,20 +73,6 @@ class AstuteoToolkit extends Plugin
             }
         );
 
-        // Add in our Twig extensions
-        Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
-            Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
-            if (Craft::$app->request->getIsCpRequest()) {
-                $this->_bindCpEvents();
-                if (!Craft::$app->request->getIsAjax() && !Craft::$app->request->getIsConsoleRequest()) {
-                    Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
-                }
-            }
-            if (Craft::$app->request->getIsSiteRequest()) {
-                $this->_bindFrontEndEvents();
-            }
-        });
-        // Register services
         $this->setComponents([
             'toolkit' => ToolkitService::class,
             'location' => LocationService::class,
@@ -99,7 +81,6 @@ class AstuteoToolkit extends Plugin
             'build' => AstuteoBuildService::class,
         ]);
 
-        // Load our AssetBundle
         if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {
             Event::on(
                 View::class,
@@ -116,40 +97,14 @@ class AstuteoToolkit extends Plugin
                 }
             );
         }
-
-        // Register our variables
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function (Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('astuteoToolkit', AstuteoToolkitVariable::class);
-            }
-        );
-
-
-        /**
-         * Logging in Craft involves using one of the following methods:
-         *
-         * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
-         * Craft::info(): record a message that conveys some useful information.
-         * Craft::warning(): record a warning message that indicates something unexpected has happened.
-         * Craft::error(): record a fatal error that should be investigated as soon as possible.
-         */
-        Craft::info(
-            Craft::t(
-                'astuteo-toolkit',
-                '{name} plugin loaded',
-                ['name' => $this->name]
-            ),
-            __METHOD__
-        );
     }
 
-
-    // Private Methods
-    // =========================================================================
+    private function attachEventHandlers(): void
+    {
+        if (Craft::$app->request->getIsSiteRequest()) {
+            $this->_bindFrontEndEvents();
+        }
+    }
 
     private function _shouldLoadAssets() {
         $currentUser = Craft::$app->getUser()->identity ?? null;
@@ -161,8 +116,6 @@ class AstuteoToolkit extends Plugin
     }
 
     private function _bindFrontEndEvents() {
-        // Add edit entry link to front-end templatesincludeFeEdit
-
         if(AstuteoToolkit::$plugin->getSettings()->includeFeEdit) {
             Event::on(
                 View::class,
@@ -172,15 +125,13 @@ class AstuteoToolkit extends Plugin
                     $element = Craft::$app->getUrlManager()->getMatchedElement();
                     if (!$element) return;
 
-                    if (
-                    $this->_shouldLoadAssets()
-                    ) {
+                    if ($this->_shouldLoadAssets()) {
                         echo '<a
-                                href="' . $element->cpEditUrl . '"
-                                class="astuteo-edit-entry"
-                                target="_blank"
-                                rel="noopener"
-                              >Edit Entry</a>';
+                            href="' . $element->cpEditUrl . '"
+                            class="astuteo-edit-entry"
+                            target="_blank"
+                            rel="noopener"
+                          >Edit Entry</a>';
                     }
                 }
             );
@@ -206,36 +157,8 @@ class AstuteoToolkit extends Plugin
         );
     }
 
-    // Protected Methods
-    // =========================================================================
-
-    /**
-     * Creates and returns the model used to store the plugin’s settings.
-     *
-     * @return Model|null
-     */
-    protected function createSettingsModel(): ?\craft\base\Model
+    protected function createSettingsModel(): ?Model
     {
         return new Settings();
-    }
-
-    /**
-     * Returns the rendered settings HTML, which will be inserted into the content
-     * block on the settings page.
-     */
-    protected function settingsHtml(): ?string
-    {
-        try {
-            return Craft::$app->view->renderTemplate(
-                'astuteo-toolkit/settings',
-                [
-                    'settings' => $this->getSettings()
-                ]
-            );
-        } catch (LoaderError $e) {
-        } catch (RuntimeError $e) {
-        } catch (SyntaxError $e) {
-        } catch (Exception $e) {
-        }
     }
 }
