@@ -158,10 +158,14 @@ class VideoEmbedService extends Component {
      * @param string $url
      * @return string
      */
-    public function getYouTubeId($url)
+     public static function getYouTubeId($url)
     {
-        preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
-        return $match[1];
+        preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?|live)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
+        if (isset($match[1])) {
+            return $match[1];
+        } else {
+            return null;
+        }
     }
     /**
      * Parse the Vimeo URL, return the video ID
