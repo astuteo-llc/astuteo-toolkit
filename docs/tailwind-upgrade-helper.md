@@ -42,7 +42,7 @@ yet-another-old-class yet-another-new-class
 
 To use this file, you would run the script as follows:
 
-```bash
+```
 ./vendor/astuteo/astuteo-toolkit/tools/tailwind/upgrade.sh ./path/to/examplefile.txt
 ```
 
