@@ -2,12 +2,6 @@
 
 This bash script will help you to upgrade your Tailwind CSS classes in your project files when moving from one major version to another.
 
-## Getting Started
-
-1. First, ensure you have bash installed on your system. This script is a bash script and therefore requires bash to be present. Most Unix-based systems like Linux or macOS come with bash pre-installed.
-
-2. Make sure your Craft CMS project is set up and the plugin resides in the `vendor/astuteo/astuteo-toolkit/tools/tailwind` directory of your project.
-
 ## Running the Upgrade Script
 
 The `upgrade.sh` script requires a single argument: the path to a text file that maps old class names to new ones. The script and the class mapping file are both located in the `vendor/astuteo/astuteo-toolkit/tools/tailwind` directory of your Craft CMS project.
