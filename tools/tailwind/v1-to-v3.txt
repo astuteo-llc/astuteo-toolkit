@@ -1,0 +1,7 @@
+clearfix flow-root
+focus:shadow-outline focus:ring
+shadow-xs ring-1 ring-black ring-opacity-5
+whitespace-no-wrap whitespace-nowrap
+flex-no-wrap flex-nowrap
+col-gap- gap-x-
+row-gap- gap-y-
