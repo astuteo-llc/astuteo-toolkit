@@ -12,7 +12,7 @@ class_file=$1
 dirs="./src ./templates"
 
 # File types to scan in the src directory
-types="css sass scss pcss"
+types="css sass pcss"
 
 while read -r line
 do
@@ -38,7 +38,7 @@ do
                     do
                         echo "Updating $file"
                         # Use sed to replace old_class with new_class
-                        sed -i "s/$old_class/$new_class/g" "$file"
+                        sed -i '' "s/$old_class/$new_class/g" "$file"
                     done
                 done
             else
@@ -47,7 +47,7 @@ do
                 do
                     echo "Updating $file"
                     # Use sed to replace old_class with new_class
-                    sed -i "s/$old_class/$new_class/g" "$file"
+                    sed -i '' "s/$old_class/$new_class/g" "$file"
                 done
             fi
         else
