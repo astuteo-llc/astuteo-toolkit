@@ -12,7 +12,7 @@ class_file=$1
 dirs="./src ./templates"
 
 # File types to scan in the src directory
-types="css sass pcss"
+types="css sass scss pcss"
 
 while read -r line
 do
