@@ -42,10 +42,9 @@ yet-another-old-class yet-another-new-class
 
 To use this file, you would run the script as follows:
 
-    ```bash
+```bash
 ./vendor/astuteo/astuteo-toolkit/tools/tailwind/upgrade.sh ./path/to/examplefile.txt
-
-    ```
+```
 
 Replace `./path/to/examplefile.txt` with the actual relative path to your custom class change file.
 
