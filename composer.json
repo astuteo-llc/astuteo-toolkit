@@ -3,7 +3,7 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "4.3.1",
+    "version": "4.3.2",
     "keywords": [],
     "scripts": {
         "changelog": "conventional-changelog",
