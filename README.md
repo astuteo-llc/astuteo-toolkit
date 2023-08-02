@@ -9,3 +9,4 @@
 9. Area to Dimensions - [areaToDimensions](docs/area-to-dimensions.md)
 10. Insecure Cookie - [insecureCookie](docs/insecure-cookie.md)
 11. Autologin - [how to](docs/autologin.md)
+12. Tailwind Upgrade Helper - [how to](docs/tailwind-upgrade-helper.md)
