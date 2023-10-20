@@ -25,6 +25,7 @@ Admin users can test the functionality by accessing the following endpoint:
 
 - `$type`: `'url'` or `'uri'` (default `'url'`).
 - `$limit`: The maximum number of URLs to fetch per section or category group (default `1`).
+- `$mode`: Optional. A string that specifies the mode of operation. If set to 'css-testing', the function will return URIs formatted specifically for CSS testing. Default is null.
 
 #### Return:
 
