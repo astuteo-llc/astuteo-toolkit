@@ -4,93 +4,80 @@ namespace astuteo\astuteotoolkit\services;
 
 use craft\elements\Entry;
 use craft\elements\Category;
+use Illuminate\Support\Collection;
 
 class UrlsToTest
 {
-    public function getAllUrls($type = 'url'): array
+    public function getAllUrls($type = 'url', int $limit = 1): array
     {
-        $urls = [];
+        $urls = array_merge(
+            $this->getUrlsFromSections($limit, $type),
+            $this->getUrlsFromCategoryGroups($limit, $type)
+        );
+        return array_values(array_filter($urls, fn($url) => !is_null($url)));
+    }
 
-        // Retrieve all sections
+    private function getUrlsFromSections(int $limit, string $type): array
+    {
         $sections = \Craft::$app->sections->getAllSections();
 
-        // Iterate through sections and their respective entry types
-        foreach ($sections as $section) {
-            if ($section->type === 'single') {
-                $entry = Entry::find()->sectionId($section->id)->one();
-                if ($entry && $entry->url !== null) {
-                    $urls[] = $type === 'uri' ? $entry->uri : $entry->url;
-                }
-            } else {
-                $entryTypes = $section->getEntryTypes();
+        return Collection::make($sections)
+            ->flatMap(fn($section) => $this->getUrlsFromSection($section, $limit, $type))
+            ->all();
+    }
 
-                foreach ($entryTypes as $entryType) {
-                    // Get 20 entries of each entry type
-                    $criteria = Entry::find();
-                    $criteria->sectionId = $section->id;
-                    $criteria->typeId = $entryType->id;
-                    $criteria->limit = 20;
+    private function getUrlsFromSection($section, int $limit, string $type): array
+    {
+        $maxEntries = $this->getMaxEntries($section, $limit);
 
-                    $entries = $criteria->all();
-                    $maxFilledFields = 0;
-                    $maxEntry = null;
+        return $maxEntries
+            ->map(fn($entry) => $type === 'uri' ? $entry->uri : $entry->url)
+            ->all();
+    }
 
-                    // Iterate through the entries to find the entry with the most filled fields
-                    foreach ($entries as $entry) {
-                        $filledFields = 0;
-
-                        foreach ($entry->getFieldValues() as $fieldValue) {
-                            if (!empty($fieldValue)) {
-                                $filledFields++;
-                            }
-                        }
-
-                        if ($filledFields > $maxFilledFields) {
-                            $maxFilledFields = $filledFields;
-                            $maxEntry = $entry;
-                        }
-                    }
-                    if ($maxEntry->url !== null) {
-                        $urls[] = $type === 'uri' ? $maxEntry->uri :  $maxEntry->url;
-                    }
-                }
-            }
+    private function getMaxEntries($section, int $limit): Collection
+    {
+        if ($section->type === 'single') {
+            return Collection::make([Entry::find()->sectionId($section->id)->one()]);
         }
 
-        // Retrieve all category groups
+        $entryTypes = $section->getEntryTypes();
+        $entries = Collection::make();
+
+        foreach ($entryTypes as $entryType) {
+            $entryCollection = Entry::find()->sectionId($section->id)->typeId($entryType->id)->all();
+            $sortedEntries = Collection::make($entryCollection)
+                ->sortByDesc(fn($entry) => count(array_filter($entry->getFieldValues())))
+                ->take($limit);
+            $entries = $entries->concat($sortedEntries);
+        }
+
+        return $entries;
+    }
+
+    private function getUrlsFromCategoryGroups(int $limit, string $type): array
+    {
         $categoryGroups = \Craft::$app->categories->getAllGroups();
 
-        // Iterate through category groups
-        foreach ($categoryGroups as $categoryGroup) {
-            // Get 20 categories from each group
-            $criteria = Category::find();
-            $criteria->groupId = $categoryGroup->id;
-            $criteria->limit = 20;
+        return Collection::make($categoryGroups)
+            ->flatMap(fn($group) => $this->getUrlsFromCategoryGroup($group, $limit, $type))
+            ->all();
+    }
 
-            $categories = $criteria->all();
-            $maxFilledFields = 0;
-            $maxCategory = null;
+    private function getUrlsFromCategoryGroup($group, int $limit, string $type): array
+    {
+        $maxCategories = $this->getMaxCategories($group, $limit);
 
-            // Iterate through the categories to find the category with the most filled fields
-            foreach ($categories as $category) {
-                $filledFields = 0;
+        return $maxCategories
+            ->map(fn($category) => $type === 'uri' ? $category->uri : $category->url)
+            ->all();
+    }
 
-                foreach ($category->getFieldValues() as $fieldValue) {
-                    if (!empty($fieldValue)) {
-                        $filledFields++;
-                    }
-                }
-
-                if ($filledFields > $maxFilledFields) {
-                    $maxFilledFields = $filledFields;
-                    $maxCategory = $category;
-                }
-            }
-            if ($maxCategory !== null) {
-                $urls[] = $type === 'uri' ? $maxCategory->uri : $maxCategory->url;
-            }
-        }
-
-        return $urls;
+    private function getMaxCategories($group, int $limit): Collection
+    {
+        $categories = Category::find()->groupId($group->id)->all();
+        return Collection::make($categories)
+            ->sortByDesc(fn($category) => count(array_filter($category->getFieldValues())))
+            ->take($limit);
     }
 }

@@ -16,7 +16,9 @@ class TestUrlController extends Controller
     public function actionIndex()
     {
         $type = \Craft::$app->request->getQueryParam('type', 'url');
-        $urls = (new UrlsToTest)->getAllUrls($type);
+        $limit = \Craft::$app->request->getQueryParam('limit');
+        $limit = $limit ? (int) $limit : 1;
+        $urls = (new UrlsToTest)->getAllUrls($type, $limit);
         return $this->asJson($urls);
     }
 }
