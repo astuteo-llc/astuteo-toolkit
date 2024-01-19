@@ -4,6 +4,15 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [4.4.2](https://github.com/astuteo-llc/astuteo-toolkit/compare/v4.4.1...v4.4.2) (2024-01-19)
+
+### Bug Fixes
+
+* Bug from incoming YouTube video missing thumb ([233257](https://github.com/astuteo-llc/astuteo-toolkit/commit/233257915774925d9eae13f24d5632ed8ce1b3fb))
+
+
+---
+
 ## [4.4.1](https://github.com/astuteo-llc/astuteo-toolkit/compare/v4.4.0...v4.4.1) (2023-10-20)
 
 
