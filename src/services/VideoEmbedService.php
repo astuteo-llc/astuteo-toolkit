@@ -97,7 +97,7 @@ class VideoEmbedService extends Component {
     }
 
 
-    public static function createYouTubeThumbnailMax($id): string
+    public static function createYouTubeThumbnailMax($id): string | bool
     {
         $thumbnail = self::thumbnailExists('https://i.ytimg.com/vi/' . $id . '/maxresdefault.jpg');
         if($thumbnail) return $thumbnail;
@@ -105,6 +105,7 @@ class VideoEmbedService extends Component {
         if($thumbnail) return $thumbnail;
         $thumbnail = self::thumbnailExists('https://i.ytimg.com/vi/' . $id . '/default.jpg');
         if($thumbnail) return $thumbnail;
+        return false;
     }
 
     private static function thumbnailExists($url): bool | string
