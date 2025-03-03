@@ -25,6 +25,7 @@ class VideoEmbedService extends Component {
         return match (true) {
             self::isYouTube($url) => self::getYouTubeEmbedInfo($url, $settings),
             self::isVimeo($url) => self::getVimeoEmbedInfo($url, $settings),
+            self::isWistia($url) => self::getWistiaEmbedInfo($url, $settings),
             default => [
                 'id' => '',
                 'url' => '',
@@ -86,6 +87,24 @@ class VideoEmbedService extends Component {
         return $embedInfo;
     }
 
+    private static function getWistiaEmbedInfo(string $url, $settings): ?array {
+        $videoId = self::getWistiaId($url);
+        $embedInfo = [
+            'id' => $videoId,
+            'url' => self::createWistiaEmbed($videoId),
+            'thumbnail' => [
+                'url' => '',
+            ],
+            'staticThumb' => true,
+            'provider' => 'wistia',
+        ];
+
+        if($settings->cacheVideoEmbeds) {
+            Craft::$app->cache->set($url, $embedInfo);
+        }
+
+        return $embedInfo;
+    }
 
     public static function createYouTubeEmbed($id): string
     {
@@ -95,6 +114,11 @@ class VideoEmbedService extends Component {
     {
         return 'https://player.vimeo.com/video/' . $id;
     }
+    public static function createWistiaEmbed($id): string
+    {
+        return 'https://fast.wistia.net/embed/iframe/' . $id;
+    }
+
 
 
     public static function createYouTubeThumbnailMax($id): string | bool
@@ -181,6 +205,7 @@ class VideoEmbedService extends Component {
     {
         return (str_contains($url, 'youtube.com/') || str_contains($url, 'youtu.be/') || str_contains($url, 'youtube-nocookie.com/'));
     }
+
     /**
      * Is the url a vimeo url
      * @param string $url
@@ -189,6 +214,16 @@ class VideoEmbedService extends Component {
     public static function isVimeo(string $url): bool
     {
         return str_contains($url, 'vimeo.com/');
+    }
+
+    /**
+     * Is the url a Wistia url
+     * @param string $url
+     * @return boolean
+     */
+    public static function isWistia(string $url): bool
+    {
+        return (str_contains($url, 'wistia.com/') || str_contains($url, 'wistia.net/'));
     }
 
     /**
@@ -257,6 +292,31 @@ class VideoEmbedService extends Component {
             return $fallbackMatches[1];
         }
 
+        return false;
+    }
+
+    /**
+     * Parse the Wistia URL, return the video ID
+     * Covers these URL formats:
+     * - yoursite.wistia.com/medias/abc123
+     * - fast.wistia.net/embed/iframe/abc123
+     * @param string $url
+     * @return bool|string
+     */
+    public static function getWistiaId(string $url): bool|string
+    {
+        // Handle formats like: https://yoursite.wistia.com/medias/1n5odqzvb9
+        preg_match('/wistia\.com\/medias\/([a-zA-Z0-9]+)/', $url, $matches);
+        if (isset($matches[1])) {
+            return $matches[1];
+        }
+        
+        // Handle formats like: https://fast.wistia.net/embed/iframe/1n5odqzvb9
+        preg_match('/wistia\.net\/embed\/iframe\/([a-zA-Z0-9]+)/', $url, $matches);
+        if (isset($matches[1])) {
+            return $matches[1];
+        }
+        
         return false;
     }
 }
