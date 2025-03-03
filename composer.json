@@ -6,11 +6,11 @@
     "version": "6.2.1",
     "keywords": [],
     "scripts": {
-        "changelog": "conventional-changelog",
-        "release": "conventional-changelog --commit",
-        "release:patch": "conventional-changelog --patch --commit",
-        "release:minor": "conventional-changelog --minor --commit",
-        "release:major": "conventional-changelog --major --commit"
+        "changelog": "php vendor/bin/conventional-changelog",
+        "release": "php vendor/bin/conventional-changelog --commit",
+        "release:patch": "php vendor/bin/conventional-changelog --patch --commit",
+        "release:minor": "php vendor/bin/conventional-changelog --minor --commit",
+        "release:major": "php vendor/bin/conventional-changelog --major --commit"
     },
     "support": {
         "docs": "https://github.com/astuteo-llc/astuteo-toolkit/blob/master/README.md",
@@ -24,8 +24,8 @@
         }
     ],
     "require": {
-        "php": "^8.2.0",
-        "craftcms/cms": "^5.0.0",
+        "php": "^8.0.0 || ^8.1.0 || ^8.2.0",
+        "craftcms/cms": "^4.0.0 || ^5.0.0",
         "ext-json": "*"
     },
     "require-dev": {
