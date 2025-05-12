@@ -80,6 +80,9 @@ class AstuteoToolkit extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        // Fixes registration timing (for SI)
+        Craft::$app->view->registerTwigExtension(new AstuteoToolkitTwigExtension());
+
         // Add in our console commands
         if (Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'astuteo\astuteotoolkit\console\controllers';
