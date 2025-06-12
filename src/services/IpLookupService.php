@@ -3,6 +3,7 @@
 namespace astuteo\astuteotoolkit\services;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use Craft;
 use yii\base\Component;
 
@@ -12,10 +13,11 @@ class IpLookupService extends Component
     {
         $token = AstuteoToolkit::$plugin->getSettings()->ipinfoToken;
         if (empty($token)) {
-            Craft::error('IPInfo token not configured', __METHOD__);
+            LoggerHelper::error('IPInfo token not configured');
             return null;
         }
 
+        LoggerHelper::warning('Looking IP info token: ' . $token);
         $url = "https://ipinfo.io/{$ip}/json?token={$token}";
 
         try {
@@ -30,7 +32,7 @@ class IpLookupService extends Component
                 'continent' => $data['continent'] ?? null,
             ];
         } catch (\Throwable $e) {
-            Craft::error("IP lookup failed: " . $e->getMessage(), __METHOD__);
+            LoggerHelper::error("IP lookup failed: " . $e->getMessage());
             return null;
         }
     }

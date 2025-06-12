@@ -4,6 +4,7 @@ namespace astuteo\astuteotoolkit;
 
 use astuteo\astuteotoolkit\assetbundles\cptweaks\AstuteoToolkitCPAsset;
 use astuteo\astuteotoolkit\assetbundles\astuteotoolkit\AstuteoToolkitAsset;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use astuteo\astuteotoolkit\services\TransformService;
 use astuteo\astuteotoolkit\twigextensions\AstuteoToolkitTwigExtension;
 use astuteo\astuteotoolkit\variables\AstuteoToolkitVariable;
@@ -15,6 +16,9 @@ use astuteo\astuteotoolkit\services\AstuteoBuildService;
 use astuteo\astuteotoolkit\services\IpLookupService;
 
 use Craft;
+use Monolog\Formatter\LineFormatter;
+use Psr\Log\LogLevel;
+use craft\log\MonologTarget;
 use craft\base\Model;
 use craft\web\View;
 use craft\base\Plugin;
@@ -38,6 +42,8 @@ class AstuteoToolkit extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        $this->_registerLogTarget();
 
         Craft::$app->onInit(function() {
             $this->attachEventHandlers();
@@ -92,10 +98,7 @@ class AstuteoToolkit extends Plugin
                     try {
                         Craft::$app->getView()->registerAssetBundle(AstuteoToolkitCPAsset::class);
                     } catch (InvalidConfigException $e) {
-                        Craft::error(
-                            'Error registering AssetBundle - ' . $e->getMessage(),
-                            __METHOD__
-                        );
+                        LoggerHelper::error('Error registering AssetBundle - ' . $e->getMessage());
                     }
                 }
             );
@@ -163,5 +166,20 @@ class AstuteoToolkit extends Plugin
     protected function createSettingsModel(): ?Model
     {
         return new Settings();
+    }
+
+    private function _registerLogTarget(): void
+    {
+        Craft::getLogger()->dispatcher->targets[] = new MonologTarget([
+            'name' => 'astuteo-toolkit',
+            'categories' => ['astuteo-toolkit'],
+            'level' => LogLevel::INFO,
+            'logContext' => false,
+            'allowLineBreaks' => false,
+            'formatter' => new LineFormatter(
+                format: "%datetime% %message%\n",
+                dateFormat: 'Y-m-d H:i:s',
+            ),
+        ]);
     }
 }
