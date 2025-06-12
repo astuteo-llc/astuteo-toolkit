@@ -12,6 +12,7 @@ use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\CpNavService;
 use astuteo\astuteotoolkit\services\AstuteoBuildService;
+use astuteo\astuteotoolkit\services\IpLookupService;
 
 use Craft;
 use craft\base\Model;
@@ -70,6 +71,7 @@ class AstuteoToolkit extends Plugin
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['astuteologin'] = 'astuteo-toolkit/auto-login';
+                $event->rules['astuteo-toolkit/info'] = 'astuteo-toolkit/ip/info';
             }
         );
 
@@ -79,6 +81,7 @@ class AstuteoToolkit extends Plugin
             'transform' => TransformService::class,
             'cpnav' => CpNavService::class,
             'build' => AstuteoBuildService::class,
+            'ipLookup' => IpLookupService::class,
         ]);
 
         if (AstuteoToolkit::$plugin->getSettings()->loadCpTweaks && Craft::$app->getRequest()->getIsCpRequest()) {

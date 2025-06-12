@@ -289,4 +289,14 @@ class Settings extends Model
         "ZM" => "Zambia",
         "ZW" => "Zimbabwe"
     ];
+
+    public string $ipinfoToken = '';
+
+    public function rules(): array
+    {
+        return [
+            [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
+            [['ipinfoToken'], 'string'],
+        ];
+    }
 }
