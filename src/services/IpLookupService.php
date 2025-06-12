@@ -17,7 +17,7 @@ class IpLookupService extends Component
             return null;
         }
 
-        LoggerHelper::warning('Looking IP info token: ' . $token);
+        LoggerHelper::info('Looking IP info');
         $url = "https://ipinfo.io/{$ip}/json?token={$token}";
 
         try {
