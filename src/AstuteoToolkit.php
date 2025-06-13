@@ -82,6 +82,7 @@ class AstuteoToolkit extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['astuteologin'] = 'astuteo-toolkit/auto-login';
                 $event->rules['astuteo-toolkit/info'] = 'astuteo-toolkit/ip/info';
+                $event->rules['astuteo-toolkit/auth-info'] = 'astuteo-toolkit/ip/get-auth-info';
             }
         );
 

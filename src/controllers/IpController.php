@@ -116,4 +116,23 @@ class IpController extends Controller
 
         return $this->redirectToPostedUrl();
     }
+
+    /**
+     * Get the authentication key information
+     * 
+     * @return Response
+     */
+    public function actionGetAuthInfo(): Response
+    {
+        $this->requireAdmin();
+
+        $settings = AstuteoToolkit::$plugin->getSettings();
+        $token = $settings->getIpControllerToken();
+
+        return $this->asJson([
+            'keyName' => self::AUTH_KEY,
+            'keyValue' => $token,
+            'exampleUrl' => Craft::getAlias('@web') . 'astuteo-toolkit/info?' . self::AUTH_KEY . '=' . $token
+        ]);
+    }
 } 
