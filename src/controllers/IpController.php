@@ -42,12 +42,35 @@ class IpController extends Controller
 
             if ($referer) {
                 $refererDomain = parse_url($referer, PHP_URL_HOST);
+                $origin = Craft::$app->getRequest()->getHeaders()->get('Origin');
+                $originDomain = $origin ? parse_url($origin, PHP_URL_HOST) : null;
 
+                // Check if the request has a valid Origin header that matches our domain
+                if ($origin && (!$originDomain || !$this->domainsMatch($serverDomain, $originDomain))) {
+                    return $this->asJson([
+                        'error' => 'Access denied: Invalid origin',
+                        'status' => 403
+                    ])->setStatusCode(403);
+                }
+
+                // Check if the referer domain matches our server domain
                 if (!$refererDomain || !$this->domainsMatch($serverDomain, $refererDomain)) {
                     return $this->asJson([
                         'error' => 'Access denied: Domain mismatch',
                         'status' => 403
                     ])->setStatusCode(403);
+                }
+            } else {
+                // If no referer is present, check for Origin header
+                $origin = Craft::$app->getRequest()->getHeaders()->get('Origin');
+                if ($origin) {
+                    $originDomain = parse_url($origin, PHP_URL_HOST);
+                    if (!$originDomain || !$this->domainsMatch($serverDomain, $originDomain)) {
+                        return $this->asJson([
+                            'error' => 'Access denied: Invalid origin',
+                            'status' => 403
+                        ])->setStatusCode(403);
+                    }
                 }
             }
         }
