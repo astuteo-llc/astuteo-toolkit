@@ -12,7 +12,17 @@ class LoggerHelper
      */
     public static function log($level, $message)
     {
-        $message = "[AstuteoToolkit] " . $message;
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[1] ?? [];
+        $file = $caller['file'] ?? 'unknown';
+        $line = $caller['line'] ?? 0;
+        
+        $message = sprintf("[AstuteoToolkit] [%s:%d] %s", 
+            basename($file), 
+            $line, 
+            $message
+        );
+        
         Craft::getLogger()->log($message, $level, 'astuteo-toolkit');
     }
 

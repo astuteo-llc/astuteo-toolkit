@@ -42,11 +42,10 @@ class IpLookupService extends Component
         // Try to get the cached result
         $cachedResult = \Craft::$app->cache->get($cacheKey);
         if ($cachedResult !== false) {
-            LoggerHelper::info('Retrieved cached IP info for ' . $ip);
+            LoggerHelper::warning('Retrieved cached IP info for ' . $ip);
             return $cachedResult;
         }
 
-        LoggerHelper::info('Looking up IP info for ' . $ip);
 
         $provider = $this->getProvider();
         if (!$provider) {
@@ -54,7 +53,6 @@ class IpLookupService extends Component
             return null;
         }
 
-        LoggerHelper::info('provider');
         $result = $provider->lookup($ip);
 
         // Cache the result for 60 days

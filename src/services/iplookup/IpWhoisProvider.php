@@ -16,8 +16,6 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     public function lookup(string $ip): ?array
     {
         $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
-
-        LoggerHelper::info('Looking up IP info for ' . $token);
         $url = "http://ipwhois.pro/{$ip}?key={$token}";
 
         try {
