@@ -87,17 +87,28 @@
     placeholder: '$IP_LOOKUP_TOKEN'
 }) }}
 
+{{ forms.autosuggestField({
+    label: "Development IP Address"|t('astuteo-toolkit'),
+    instructions: "IP address to use for development testing"|t('astuteo-toolkit'),
+    id: 'devIpAddress',
+    name: 'devIpAddress',
+    value: settings.devIpAddress,
+    errors: settings.getErrors('devIpAddress'),
+    suggestEnvVars: true,
+    placeholder: '$DEV_IP_ADDRESS'
+}) }}
+
 {# Optional: Show parsed values for debugging #}
 {% if craft.app.config.general.devMode %}
-
 
     <div class="field">
         <div class="heading">
             <label>{{ "Parsed Values (Dev Mode Only)"|t('astuteo-toolkit') }}</label>
         </div>
         <div class="input">
-            <p><strong>Provider:</strong> {{ settings.parsedIpLookupProvider }}</p>
-            <p><strong>Token:</strong> {{ settings.parsedIpLookupToken ? '***' : '(empty)' }}</p>
+            <p><strong>Provider:</strong> {{ settings.getIpLookupProvider() }}</p>
+            <p><strong>Token:</strong> {{ settings.getIpLookupToken() ? '***' : '(empty)' }}</p>
+            <p><strong>Dev IP Address:</strong> {{ settings.getDevIpAddress() }}</p>
         </div>
     </div>
 
@@ -107,18 +118,52 @@
         </div>
         <div class="input">
             <p>{{ "Testing IP lookup functionality by loading example case:"|t('astuteo-toolkit') }} <a href="{{ siteUrl('astuteo-toolkit/info') }}" target="_blank">{{ siteUrl('astuteo-toolkit/info') }}</a></p>
-            <div id="ip-lookup-result" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px;">
-                <p>{{ "Loading IP lookup data..."|t('astuteo-toolkit') }}</p>
-            </div>
+            <!-- The ip-lookup-result element will be created dynamically by JavaScript -->
         </div>
     </div>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
+            // Find the container where we want to display the result
+            // Look for the div with class 'input' that is inside the div with class 'field' 
+            // that has a heading with the text "IP Lookup Test (Dev Mode Only)"
+            const ipLookupTestFields = document.querySelectorAll('.field');
+            let container = null;
+
+            for (const field of ipLookupTestFields) {
+                const heading = field.querySelector('.heading label');
+                if (heading && heading.textContent.includes('IP Lookup Test')) {
+                    container = field.querySelector('.input');
+                    break;
+                }
+            }
+
+            // Check if the element exists, create it if it doesn't
+            let resultElement = document.getElementById('ip-lookup-result');
+            if (!resultElement && container) {
+                console.log('Creating ip-lookup-result element');
+                resultElement = document.createElement('div');
+                resultElement.id = 'ip-lookup-result';
+                resultElement.style = 'margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px;';
+                resultElement.innerHTML = '<p>{{ "Loading IP lookup data..."|t('astuteo-toolkit') }}</p>';
+                container.appendChild(resultElement);
+            } else if (!container) {
+                console.error('Container for ip-lookup-result not found');
+                return;
+            } else {
+                console.log('IP lookup result element found');
+            }
+
             fetch('{{ siteUrl('astuteo-toolkit/info') }}')
                 .then(response => response.json())
                 .then(data => {
-                    const resultElement = document.getElementById('ip-lookup-result');
+                    // Get the element again in case it was modified
+                    resultElement = document.getElementById('ip-lookup-result');
+                    if (!resultElement) {
+                        console.error('IP lookup result element not found after fetch');
+                        return;
+                    }
+
                     if (data) {
                         let html = '<h3>{{ "IP Lookup Result"|t('astuteo-toolkit') }}</h3>';
                         html += '<pre style="max-height: 300px; overflow: auto;">' + JSON.stringify(data, null, 2) + '</pre>';
@@ -128,8 +173,23 @@
                     }
                 })
                 .catch(error => {
-                    const resultElement = document.getElementById('ip-lookup-result');
-                    resultElement.innerHTML = '<p>{{ "Error loading IP lookup data:"|t('astuteo-toolkit') }} ' + error.message + '</p>';
+                    // Get the element again in case it was modified
+                    resultElement = document.getElementById('ip-lookup-result');
+                    if (resultElement) {
+                        resultElement.innerHTML = '<p>{{ "Error loading IP lookup data:"|t('astuteo-toolkit') }} ' + error.message + '</p>';
+                    } else {
+                        console.error('Error loading IP lookup data:', error.message);
+
+                        // Try to create the element again if it doesn't exist
+                        if (container) {
+                            console.log('Creating ip-lookup-result element after error');
+                            resultElement = document.createElement('div');
+                            resultElement.id = 'ip-lookup-result';
+                            resultElement.style = 'margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px;';
+                            resultElement.innerHTML = '<p>{{ "Error loading IP lookup data:"|t('astuteo-toolkit') }} ' + error.message + '</p>';
+                            container.appendChild(resultElement);
+                        }
+                    }
                 });
         });
     </script>

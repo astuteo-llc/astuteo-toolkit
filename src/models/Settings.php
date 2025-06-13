@@ -318,7 +318,7 @@ class Settings extends Model
     {
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
-            [['ipLookupToken', 'ipLookupProvider'], 'string'],
+            [['ipLookupToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
         ];
     }
 
