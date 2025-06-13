@@ -30,6 +30,16 @@ class IpLookupService extends Component
             $ip = $simulateIp;
         }
 
+        // Generate a unique cache key for this IP
+        $cacheKey = 'astuteo-toolkit-ip-lookup-' . $ip;
+        
+        // Try to get the cached result
+        $cachedResult = \Craft::$app->cache->get($cacheKey);
+        if ($cachedResult !== false) {
+            LoggerHelper::info('Retrieved cached IP info for ' . $ip);
+            return $cachedResult;
+        }
+
         LoggerHelper::info('Looking up IP info for ' . $ip);
 
         $provider = $this->getProvider();
@@ -39,7 +49,15 @@ class IpLookupService extends Component
         }
 
         LoggerHelper::info('provider');
-        return $provider->lookup($ip);
+        $result = $provider->lookup($ip);
+        
+        // Cache the result for 60 days
+        if ($result !== null) {
+            \Craft::$app->cache->set($cacheKey, $result, 60 * 24 * 60 * 60); // 60 days in seconds
+            LoggerHelper::info('Cached IP info for ' . $ip);
+        }
+        
+        return $result;
     }
 
     /**
