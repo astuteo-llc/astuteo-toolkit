@@ -292,11 +292,17 @@ class Settings extends Model
 
     public string $ipinfoToken = '';
 
+    /**
+     * The IP lookup provider to use
+     * Options: 'ipinfo', 'ipwhois'
+     */
+    public string $ipLookupProvider = 'ipwhois';
+
     public function rules(): array
     {
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
-            [['ipinfoToken'], 'string'],
+            [['ipinfoToken', 'ipLookupProvider'], 'string'],
         ];
     }
 }

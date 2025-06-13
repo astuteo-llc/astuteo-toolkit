@@ -4,36 +4,83 @@ namespace astuteo\astuteotoolkit\services;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\helpers\LoggerHelper;
+use astuteo\astuteotoolkit\services\iplookup\IpInfoProvider;
+use astuteo\astuteotoolkit\services\iplookup\IpLookupProviderInterface;
+use astuteo\astuteotoolkit\services\iplookup\IpWhoisProvider;
 use Craft;
 use yii\base\Component;
 
 class IpLookupService extends Component
 {
+    /**
+     * @var IpLookupProviderInterface|null The current provider instance
+     */
+    private ?IpLookupProviderInterface $provider = null;
+
+    /**
+     * Look up information about an IP address
+     * 
+     * @param string $ip The IP address to look up
+     * @return array|null An array containing standardized IP information or null on failure
+     */
     public function lookup(string $ip): ?array
     {
-        $token = AstuteoToolkit::$plugin->getSettings()->ipinfoToken;
-        if (empty($token)) {
-            LoggerHelper::error('IPInfo token not configured');
+        $ip = '184.61.146.48'; // temp for debugging
+        LoggerHelper::info('Looking up IP info for ' . $ip);
+
+        $provider = $this->getProvider();
+        if (!$provider) {
+            LoggerHelper::error('No IP lookup provider available');
             return null;
         }
 
-        LoggerHelper::info('Looking IP info');
-        $url = "https://ipinfo.io/{$ip}/json?token={$token}";
-
-        try {
-            $client = Craft::createGuzzleClient();
-            $response = $client->get($url);
-            $data = json_decode((string)$response->getBody(), true);
-
-            return [
-                'asn' => $data['asn'] ?? null,
-                'company_name' => $data['as_name'] ?? null,
-                'country' => $data['country'] ?? null,
-                'continent' => $data['continent'] ?? null,
-            ];
-        } catch (\Throwable $e) {
-            LoggerHelper::error("IP lookup failed: " . $e->getMessage());
-            return null;
-        }
+        return $provider->lookup($ip);
     }
-} 
+
+    /**
+     * Get the configured IP lookup provider
+     * 
+     * @return IpLookupProviderInterface|null The provider instance or null if no provider is available
+     */
+    public function getProvider(): ?IpLookupProviderInterface
+    {
+        if ($this->provider !== null) {
+            return $this->provider;
+        }
+
+        $settings = AstuteoToolkit::$plugin->getSettings();
+        $providerName = $settings->ipLookupProvider;
+
+        // Create the provider instance based on the configuration
+        switch ($providerName) {
+            case 'ipinfo':
+                $this->provider = new IpInfoProvider();
+                break;
+            case 'ipwhois':
+                $this->provider = new IpWhoisProvider();
+                break;
+            default:
+                LoggerHelper::error("Unknown IP lookup provider: {$providerName}");
+                return null;
+        }
+
+        // Check if the provider is configured
+        if (!$this->provider->isConfigured()) {
+            LoggerHelper::error("IP lookup provider {$providerName} is not configured");
+            return null;
+        }
+
+        return $this->provider;
+    }
+
+    /**
+     * Set the provider to use for IP lookups
+     * 
+     * @param IpLookupProviderInterface $provider The provider instance
+     * @return void
+     */
+    public function setProvider(IpLookupProviderInterface $provider): void
+    {
+        $this->provider = $provider;
+    }
+}
