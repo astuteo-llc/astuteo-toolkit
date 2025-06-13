@@ -4,12 +4,19 @@ namespace astuteo\astuteotoolkit\services\iplookup;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\helpers\LoggerHelper;
+use GuzzleHttp\Client;
+use Craft;
 
 /**
  * IP lookup provider using ipwhois.app API
  */
 class IpWhoisProvider extends AbstractIpLookupProvider
 {
+    public function __construct()
+    {
+        $this->client = Craft::createGuzzleClient();
+    }
+
     /**
      * {@inheritdoc}
      */

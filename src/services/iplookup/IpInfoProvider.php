@@ -3,6 +3,7 @@
 namespace astuteo\astuteotoolkit\services\iplookup;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use Craft;
 
 /**
  * IP lookup provider using ipinfo.io API
