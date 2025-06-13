@@ -24,7 +24,7 @@ class IpInfoProvider extends AbstractIpLookupProvider
             return null;
         }
 
-        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
         $url = "https://api.ipinfo.io/lite/{$ip}?token={$token}";
 
         try {
@@ -48,7 +48,7 @@ class IpInfoProvider extends AbstractIpLookupProvider
      */
     public function isConfigured(): bool
     {
-        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
         return !empty($token);
     }
 

@@ -26,9 +26,11 @@ class IpLookupService extends Component
      */
     public function lookup(string $ip): ?array
     {
-        if(App::env('ENVIRONMENT') === 'dev') {
-            $ip = '184.61.146.48';
+        $simulateIp = AstuteoToolkit::$plugin->getSettings()->devIpAddress;
+        if (App::devMode() && $simulateIp) {
+            $ip = $simulateIp;
         }
+
         LoggerHelper::info('Looking up IP info for ' . $ip);
 
         $provider = $this->getProvider();
@@ -53,8 +55,8 @@ class IpLookupService extends Component
         }
 
         $settings = AstuteoToolkit::$plugin->getSettings();
-        $providerName = $settings->ipLookupProvider;
-        LoggerHelper::info('Looking up IP info for ' . $providerName);
+        $providerName = $settings->getIpLookupProvider();
+        LoggerHelper::info('Looking up IP info from provider ' . $providerName);
 
         // Create the provider instance based on the configuration
         switch ($providerName) {

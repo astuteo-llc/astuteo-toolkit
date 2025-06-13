@@ -15,7 +15,7 @@ class IpWhoisProvider extends AbstractIpLookupProvider
      */
     public function lookup(string $ip): ?array
     {
-        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
 
         LoggerHelper::info('Looking up IP info for ' . $token);
         $url = "http://ipwhois.pro/{$ip}?key={$token}";
@@ -48,7 +48,7 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     public function isConfigured(): bool
     {
         // IPWhois.pro requires an API token
-        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
         return !empty($token);
     }
 
