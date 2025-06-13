@@ -304,6 +304,16 @@ class Settings extends Model
 
     public string $devIpAddress = '184.61.146.48';
 
+    /**
+     * Get the parsed development IP address
+     * 
+     * @return string The parsed IP address
+     */
+    public function getDevIpAddress(): string
+    {
+        return App::parseEnv($this->devIpAddress) ?? '';
+    }
+
     public function rules(): array
     {
         return [

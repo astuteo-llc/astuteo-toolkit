@@ -7,7 +7,6 @@ use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use astuteo\astuteotoolkit\services\iplookup\IpInfoProvider;
 use astuteo\astuteotoolkit\services\iplookup\IpLookupProviderInterface;
 use astuteo\astuteotoolkit\services\iplookup\IpWhoisProvider;
-use Craft;
 use craft\helpers\App;
 use yii\base\Component;
 
@@ -26,7 +25,7 @@ class IpLookupService extends Component
      */
     public function lookup(string $ip): ?array
     {
-        $simulateIp = AstuteoToolkit::$plugin->getSettings()->devIpAddress;
+        $simulateIp = AstuteoToolkit::$plugin->getSettings()->getDevIpAddress();
         if (App::devMode() && $simulateIp) {
             $ip = $simulateIp;
         }
