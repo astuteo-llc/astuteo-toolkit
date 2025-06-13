@@ -8,6 +8,7 @@ use astuteo\astuteotoolkit\services\iplookup\IpInfoProvider;
 use astuteo\astuteotoolkit\services\iplookup\IpLookupProviderInterface;
 use astuteo\astuteotoolkit\services\iplookup\IpWhoisProvider;
 use Craft;
+use craft\helpers\App;
 use yii\base\Component;
 
 class IpLookupService extends Component
@@ -25,7 +26,9 @@ class IpLookupService extends Component
      */
     public function lookup(string $ip): ?array
     {
-        $ip = '184.61.146.48';
+        if(App::env('ENVIRONMENT') === 'dev') {
+            $ip = '184.61.146.48';
+        }
         LoggerHelper::info('Looking up IP info for ' . $ip);
 
         $provider = $this->getProvider();
