@@ -10,15 +10,20 @@ use astuteo\astuteotoolkit\services\iplookup\IpWhoisProvider;
 use craft\helpers\App;
 use yii\base\Component;
 
+/**
+ * IP Lookup Service for retrieving geolocation and organization information
+ * 
+ * @property-read IpLookupProviderInterface|null $provider
+ */
 class IpLookupService extends Component
 {
     /**
      * Cache key prefix for all IP lookup cache entries
      */
-    const CACHE_KEY_PREFIX = 'astuteo-toolkit-ip-lookup';
+    public const CACHE_KEY_PREFIX = 'astuteo-toolkit-ip-lookup';
 
     /**
-     * @var IpLookupProviderInterface|null The current provider instance
+     * The current provider instance
      */
     private ?IpLookupProviderInterface $provider = null;
 
@@ -26,9 +31,16 @@ class IpLookupService extends Component
      * Look up information about an IP address
      * 
      * @param string $ip The IP address to look up
-     * @return array|null An array containing standardized IP information or null on failure
+     * @return array{
+     *     ip: string,
+     *     city: string|null,
+     *     state: string|null,
+     *     country: string|null,
+     *     postal: string|null,
+     *     organization: string|null,
+     *     raw: array
+     * }|null An array containing standardized IP information or null on failure
      */
-
     public function lookup(string $ip): ?array
     {
         $simulateIp = AstuteoToolkit::$plugin->getSettings()->getDevIpAddress();
@@ -42,10 +54,13 @@ class IpLookupService extends Component
         // Try to get the cached result
         $cachedResult = \Craft::$app->cache->get($cacheKey);
         if ($cachedResult !== false) {
-            LoggerHelper::info('Retrieved cached IP info for ' . $ip . ' (' . ($cachedResult['organization'] ?? '') . ')');
+            LoggerHelper::info(sprintf(
+                'Retrieved cached IP info for %s (Organization: %s)',
+                $ip,
+                $cachedResult['organization'] ?? 'Unknown'
+            ));
             return $cachedResult;
         }
-
 
         $provider = $this->getProvider();
         if (!$provider) {
@@ -58,8 +73,11 @@ class IpLookupService extends Component
         // Cache the result for 60 days
         if ($result !== null) {
             \Craft::$app->cache->set($cacheKey, $result, 60 * 24 * 60 * 60); // 60 days in seconds
-            LoggerHelper::warning('New look up IP info for ' . $ip . ' (' . ($result['organization'] ?? '') . ')');
-            LoggerHelper::warning('Cached IP info for ' . $ip);
+            LoggerHelper::info(sprintf(
+                'Performed new IP lookup for %s (Organization: %s)',
+                $ip,
+                $result['organization'] ?? 'Unknown'
+            ));
         }
 
         return $result;
@@ -72,9 +90,6 @@ class IpLookupService extends Component
      */
     public function getProvider(): ?IpLookupProviderInterface
     {
-        if($this->provider === null) {
-            LoggerHelper::error('No provider specified');
-        } 
         if ($this->provider !== null) {
             return $this->provider;
         }
@@ -84,16 +99,15 @@ class IpLookupService extends Component
         LoggerHelper::info('Looking up IP info from provider ' . $providerName);
 
         // Create the provider instance based on the configuration
-        switch ($providerName) {
-            case 'ipinfo':
-                $this->provider = new IpInfoProvider();
-                break;
-            case 'ipwhois':
-                $this->provider = new IpWhoisProvider();
-                break;
-            default:
-                LoggerHelper::error("Unknown IP lookup provider: {$providerName}");
-                return null;
+        $this->provider = match ($providerName) {
+            'ipinfo' => new IpInfoProvider(),
+            'ipwhois' => new IpWhoisProvider(),
+            default => null
+        };
+
+        if ($this->provider === null) {
+            LoggerHelper::error("Unknown IP lookup provider: {$providerName}");
+            return null;
         }
 
         // Check if the provider is configured
@@ -115,5 +129,4 @@ class IpLookupService extends Component
         LoggerHelper::info('Clearing all IP lookup cache entries');
         return \Craft::$app->cache->delete(self::CACHE_KEY_PREFIX . '-*');
     }
-
 }
