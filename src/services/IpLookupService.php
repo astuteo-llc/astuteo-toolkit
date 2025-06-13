@@ -75,14 +75,4 @@ class IpLookupService extends Component
         return $this->provider;
     }
 
-    /**
-     * Set the provider to use for IP lookups
-     * 
-     * @param IpLookupProviderInterface $provider The provider instance
-     * @return void
-     */
-    public function setProvider(IpLookupProviderInterface $provider): void
-    {
-        $this->provider = $provider;
-    }
 }

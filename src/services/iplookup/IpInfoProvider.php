@@ -74,6 +74,14 @@ class IpInfoProvider extends AbstractIpLookupProvider
     /**
      * {@inheritdoc}
      */
+    protected function extractPostal(array $data): ?string
+    {
+        return $data['postal'] ?? null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function extractOrganization(array $data): ?string
     {
         return $data['org'] ?? ($data['as_name'] ?? null);

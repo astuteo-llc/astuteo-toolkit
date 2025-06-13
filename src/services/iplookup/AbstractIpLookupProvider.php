@@ -15,7 +15,7 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @var Client|null Guzzle HTTP client
      */
     protected ?Client $client = null;
-    
+
     /**
      * Constructor
      */
@@ -23,17 +23,17 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
     {
         $this->client = Craft::createGuzzleClient();
     }
-    
+
     /**
      * {@inheritdoc}
      */
     abstract public function lookup(string $ip): ?array;
-    
+
     /**
      * {@inheritdoc}
      */
     abstract public function isConfigured(): bool;
-    
+
     /**
      * Standardize the response format to ensure all providers return the same data structure
      * 
@@ -48,11 +48,12 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
             'city' => $this->extractCity($data),
             'state' => $this->extractState($data),
             'country' => $this->extractCountry($data),
+            'postal' => $this->extractPostal($data),
             'organization' => $this->extractOrganization($data),
             'raw' => $data, // Include the raw data for debugging or custom processing
         ];
     }
-    
+
     /**
      * Extract the city from the provider's response
      * 
@@ -60,7 +61,7 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @return string|null The city name or null if not available
      */
     abstract protected function extractCity(array $data): ?string;
-    
+
     /**
      * Extract the state/region from the provider's response
      * 
@@ -68,7 +69,7 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @return string|null The state/region name or null if not available
      */
     abstract protected function extractState(array $data): ?string;
-    
+
     /**
      * Extract the country from the provider's response
      * 
@@ -76,7 +77,15 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @return string|null The country name or null if not available
      */
     abstract protected function extractCountry(array $data): ?string;
-    
+
+    /**
+     * Extract the postal code from the provider's response
+     * 
+     * @param array $data The raw data from the provider
+     * @return string|null The postal code or null if not available
+     */
+    abstract protected function extractPostal(array $data): ?string;
+
     /**
      * Extract the organization/company from the provider's response
      * 
@@ -84,7 +93,7 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @return string|null The organization/company name or null if not available
      */
     abstract protected function extractOrganization(array $data): ?string;
-    
+
     /**
      * Log an error message
      * 

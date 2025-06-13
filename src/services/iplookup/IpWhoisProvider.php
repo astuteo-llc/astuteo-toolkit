@@ -79,6 +79,14 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     /**
      * {@inheritdoc}
      */
+    protected function extractPostal(array $data): ?string
+    {
+        return $data['postal'] ?? null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function extractOrganization(array $data): ?string
     {
         if (isset($data['connection']) && is_array($data['connection'])) {
