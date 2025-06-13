@@ -32,6 +32,10 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\services\Plugins;
 use yii\base\Event;
 use yii\base\InvalidConfigException;
+use craft\events\RegisterCacheOptionsEvent;
+use craft\utilities\ClearCaches;
+
+
 
 class AstuteoToolkit extends Plugin
 {
@@ -110,6 +114,19 @@ class AstuteoToolkit extends Plugin
         if (Craft::$app->request->getIsSiteRequest()) {
             $this->_bindFrontEndEvents();
         }
+        // custom cache clearing
+        Event::on(
+            ClearCaches::class,
+            ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
+            function (RegisterCacheOptionsEvent $event) {
+                // Register our Cache Options
+                $event->options = array_merge(
+                    $event->options,
+                    $this->customAdminCpCacheOptions()
+                );
+            }
+        );
+
     }
 
     private function _shouldLoadAssets() {
@@ -119,6 +136,16 @@ class AstuteoToolkit extends Plugin
             return true;
         }
         return false;
+    }
+
+    private function customAdminCpCacheOptions(): array {
+        return [
+            [
+                'key' => IpLookupService::CACHE_KEY_PREFIX . '-',
+                'label' => Craft::t('astuteo-toolkit', 'IP Lookup'),
+                'action' => 'astuteo-toolkit/ip/clear-cache',
+            ]
+        ];
     }
 
     private function _bindFrontEndEvents() {

@@ -13,6 +13,11 @@ use yii\base\Component;
 class IpLookupService extends Component
 {
     /**
+     * Cache key prefix for all IP lookup cache entries
+     */
+    const CACHE_KEY_PREFIX = 'astuteo-toolkit-ip-lookup';
+
+    /**
      * @var IpLookupProviderInterface|null The current provider instance
      */
     private ?IpLookupProviderInterface $provider = null;
@@ -23,6 +28,7 @@ class IpLookupService extends Component
      * @param string $ip The IP address to look up
      * @return array|null An array containing standardized IP information or null on failure
      */
+
     public function lookup(string $ip): ?array
     {
         $simulateIp = AstuteoToolkit::$plugin->getSettings()->getDevIpAddress();
@@ -31,8 +37,8 @@ class IpLookupService extends Component
         }
 
         // Generate a unique cache key for this IP
-        $cacheKey = 'astuteo-toolkit-ip-lookup-' . $ip;
-        
+        $cacheKey = self::CACHE_KEY_PREFIX . '-' . $ip;
+
         // Try to get the cached result
         $cachedResult = \Craft::$app->cache->get($cacheKey);
         if ($cachedResult !== false) {
@@ -50,13 +56,13 @@ class IpLookupService extends Component
 
         LoggerHelper::info('provider');
         $result = $provider->lookup($ip);
-        
+
         // Cache the result for 60 days
         if ($result !== null) {
             \Craft::$app->cache->set($cacheKey, $result, 60 * 24 * 60 * 60); // 60 days in seconds
             LoggerHelper::info('Cached IP info for ' . $ip);
         }
-        
+
         return $result;
     }
 
@@ -95,6 +101,17 @@ class IpLookupService extends Component
         }
 
         return $this->provider;
+    }
+
+    /**
+     * Clear all IP lookup cache entries
+     * 
+     * @return bool Whether the cache was successfully cleared
+     */
+    public function clearCache(): bool
+    {
+        LoggerHelper::info('Clearing all IP lookup cache entries');
+        return \Craft::$app->cache->delete(self::CACHE_KEY_PREFIX . '-*');
     }
 
 }
