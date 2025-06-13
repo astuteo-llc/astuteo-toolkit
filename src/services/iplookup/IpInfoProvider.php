@@ -6,6 +6,11 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 
 /**
  * IP lookup provider using ipinfo.io API
+ * 
+ * This provider uses the ipinfo.io API to look up information about IP addresses.
+ * It requires an API token to be configured in the plugin settings.
+ * 
+ * @see https://ipinfo.io/
  */
 class IpInfoProvider extends AbstractIpLookupProvider
 {
