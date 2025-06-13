@@ -297,11 +297,24 @@ class Settings extends Model
     public string $ipLookupToken = '';
 
     /**
+     * Authentication token for IP controller endpoints
+     * this is NOT the same as the third-party API token
+     * that's above.
+     * This is for our own fetch request.
+     * Use with 'authKey' parameter in requests.
+     */
+    public string $ipControllerToken = '';
+
+    /**
      * The IP lookup provider to use
      * Options: 'ipinfo', 'ipwhois'
      */
     public string $ipLookupProvider = 'ipwhois';
 
+    /**
+     * IP address that we simulate while in
+     * dev mode
+     */
     public string $devIpAddress = '184.61.146.48';
 
     /**
@@ -318,7 +331,7 @@ class Settings extends Model
     {
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
-            [['ipLookupToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
+            [['ipLookupToken', 'ipControllerToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
         ];
     }
 
@@ -330,6 +343,16 @@ class Settings extends Model
     public function getIpLookupToken(): string
     {
         return App::parseEnv($this->ipLookupToken) ?? '';
+    }
+
+    /**
+     * Get the parsed IP controller token
+     * 
+     * @return string The parsed token
+     */
+    public function getIpControllerToken(): string
+    {
+        return App::parseEnv($this->ipControllerToken) ?? '';
     }
 
     /**
