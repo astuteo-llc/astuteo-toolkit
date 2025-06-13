@@ -117,7 +117,7 @@
             <label>{{ "IP Lookup Test (Dev Mode Only)"|t('astuteo-toolkit') }}</label>
         </div>
         <div class="input">
-            <p>{{ "Testing IP lookup functionality by loading example case:"|t('astuteo-toolkit') }} <a href="{{ siteUrl('astuteo-toolkit/info?authKey=' ~ settings.getIpControllerToken()) }}" target="_blank">{{ siteUrl('astuteo-toolkit/info?authKey=' ~ settings.getIpControllerToken()) }}</a></p>
+            <p>{{ "Testing IP lookup functionality by loading example case:"|t('astuteo-toolkit') }} <a href="{{ siteUrl('astuteo-toolkit/info?' ~ astuteoAuthKeyName() ~ '=' ~ settings.getIpControllerToken()) }}" target="_blank">{{ siteUrl('astuteo-toolkit/info?' ~ astuteoAuthKeyName() ~ '=' ~ settings.getIpControllerToken()) }}</a></p>
             <!-- The ip-lookup-result element will be created dynamically by JavaScript -->
         </div>
     </div>
@@ -154,7 +154,7 @@
                 console.log('IP lookup result element found');
             }
 
-            fetch('{{ siteUrl('astuteo-toolkit/info?authKey=' ~ settings.getIpControllerToken()) }}')
+            fetch('{{ siteUrl('astuteo-toolkit/info?' ~ astuteoAuthKeyName() ~ '=' ~ settings.getIpControllerToken()) }}')
                 .then(response => response.json())
                 .then(data => {
                     // Get the element again in case it was modified

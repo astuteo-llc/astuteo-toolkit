@@ -14,6 +14,16 @@ class IpController extends Controller
      */
     public const AUTH_KEY = 'authKey';
 
+    /**
+     * Get the authentication key parameter name
+     * 
+     * @return string
+     */
+    public static function getAuthKeyName(): string
+    {
+        return self::AUTH_KEY;
+    }
+
     protected array|bool|int $allowAnonymous = true;
 
     public function actionInfo(): Response

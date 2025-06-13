@@ -72,6 +72,7 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             new TwigFunction('astuteoMarks', [$this, 'astuteoMarks']),
             new TwigFilter('astuteoPhone', [$this, 'astuteoPhone']),
             new TwigFilter('astuteoExternalUrl', [$this, 'astuteoExternalUrl']),
+            new \Twig\TwigFunction('astuteoAuthKeyName', [$this, 'getAuthKeyName']),
         ];
     }
 
@@ -203,5 +204,15 @@ class AstuteoToolkitTwigExtension extends AbstractExtension
             $path = substr($path, 1);
         }
         return $path;
+    }
+
+    /**
+     * Get the authentication key name from the IP controller
+     * 
+     * @return string
+     */
+    public function getAuthKeyName(): string
+    {
+        return \astuteo\astuteotoolkit\controllers\IpController::AUTH_KEY;
     }
 }
