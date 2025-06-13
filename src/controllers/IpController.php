@@ -33,6 +33,13 @@ class IpController extends Controller
             }
         }
 
+        /** 
+         * This is very rudimentary and should be improved.
+         * 
+         * we're just trying to avoid outside js requests from other domains.
+         * This is not a perfect solution, but it's a start.
+        */
+
         if($validateDomain) {
             // Basic validation on domain names to make sure
             // it's serving the same server that's requesting
