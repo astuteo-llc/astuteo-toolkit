@@ -5,6 +5,7 @@
  */
 namespace astuteo\astuteotoolkit\models;
 use craft\base\Model;
+use craft\helpers\App;
 
 class Settings extends Model
 {
@@ -290,13 +291,65 @@ class Settings extends Model
         "ZW" => "Zimbabwe"
     ];
 
-    public string $ipinfoToken = '';
+    /**
+     * API token for IP lookup services
+     */
+    public string $ipLookupToken = '';
+
+    /**
+     * The IP lookup provider to use
+     * Options: 'ipinfo', 'ipwhois'
+     */
+    public string $ipLookupProvider = 'ipwhois';
+
+    public string $devIpAddress = '184.61.146.48';
+
+    /**
+     * Get the parsed development IP address
+     * 
+     * @return string The parsed IP address
+     */
+    public function getDevIpAddress(): string
+    {
+        return App::parseEnv($this->devIpAddress) ?? '';
+    }
 
     public function rules(): array
     {
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
-            [['ipinfoToken'], 'string'],
+            [['ipLookupToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
         ];
+    }
+
+    /**
+     * Get the parsed IP lookup token
+     * 
+     * @return string The parsed token
+     */
+    public function getIpLookupToken(): string
+    {
+        return App::parseEnv($this->ipLookupToken) ?? '';
+    }
+
+    /**
+     * Get the parsed IP lookup provider
+     * 
+     * @return string The parsed provider
+     */
+    public function getIpLookupProvider(): string
+    {
+        return App::parseEnv($this->ipLookupProvider);
+    }
+
+    /**
+     * Set the IP lookup provider
+     * 
+     * @param string $provider The provider to set
+     * @return void
+     */
+    public function setIpLookupProvider(string $provider): void
+    {
+        $this->ipLookupProvider = $provider;
     }
 }
