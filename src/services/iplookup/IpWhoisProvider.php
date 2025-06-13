@@ -12,39 +12,12 @@ use Craft;
  */
 class IpWhoisProvider extends AbstractIpLookupProvider
 {
-    public function __construct()
-    {
-        $this->client = Craft::createGuzzleClient();
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function lookup(string $ip): ?array
+    protected function getApiUrl(string $ip, string $token): string
     {
-        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
-        $url = "http://ipwhois.pro/{$ip}?key={$token}";
-
-        try {
-            $response = $this->client->get($url);
-            $data = json_decode((string)$response->getBody(), true);
-
-            if (!$data) {
-                $this->logError('Failed to decode response from ipwhois.pro');
-                return null;
-            }
-
-            // Check if the request was successful
-            if (isset($data['success']) && $data['success'] === false) {
-                $this->logError('IPWhois lookup failed: ' . ($data['message'] ?? 'Unknown error'));
-                return null;
-            }
-
-            return $this->standardizeResponse($data, $ip);
-        } catch (\Throwable $e) {
-            $this->logError("IPWhois lookup failed: " . $e->getMessage());
-            return null;
-        }
+        return "http://ipwhois.pro/{$ip}?key={$token}";
     }
 
     /**

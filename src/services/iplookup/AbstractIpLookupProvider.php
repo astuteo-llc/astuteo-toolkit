@@ -5,6 +5,7 @@ namespace astuteo\astuteotoolkit\services\iplookup;
 use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use Craft;
 use GuzzleHttp\Client;
+use astuteo\astuteotoolkit\AstuteoToolkit;
 
 /**
  * Abstract base class for IP lookup providers
@@ -25,9 +26,48 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
     }
 
     /**
+     * Get the API URL for the IP lookup
+     * 
+     * @param string $ip The IP address to look up
+     * @param string $token The API token
+     * @return string The complete API URL
+     */
+    abstract protected function getApiUrl(string $ip, string $token): string;
+
+    /**
      * {@inheritdoc}
      */
-    abstract public function lookup(string $ip): ?array;
+    public function lookup(string $ip): ?array
+    {
+        if (!$this->isConfigured()) {
+            $this->logError('Provider not configured');
+            return null;
+        }
+
+        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
+        $url = $this->getApiUrl($ip, $token);
+
+        try {
+            $response = $this->client->get($url);
+            $data = json_decode((string)$response->getBody(), true);
+
+            if (!$data) {
+                $this->logError('Failed to decode response from API');
+                return null;
+            }
+
+            // Check if the request was successful (if the API provides this information)
+            if (isset($data['success']) && $data['success'] === false) {
+                $this->logError('API lookup failed: ' . ($data['message'] ?? 'Unknown error'));
+                return null;
+            }
+
+            return $this->standardizeResponse($data, $ip);
+        } catch (\Throwable $e) {
+            $this->logError("API lookup failed: " . $e->getMessage());
+            return null;
+        }
+    }
 
     /**
      * {@inheritdoc}

@@ -18,30 +18,9 @@ class IpInfoProvider extends AbstractIpLookupProvider
     /**
      * {@inheritdoc}
      */
-    public function lookup(string $ip): ?array
+    protected function getApiUrl(string $ip, string $token): string
     {
-        if (!$this->isConfigured()) {
-            $this->logError('IPInfo token not configured');
-            return null;
-        }
-
-        $token = AstuteoToolkit::$plugin->getSettings()->getIpLookupToken();
-        $url = "https://api.ipinfo.io/lite/{$ip}?token={$token}";
-
-        try {
-            $response = $this->client->get($url);
-            $data = json_decode((string)$response->getBody(), true);
-
-            if (!$data) {
-                $this->logError('Failed to decode response from ipinfo.io');
-                return null;
-            }
-
-            return $this->standardizeResponse($data, $ip);
-        } catch (\Throwable $e) {
-            $this->logError("IPInfo lookup failed: " . $e->getMessage());
-            return null;
-        }
+        return "https://api.ipinfo.io/lite/{$ip}?token={$token}";
     }
 
     /**
