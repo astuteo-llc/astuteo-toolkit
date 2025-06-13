@@ -297,6 +297,13 @@ class Settings extends Model
     public string $ipLookupToken = '';
 
     /**
+     * Validate domain on IP Lookup
+     *
+     */
+
+    public bool $validateDomain = true;
+
+    /**
      * Authentication token for IP controller endpoints
      * this is NOT the same as the third-party API token
      * that's above.
@@ -330,7 +337,7 @@ class Settings extends Model
     public function rules(): array
     {
         return [
-            [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
+            [['loadCpTweaks', 'includeFeEdit', 'devCpNav', 'validateDomain'], 'boolean'],
             [['ipLookupToken', 'ipControllerToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
         ];
     }
@@ -353,6 +360,16 @@ class Settings extends Model
     public function getIpControllerToken(): string
     {
         return App::parseEnv($this->ipControllerToken) ?? '';
+    }
+
+    /**
+     * Get whether to validate a domain on IP lookup
+     * 
+     * @return bool
+     */
+    public function getValidateDomain(): bool
+    {
+        return App::parseEnv($this->validateDomain) ?? true;
     }
 
     /**
