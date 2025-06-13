@@ -39,7 +39,7 @@
     "extra": {
         "name": "Astuteo Toolkit",
         "handle": "astuteo-toolkit",
-        "hasCpSettings": false,
+        "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/astuteo-llc/astuteo-toolkit/master/CHANGELOG.md",
         "components": {

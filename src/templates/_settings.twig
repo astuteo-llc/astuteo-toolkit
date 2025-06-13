@@ -1,0 +1,85 @@
+{% import "_includes/forms" as forms %}
+
+<h2>General Settings</h2>
+
+{{ forms.lightswitchField({
+    label: "Load CP Tweaks"|t('astuteo-toolkit'),
+    instructions: "Enable Control Panel tweaks"|t('astuteo-toolkit'),
+    id: 'loadCpTweaks',
+    name: 'loadCpTweaks',
+    on: settings.loadCpTweaks,
+    errors: settings.getErrors('loadCpTweaks')
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Dev CP Nav"|t('astuteo-toolkit'),
+    instructions: "Enable developer Control Panel navigation items"|t('astuteo-toolkit'),
+    id: 'devCpNav',
+    name: 'devCpNav',
+    on: settings.devCpNav,
+    errors: settings.getErrors('devCpNav')
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Include Frontend Edit"|t('astuteo-toolkit'),
+    instructions: "Enable frontend edit links for entries"|t('astuteo-toolkit'),
+    id: 'includeFeEdit',
+    name: 'includeFeEdit',
+    on: settings.includeFeEdit,
+    errors: settings.getErrors('includeFeEdit')
+}) }}
+
+<h2>Asset Settings</h2>
+
+{{ forms.textField({
+    label: "Asset Path"|t('astuteo-toolkit'),
+    instructions: "Path to site assets"|t('astuteo-toolkit'),
+    id: 'assetPath',
+    name: 'assetPath',
+    value: settings.assetPath,
+    errors: settings.getErrors('assetPath')
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Cache Bust Dev"|t('astuteo-toolkit'),
+    instructions: "Enable cache busting in development mode"|t('astuteo-toolkit'),
+    id: 'cacheBustDev',
+    name: 'cacheBustDev',
+    on: settings.cacheBustDev,
+    errors: settings.getErrors('cacheBustDev')
+}) }}
+
+<h2>Video Settings</h2>
+
+{{ forms.lightswitchField({
+    label: "Cache Video Embeds"|t('astuteo-toolkit'),
+    instructions: "Enable caching for video embeds"|t('astuteo-toolkit'),
+    id: 'cacheVideoEmbeds',
+    name: 'cacheVideoEmbeds',
+    on: settings.cacheVideoEmbeds,
+    errors: settings.getErrors('cacheVideoEmbeds')
+}) }}
+
+<h2>IP Lookup Settings</h2>
+
+{{ forms.selectField({
+    label: "IP Lookup Provider"|t('astuteo-toolkit'),
+    instructions: "Select the IP lookup provider to use"|t('astuteo-toolkit'),
+    id: 'ipLookupProvider',
+    name: 'ipLookupProvider',
+    options: [
+        { value: 'ipwhois', label: 'IP Whois' },
+        { value: 'ipinfo', label: 'IP Info' }
+    ],
+    value: settings.ipLookupProvider,
+    errors: settings.getErrors('ipLookupProvider')
+}) }}
+
+{{ forms.textField({
+    label: "IP Lookup Token"|t('astuteo-toolkit'),
+    instructions: "API token for IP lookup services"|t('astuteo-toolkit'),
+    id: 'ipLookupToken',
+    name: 'ipLookupToken',
+    value: settings.ipLookupToken,
+    errors: settings.getErrors('ipLookupToken')
+}) }}

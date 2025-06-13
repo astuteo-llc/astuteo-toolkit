@@ -37,7 +37,7 @@ class AstuteoToolkit extends Plugin
 {
     public static $plugin;
     public string $schemaVersion = '4.0.0';
-
+    public bool $hasCpSettings = true;
     public function init()
     {
         parent::init();
@@ -166,6 +166,17 @@ class AstuteoToolkit extends Plugin
     protected function createSettingsModel(): ?Model
     {
         return new Settings();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function settingsHtml(): ?string
+    {
+        return Craft::$app->view->renderTemplate('astuteo-toolkit/_settings.twig', [
+            'plugin' => $this,
+            'settings' => $this->getSettings(),
+        ]);
     }
 
     private function _registerLogTarget(): void

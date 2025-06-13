@@ -25,7 +25,7 @@ class IpLookupService extends Component
      */
     public function lookup(string $ip): ?array
     {
-        $ip = '184.61.146.48'; // temp for debugging
+        $ip = '184.61.146.48';
         LoggerHelper::info('Looking up IP info for ' . $ip);
 
         $provider = $this->getProvider();
@@ -34,6 +34,7 @@ class IpLookupService extends Component
             return null;
         }
 
+        LoggerHelper::info('provider');
         return $provider->lookup($ip);
     }
 
@@ -50,6 +51,7 @@ class IpLookupService extends Component
 
         $settings = AstuteoToolkit::$plugin->getSettings();
         $providerName = $settings->ipLookupProvider;
+        LoggerHelper::info('Looking up IP info for ' . $providerName);
 
         // Create the provider instance based on the configuration
         switch ($providerName) {

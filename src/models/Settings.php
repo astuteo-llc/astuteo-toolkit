@@ -290,7 +290,10 @@ class Settings extends Model
         "ZW" => "Zimbabwe"
     ];
 
-    public string $ipinfoToken = '';
+    /**
+     * API token for IP lookup services
+     */
+    public string $ipLookupToken = '';
 
     /**
      * The IP lookup provider to use
@@ -302,7 +305,7 @@ class Settings extends Model
     {
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav'], 'boolean'],
-            [['ipinfoToken', 'ipLookupProvider'], 'string'],
+            [['ipLookupToken', 'ipLookupProvider'], 'string'],
         ];
     }
 }

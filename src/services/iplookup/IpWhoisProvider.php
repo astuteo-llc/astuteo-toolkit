@@ -3,6 +3,7 @@
 namespace astuteo\astuteotoolkit\services\iplookup;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 
 /**
  * IP lookup provider using ipwhois.app API
@@ -14,39 +15,43 @@ class IpWhoisProvider extends AbstractIpLookupProvider
      */
     public function lookup(string $ip): ?array
     {
-        $url = "https://ipwhois.app/json/{$ip}";
-        
+        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+
+        LoggerHelper::info('Looking up IP info for ' . $token);
+        $url = "http://ipwhois.pro/{$ip}?key={$token}";
+
         try {
             $response = $this->client->get($url);
             $data = json_decode((string)$response->getBody(), true);
-            
+
             if (!$data) {
-                $this->logError('Failed to decode response from ipwhois.app');
+                $this->logError('Failed to decode response from ipwhois.pro');
                 return null;
             }
-            
+
             // Check if the request was successful
             if (isset($data['success']) && $data['success'] === false) {
                 $this->logError('IPWhois lookup failed: ' . ($data['message'] ?? 'Unknown error'));
                 return null;
             }
-            
+
             return $this->standardizeResponse($data, $ip);
         } catch (\Throwable $e) {
             $this->logError("IPWhois lookup failed: " . $e->getMessage());
             return null;
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function isConfigured(): bool
     {
-        // IPWhois.app doesn't require authentication for basic usage
-        return true;
+        // IPWhois.pro requires an API token
+        $token = AstuteoToolkit::$plugin->getSettings()->ipLookupToken;
+        return !empty($token);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -54,7 +59,7 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     {
         return $data['city'] ?? null;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -62,7 +67,7 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     {
         return $data['region'] ?? null;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -70,12 +75,16 @@ class IpWhoisProvider extends AbstractIpLookupProvider
     {
         return $data['country'] ?? null;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     protected function extractOrganization(array $data): ?string
     {
+        if (isset($data['connection']) && is_array($data['connection'])) {
+            return $data['connection']['org'] ?? ($data['connection']['isp'] ?? ($data['org'] ?? ($data['isp'] ?? null)));
+        }
+        // Fall back to the "free" version
         return $data['org'] ?? ($data['isp'] ?? null);
     }
 }
