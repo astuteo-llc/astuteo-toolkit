@@ -4,6 +4,15 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [6.4.5](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.4.4...v6.4.5) (2025-06-18)
+
+### Bug Fixes
+
+* Double suffix issue ([0668fb](https://github.com/astuteo-llc/astuteo-toolkit/commit/0668fb1fcf7244584d98e1eb48e104428a6cc489))
+
+
+---
+
 ## [6.4.4](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.4.3...v6.4.4) (2025-06-18)
 
 
