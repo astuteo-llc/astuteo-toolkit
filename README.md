@@ -11,3 +11,4 @@
 11. Autologin - [how to](docs/autologin.md)
 12. Tailwind Upgrade Helper - [how to](docs/tailwind-upgrade-helper.md)
 13. URL audit testing - [how to](docs/url-audit-testing.md)
+14. IP Lookup Service - [how to](docs/ip-lookup.md)
