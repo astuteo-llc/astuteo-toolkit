@@ -157,7 +157,7 @@ class IspDetector extends Model
         }
 
         if ($this->isLikelyIsp($organizationName)) {
-            return "Likely-ISP ({$organizationName})";
+            return "{$organizationName} (Likely-ISP)";
         }
 
         return $organizationName;
