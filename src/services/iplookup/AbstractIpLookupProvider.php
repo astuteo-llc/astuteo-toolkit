@@ -4,6 +4,7 @@ namespace astuteo\astuteotoolkit\services\iplookup;
 
 use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use Craft;
+use craft\helpers\App;
 use GuzzleHttp\Client;
 use astuteo\astuteotoolkit\AstuteoToolkit;
 
@@ -83,15 +84,21 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      */
     protected function standardizeResponse(array $data, string $ip): array
     {
-        return [
+        $response = [
             'ip' => $ip,
             'city' => $this->extractCity($data),
             'state' => $this->extractState($data),
             'country' => $this->extractCountry($data),
             'postal' => $this->extractPostal($data),
             'organization' => $this->extractOrganization($data),
-            'raw' => $data, // Include the raw data for debugging or custom processing
         ];
+
+        // Only include raw data in dev mode for debugging purposes
+        if (App::devMode()) {
+            $response['raw'] = $data;
+        }
+
+        return $response;
     }
 
     /**

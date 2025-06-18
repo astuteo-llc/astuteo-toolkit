@@ -21,7 +21,7 @@ Configure the IP lookup service in your `config/astuteo-toolkit.php` file:
 return [
     // Authentication token for IP controller endpoints
     'ipControllerToken' => getenv('IP_CONTROLLER_TOKEN') ?: 'random-string-no-plus',
-    
+
     // Development IP address for testing in dev mode
     'devIpAddress' =>   '',
 ];
@@ -67,7 +67,7 @@ An array containing:
 - `postal` (string|null): The postal code
 - `organization` (string|null): The organization name
 - `is_isp` (bool): Whether the organization is likely an ISP
-- `raw` (array): The raw data from the provider
+- `raw` (array): The raw data from the provider (only available in dev mode)
 
 #### `getProvider(): ?IpLookupProviderInterface`
 
@@ -82,4 +82,3 @@ Sets the API token for the IP lookup service.
 
 **Returns:**
 - `bool`: Whether the token was successfully set
-

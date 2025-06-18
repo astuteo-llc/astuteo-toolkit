@@ -44,8 +44,10 @@ class IpLookupService extends Component
      *     country: string|null,
      *     postal: string|null,
      *     organization: string|null,
-     *     raw: array
+     *     is_isp: bool,
+     *     raw?: array
      * }|null An array containing standardized IP information or null on failure
+     * Note: The 'raw' field is only included when in dev mode
      */
     public function lookup(string $ip): ?array
     {
