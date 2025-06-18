@@ -162,4 +162,14 @@ class IspDetector extends Model
 
         return $organizationName;
     }
+
+    public function getIspDetection(?string $organizationName): array
+    {
+        $isIsp = $this->isLikelyIsp($organizationName);
+        $formatted = $this->formatIspName($organizationName);
+        return [
+            'organization' => $formatted,
+            'is_isp' => $isIsp,
+        ];
+    }
 }

@@ -62,7 +62,9 @@ class IpLookupService extends Component
         if ($cachedResult !== false) {
             // Process organization name in cached result to identify ISPs
             if (isset($cachedResult['organization'])) {
-                $cachedResult['organization'] = $this->getIspDetector()->formatIspName($cachedResult['organization']);
+                $ispDetection = $this->getIspDetector()->getIspDetection($cachedResult['organization']);
+                $cachedResult['organization'] = $ispDetection['organization'];
+                $cachedResult['is_isp'] = $ispDetection['is_isp'];
             }
 
             LoggerHelper::info(sprintf(
@@ -83,7 +85,9 @@ class IpLookupService extends Component
 
         // Process organization name to identify ISPs
         if ($result !== null && isset($result['organization'])) {
-            $result['organization'] = $this->getIspDetector()->formatIspName($result['organization']);
+            $ispDetection = $this->getIspDetector()->getIspDetection($result['organization']);
+            $result['organization'] = $ispDetection['organization'];
+            $result['is_isp'] = $ispDetection['is_isp'];
         }
 
         // Cache the result for 60 days
