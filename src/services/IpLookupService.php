@@ -4,6 +4,7 @@ namespace astuteo\astuteotoolkit\services;
 
 use astuteo\astuteotoolkit\AstuteoToolkit;
 use astuteo\astuteotoolkit\helpers\LoggerHelper;
+use astuteo\astuteotoolkit\models\IspDetector;
 use astuteo\astuteotoolkit\services\iplookup\IpInfoProvider;
 use astuteo\astuteotoolkit\services\iplookup\IpLookupProviderInterface;
 use astuteo\astuteotoolkit\services\iplookup\IpWhoisProvider;
@@ -26,6 +27,11 @@ class IpLookupService extends Component
      * The current provider instance
      */
     private ?IpLookupProviderInterface $provider = null;
+
+    /**
+     * The ISP detector instance
+     */
+    private ?IspDetector $ispDetector = null;
 
     /**
      * Look up information about an IP address
@@ -54,6 +60,11 @@ class IpLookupService extends Component
         // Try to get the cached result
         $cachedResult = \Craft::$app->cache->get($cacheKey);
         if ($cachedResult !== false) {
+            // Process organization name in cached result to identify ISPs
+            if (isset($cachedResult['organization'])) {
+                $cachedResult['organization'] = $this->getIspDetector()->formatIspName($cachedResult['organization']);
+            }
+
             LoggerHelper::info(sprintf(
                 'Retrieved cached IP info for %s (Organization: %s)',
                 $ip,
@@ -69,6 +80,11 @@ class IpLookupService extends Component
         }
 
         $result = $provider->lookup($ip);
+
+        // Process organization name to identify ISPs
+        if ($result !== null && isset($result['organization'])) {
+            $result['organization'] = $this->getIspDetector()->formatIspName($result['organization']);
+        }
 
         // Cache the result for 60 days
         if ($result !== null) {
@@ -128,5 +144,19 @@ class IpLookupService extends Component
     {
         LoggerHelper::info('Clearing all IP lookup cache entries');
         return \Craft::$app->cache->delete(self::CACHE_KEY_PREFIX . '-*');
+    }
+
+    /**
+     * Get the ISP detector instance
+     * 
+     * @return IspDetector The ISP detector instance
+     */
+    private function getIspDetector(): IspDetector
+    {
+        if ($this->ispDetector === null) {
+            $this->ispDetector = new IspDetector();
+        }
+
+        return $this->ispDetector;
     }
 }
