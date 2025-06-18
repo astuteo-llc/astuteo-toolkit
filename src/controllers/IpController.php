@@ -35,6 +35,7 @@ class IpController extends Controller
 
         if (!empty($requiredToken)) {
             $requestToken = Craft::$app->getRequest()->getQueryParam(self::AUTH_KEY);
+            $requestToken = urldecode($requestToken);
             if (empty($requestToken) || $requestToken !== $requiredToken) {
                 return $this->asJson([
                     'error' => 'Invalid or missing authentication key',
@@ -142,7 +143,7 @@ class IpController extends Controller
         return $this->asJson([
             'keyName' => self::AUTH_KEY,
             'keyValue' => $token,
-            'exampleUrl' => Craft::getAlias('@web') . 'astuteo-toolkit/info?' . self::AUTH_KEY . '=' . $token
+            'exampleUrl' => Craft::getAlias('@web') . 'astuteo-toolkit/info?' . self::AUTH_KEY . '=' . urlencode($token)
         ]);
     }
 } 
