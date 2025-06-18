@@ -83,8 +83,7 @@
     name: 'ipLookupToken',
     value: settings.ipLookupToken,
     errors: settings.getErrors('ipLookupToken'),
-    suggestEnvVars: true,
-    placeholder: '$IP_LOOKUP_TOKEN'
+    suggestEnvVars: true
 }) }}
 
 {{ forms.autosuggestField({
@@ -94,8 +93,7 @@
     name: 'devIpAddress',
     value: settings.devIpAddress,
     errors: settings.getErrors('devIpAddress'),
-    suggestEnvVars: true,
-    placeholder: '$DEV_IP_ADDRESS'
+    suggestEnvVars: true
 }) }}
 
 {# Optional: Show parsed values for debugging #}
