@@ -156,6 +156,11 @@ class IspDetector extends Model
             return null;
         }
 
+        // Avoid a unique bug where it was applying it twice
+        if (str_contains($organizationName, '(Likely-ISP)')) {
+            return $organizationName;
+        }
+
         if ($this->isLikelyIsp($organizationName)) {
             return "{$organizationName} (Likely-ISP)";
         }
