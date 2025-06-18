@@ -99,11 +99,10 @@
 }) }}
 
 {# Optional: Show parsed values for debugging #}
-{% if craft.app.config.general.devMode %}
 
     <div class="field">
         <div class="heading">
-            <label>{{ "Parsed Values (Dev Mode Only)"|t('astuteo-toolkit') }}</label>
+            <label>{{ "Parsed Values (Dev Use Only)"|t('astuteo-toolkit') }}</label>
         </div>
         <div class="input">
             <p><strong>Provider:</strong> {{ settings.getIpLookupProvider() }}</p>
@@ -193,4 +192,3 @@
                 });
         });
     </script>
-{% endif %}
