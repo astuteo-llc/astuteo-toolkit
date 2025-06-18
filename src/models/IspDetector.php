@@ -112,6 +112,16 @@ class IspDetector extends Model
     ];
 
     /**
+     * List of specific combinations that should be detected as ISPs
+     * Often these are VPN providers or hosting services where the name contains
+     * a legitimate company name (e.g., "Micron") that shouldn't be flagged alone,
+     * but when combined with certain terms indicates an ISP or VPN service
+     */
+    private const SPECIFIC_ISP_COMBINATIONS = [
+        'micron hosting',
+    ];
+
+    /**
      * Check if an organization name is likely an ISP
      * 
      * @param string|null $organizationName The organization name to check
@@ -124,6 +134,13 @@ class IspDetector extends Model
         }
 
         $orgName = strtolower($organizationName);
+
+        // Check for specific ISP/VPN combinations
+        foreach (self::SPECIFIC_ISP_COMBINATIONS as $combination) {
+            if (str_contains($orgName, $combination)) {
+                return true;
+            }
+        }
 
         // Strong keyword match
         foreach (self::STRONG_ISP_KEYWORDS as $keyword) {
