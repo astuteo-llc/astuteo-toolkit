@@ -4,6 +4,11 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [6.4.11](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.4.10...v6.4.11) (2025-06-19)
+
+
+---
+
 ## [6.4.10](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.4.9...v6.4.10) (2025-06-19)
 
 
