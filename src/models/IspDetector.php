@@ -122,10 +122,14 @@ class IspDetector extends Model
         'asm adsl cbb',
         'aventice llc',
         'greenlight networks',
+        'korea telecom',
         'logicweb inc',
         'micron hosting',
         'reliance jio infocomm limited',
+        'rural telephone service company, inc',
+        'salt mobile sa',
         't mobile usa',
+        'vivid la net',
     ];
 
     /**
