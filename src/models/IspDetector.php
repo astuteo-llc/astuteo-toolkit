@@ -11,6 +11,19 @@ class IspDetector extends Model
 {
     /**
      * List of common ISP keywords to check for in organization names
+     * 
+     * How it works:
+     * - If an organization name contains ANY of these keywords, it will be identified as an ISP
+     * - These are strong indicators on their own (e.g., 'comcast', 'verizon')
+     * - Case-insensitive matching is used
+     * 
+     * When adding new keywords:
+     * - Add common ISP/telecom company names
+     * - Add well-known hosting/cloud provider names
+     * - Keep entries lowercase
+     * - For multi-word names, include variations (e.g., 'at&t', 'at t', 'at & t')
+     * - Maintain alphabetical order for easier maintenance
+     * - Avoid generic terms that might cause false positives
      */
     private const STRONG_ISP_KEYWORDS = [
         'adsl',
@@ -82,6 +95,23 @@ class IspDetector extends Model
         'ziggo',
     ];
 
+    /**
+     * List of common suffixes found in ISP organization names
+     * 
+     * How it works:
+     * - These suffixes are used in combination with STRONG_ISP_KEYWORDS
+     * - If an organization name ends with any of these suffixes AND contains any STRONG_ISP_KEYWORDS,
+     *   it will be identified as an ISP
+     * - Used for detecting organizations like "Acme Networks" or "XYZ Telecom Ltd"
+     * - Case-insensitive matching is used
+     * 
+     * When adding new suffixes:
+     * - Add common business/organization type suffixes (e.g., 'inc', 'ltd')
+     * - Add telecom/internet industry-specific suffixes (e.g., 'broadband', 'fiber')
+     * - Keep entries lowercase
+     * - Maintain alphabetical order for easier maintenance
+     * - Avoid overly generic terms that might cause false positives
+     */
     private const ISP_SUFFIXES = [
         'broadband',
         'business',
