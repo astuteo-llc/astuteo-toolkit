@@ -78,6 +78,6 @@ class IpWhoisProvider extends AbstractIpLookupProvider
         if(isset($data['connection']) && is_array($data['connection'])) {
             return $data['connection']['isp'] ?? null;
         }
-        return ($data['isp'] ?? null);
+        return $data['isp'] ?? null;
     }
 }

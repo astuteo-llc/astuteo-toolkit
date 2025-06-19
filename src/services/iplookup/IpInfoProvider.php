@@ -78,7 +78,7 @@ class IpInfoProvider extends AbstractIpLookupProvider
     protected function extractIsp(array $data): ?string
     {
         // First try to extract from the paid tier format (asn.name)
-        if (isset($data['asn']['name']) && is_array($data['asn'])) {
+        if (is_array($data['asn'] ?? null) && isset($data['asn']['name'])) {
             return $data['asn']['name'];
         }
 
