@@ -13,6 +13,7 @@ class IspDetector extends Model
      * List of common ISP keywords to check for in organization names
      */
     private const STRONG_ISP_KEYWORDS = [
+        'adsl',
         'akamai',
         'amazon',
         'astound',
@@ -23,6 +24,7 @@ class IspDetector extends Model
         'aws',
         'baidu',
         'bell',
+        'biznet',
         'bt',
         'centurylink',
         'charter',
@@ -43,8 +45,10 @@ class IspDetector extends Model
         'grande',
         'hughesnet',
         'ibm',
+        'jio',
         'mediacom',
         'microsoft',
+        'mpls',
         'optimum',
         'oracle',
         'orange',
@@ -58,7 +62,9 @@ class IspDetector extends Model
         'sprint',
         'suddenlink',
         'tds',
+        'telecom',
         'telefonica',
+        'telephone',
         'telia',
         'telstra',
         'telus',
@@ -97,9 +103,13 @@ class IspDetector extends Model
         'internet',
         'limited',
         'llc',
+        'ltd',
         'mobile',
+        'net',
         'network',
+        'networks',
         'provider',
+        'sa',
         'server',
         'service',
         'services',
@@ -119,22 +129,13 @@ class IspDetector extends Model
      * but when combined with certain terms indicates an ISP or VPN service
      */
     private const SPECIFIC_ISP_COMBINATIONS = [
-        'asm adsl cbb',
         'aventice llc',
-        'biznet networks',
         'blazing seo, llc',
-        'global mpls',
         'greenlight networks',
-        'korea telecom',
         'logicweb inc',
-        'lonconnect ltd',
         'micron hosting',
         'nixi',
-        'reliance jio infocomm limited',
-        'rural telephone service company, inc',
-        'salt mobile sa',
         't mobile usa',
-        'vivid la net',
         'zenlayer inc',
     ];
 
