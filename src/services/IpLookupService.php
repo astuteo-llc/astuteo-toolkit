@@ -66,13 +66,7 @@ class IpLookupService extends Component
             // Process organization name in cached result to identify ISPs
             if (isset($cachedResult['organization'])) {
                 // If organization name and ISP are the same, it's likely an ISP
-                if (isset($cachedResult['isp']) && $cachedResult['organization'] === $cachedResult['isp']) {
-                    $cachedResult['is_isp'] = true;
-                } else {
-                    $ispDetection = $this->getIspDetector()->getIspDetection($cachedResult['organization']);
-                    $cachedResult['organization'] = $ispDetection['organization'];
-                    $cachedResult['is_isp'] = $ispDetection['is_isp'];
-                }
+                $cachedResult = $this->getResult($cachedResult);
             }
 
             LoggerHelper::info(sprintf(
@@ -94,13 +88,7 @@ class IpLookupService extends Component
         // Process organization name to identify ISPs
         if ($result !== null && isset($result['organization'])) {
             // If organization name and ISP are the same, it's likely an ISP
-            if (isset($result['isp']) && $result['organization'] === $result['isp']) {
-                $result['is_isp'] = true;
-            } else {
-                $ispDetection = $this->getIspDetector()->getIspDetection($result['organization']);
-                $result['organization'] = $ispDetection['organization'];
-                $result['is_isp'] = $ispDetection['is_isp'];
-            }
+            $result = $this->getResult($result);
         }
 
         // Cache the result for 60 days
@@ -175,5 +163,21 @@ class IpLookupService extends Component
         }
 
         return $this->ispDetector;
+    }
+
+    /**
+     * @param mixed $cachedResult
+     * @return mixed
+     */
+    public function getResult(mixed $cachedResult): mixed
+    {
+        if (isset($cachedResult['isp']) && $cachedResult['organization'] === $cachedResult['isp']) {
+            $cachedResult['is_isp'] = true;
+        } else {
+            $ispDetection = $this->getIspDetector()->getIspDetection($cachedResult['organization']);
+            $cachedResult['organization'] = $ispDetection['organization'];
+            $cachedResult['is_isp'] = $ispDetection['is_isp'];
+        }
+        return $cachedResult;
     }
 }
