@@ -120,6 +120,7 @@ class IspDetector extends Model
      */
     private const SPECIFIC_ISP_COMBINATIONS = [
         'micron hosting',
+        't mobile usa',
     ];
 
     /**
