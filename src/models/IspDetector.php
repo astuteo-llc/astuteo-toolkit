@@ -119,6 +119,7 @@ class IspDetector extends Model
      * but when combined with certain terms indicates an ISP or VPN service
      */
     private const SPECIFIC_ISP_COMBINATIONS = [
+        'aventice llc',
         'greenlight networks',
         'micron hosting',
         't mobile usa',
