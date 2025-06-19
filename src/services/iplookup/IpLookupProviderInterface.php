@@ -18,6 +18,7 @@ interface IpLookupProviderInterface
      *     country: string|null,
      *     postal: string|null,
      *     organization: string|null,
+     *     isp: string|null,
      *     raw: array
      * }|null An array containing standardized IP information or null on failure
      */

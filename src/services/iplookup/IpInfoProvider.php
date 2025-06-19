@@ -71,4 +71,14 @@ class IpInfoProvider extends AbstractIpLookupProvider
     {
         return $data['org'] ?? ($data['as_name'] ?? null);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extractIsp(array $data): ?string
+    {
+        return isset($data['asn']) && is_array($data['asn']) ? ($data['asn']['name'] ?? null) : null;
+    }
+
+
 }

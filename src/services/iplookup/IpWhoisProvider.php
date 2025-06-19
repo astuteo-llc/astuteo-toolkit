@@ -73,4 +73,11 @@ class IpWhoisProvider extends AbstractIpLookupProvider
         // Fall back to the "free" version
         return $data['org'] ?? ($data['isp'] ?? null);
     }
+
+    protected function extractIsp(array $data): ?string {
+        if(isset($data['connection']) && is_array($data['connection'])) {
+            return $data['connection']['isp'] ?? null;
+        }
+        return ($data['isp'] ?? null);
+    }
 }

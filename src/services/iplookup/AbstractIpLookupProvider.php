@@ -91,6 +91,7 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
             'country' => $this->extractCountry($data),
             'postal' => $this->extractPostal($data),
             'organization' => $this->extractOrganization($data),
+            'isp' => $this->extractIsp($data),
         ];
 
         // Only include raw data in dev mode for debugging purposes
@@ -140,6 +141,14 @@ abstract class AbstractIpLookupProvider implements IpLookupProviderInterface
      * @return string|null The organization/company name or null if not available
      */
     abstract protected function extractOrganization(array $data): ?string;
+
+    /**
+     * Extract the isp from the provider's response
+     *
+     * @param array $data The raw data from the provider
+     * @return string|null The isp name or null if not available
+     */
+    abstract protected function extractIsp(array $data): ?string;
 
     /**
      * Log an error message

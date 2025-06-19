@@ -44,6 +44,7 @@ class IpLookupService extends Component
      *     country: string|null,
      *     postal: string|null,
      *     organization: string|null,
+     *     isp: string|null,
      *     is_isp: bool,
      *     raw?: array
      * }|null An array containing standardized IP information or null on failure
