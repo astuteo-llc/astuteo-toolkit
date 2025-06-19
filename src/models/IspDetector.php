@@ -154,9 +154,19 @@ class IspDetector extends Model
 
     /**
      * List of specific combinations that should be detected as ISPs
-     * Often these are VPN providers or hosting services where the name contains
-     * a legitimate company name (e.g., "Micron") that shouldn't be flagged alone,
-     * but when combined with certain terms indicates an ISP or VPN service
+     * 
+     * How it works:
+     * - If an organization name contains ANY of these exact combinations, it will be identified as an ISP
+     * - Used for specific cases where a company name shouldn't be flagged alone
+     * - These are direct substring matches (e.g., 'micron hosting' but not just 'micron')
+     * - Case-insensitive matching is used
+     * 
+     * When adding new combinations:
+     * - Add VPN providers or hosting services with legitimate company names
+     * - Add specific combinations that would otherwise cause false negatives
+     * - Keep entries lowercase
+     * - Maintain alphabetical order for easier maintenance
+     * - Be specific enough to avoid false positives
      */
     private const SPECIFIC_ISP_COMBINATIONS = [
         'aventice llc',
