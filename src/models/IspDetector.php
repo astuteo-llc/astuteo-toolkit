@@ -121,6 +121,7 @@ class IspDetector extends Model
     private const SPECIFIC_ISP_COMBINATIONS = [
         'aventice llc',
         'greenlight networks',
+        'logicweb inc',
         'micron hosting',
         't mobile usa',
     ];
