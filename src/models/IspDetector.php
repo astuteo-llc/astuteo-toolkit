@@ -123,6 +123,7 @@ class IspDetector extends Model
         'greenlight networks',
         'logicweb inc',
         'micron hosting',
+        'reliance jio infocomm limited',
         't mobile usa',
     ];
 
