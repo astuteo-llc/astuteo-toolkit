@@ -121,15 +121,21 @@ class IspDetector extends Model
     private const SPECIFIC_ISP_COMBINATIONS = [
         'asm adsl cbb',
         'aventice llc',
+        'biznet networks',
+        'blazing seo, llc',
+        'global mpls',
         'greenlight networks',
         'korea telecom',
         'logicweb inc',
+        'lonconnect ltd',
         'micron hosting',
+        'nixi',
         'reliance jio infocomm limited',
         'rural telephone service company, inc',
         'salt mobile sa',
         't mobile usa',
         'vivid la net',
+        'zenlayer inc',
     ];
 
     /**
