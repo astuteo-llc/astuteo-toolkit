@@ -119,6 +119,7 @@ class IspDetector extends Model
      * but when combined with certain terms indicates an ISP or VPN service
      */
     private const SPECIFIC_ISP_COMBINATIONS = [
+        'asm adsl cbb',
         'aventice llc',
         'greenlight networks',
         'logicweb inc',
