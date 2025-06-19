@@ -58,12 +58,12 @@ class IspDetector extends Model
         'sprint',
         'suddenlink',
         'tds',
+        'telefonica',
         'telia',
         'telstra',
         'telus',
-        'tmobile',
         't-mobile',
-        'telefonica',
+        'tmobile',
         'verizon',
         'vodafone',
         'vtr',
@@ -78,6 +78,7 @@ class IspDetector extends Model
 
     private const ISP_SUFFIXES = [
         'broadband',
+        'business',
         'cable',
         'cellular',
         'cloud',
