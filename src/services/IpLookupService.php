@@ -46,7 +46,7 @@ class IpLookupService extends Component
      *     organization: string|null,
      *     isp: string|null,
      *     is_isp: bool,
-     *     raw?: array
+     *     raw?: array<string, mixed>
      * }|null An array containing standardized IP information or null on failure
      * Note: The 'raw' field is only included when in dev mode
      */
@@ -134,6 +134,7 @@ class IpLookupService extends Component
         // Check if the provider is configured
         if (!$this->provider->isConfigured()) {
             LoggerHelper::error("IP lookup provider {$providerName} is not configured");
+            $this->provider = null;
             return null;
         }
 
@@ -158,23 +159,21 @@ class IpLookupService extends Component
      */
     private function getIspDetector(): IspDetector
     {
-        if ($this->ispDetector === null) {
-            $this->ispDetector = new IspDetector();
-        }
-
-        return $this->ispDetector;
+        return $this->ispDetector ??= new IspDetector();
     }
 
     /**
-     * @param mixed $cachedResult
-     * @return mixed
+     * Process the result to identify and mark ISPs
+     * 
+     * @param array $cachedResult The result to process
+     * @return array The processed result with ISP information
      */
-    public function getResult(mixed $cachedResult): mixed
+    public function getResult(array $cachedResult): array
     {
         if (isset($cachedResult['isp']) && $cachedResult['organization'] === $cachedResult['isp']) {
             $cachedResult['is_isp'] = true;
         } else {
-            $ispDetection = $this->getIspDetector()->getIspDetection($cachedResult['organization']);
+            $ispDetection = $this->getIspDetector()->getIspDetection($cachedResult['organization'] ?? null);
             $cachedResult['organization'] = $ispDetection['organization'];
             $cachedResult['is_isp'] = $ispDetection['is_isp'];
         }
