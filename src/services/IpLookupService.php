@@ -63,10 +63,7 @@ class IpLookupService extends Component
         // Try to get the cached result
         $cachedResult = \Craft::$app->cache->get($cacheKey);
         if ($cachedResult !== false) {
-            // Process organization name in cached result to identify ISPs
-            // Always process through getResult to ensure is_isp is set
             $cachedResult = $this->getResult($cachedResult);
-
             LoggerHelper::info(sprintf(
                 'Retrieved cached IP info for %s (Organization: %s)',
                 $ip,
@@ -83,9 +80,7 @@ class IpLookupService extends Component
 
         $result = $provider->lookup($ip);
 
-        // Process organization name to identify ISPs
         if ($result !== null) {
-            // Always process through getResult to ensure is_isp is set
             $result = $this->getResult($result);
         }
 
@@ -168,14 +163,8 @@ class IpLookupService extends Component
      */
     public function getResult(array $cachedResult): array
     {
-        // Ensure is_isp is set to false by default
-        if (!isset($cachedResult['is_isp'])) {
-            $cachedResult['is_isp'] = false;
-        }
-
         // If both isp and organization are set and they're the same, it's likely an ISP
-        if (isset($cachedResult['isp']) && !empty($cachedResult['isp']) && 
-            isset($cachedResult['organization']) && !empty($cachedResult['organization']) && 
+        if (!empty($cachedResult['isp']) && !empty($cachedResult['organization']) &&
             $cachedResult['organization'] === $cachedResult['isp']) {
             $cachedResult['is_isp'] = true;
         } else {
@@ -184,7 +173,6 @@ class IpLookupService extends Component
             $cachedResult['organization'] = $ispDetection['organization'];
             $cachedResult['is_isp'] = $ispDetection['is_isp'];
         }
-
         return $cachedResult;
     }
 }
