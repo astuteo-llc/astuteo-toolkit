@@ -6,7 +6,7 @@ use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
 use astuteo\astuteotoolkit\services\TransformService;
 use astuteo\astuteotoolkit\services\VideoEmbedService;
-use astuteo\astuteotoolkit\services\ImgixCompatibilityService;
+use astuteo\astuteotoolkit\helpers\ImgixCompatibilityHelper;
 
 use Craft;
 use craft\elements\Entry;
@@ -42,7 +42,7 @@ class AstuteoToolkitVariable
     }
 
     public function transformImagerX($image, $options = null, $serviceOptions = null) {
-        return (new ImgixCompatibilityService)->imagerX($image, $options, $serviceOptions);
+        return (new ImgixCompatibilityHelper)->imagerX($image, $options, $serviceOptions);
     }
 
 	/**
