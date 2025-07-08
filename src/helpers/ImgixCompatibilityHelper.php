@@ -5,37 +5,25 @@ use craft\base\Component;
 use Craft;
 
 /**
- * Class ImgixCompatibilityHelper
- *
- * Provides Imgix-compatible transforms using Imager-X or Craft native transforms
- * Handles parameter translation and fallback logic for smooth migration
- *
- * @package astuteo\astuteotoolkit\helpers
+ * ImgixCompatibilityHelper
+ * 
+ * Maps Imgix parameters to Imager-X for seamless transition between services
  */
 class ImgixCompatibilityHelper extends Component
 {
     /**
-     * Translate and execute Imager-X transform with Imgix compatibility
-     *
-     * @param $image
-     * @param array|null $options
-     * @param array|null $serviceOptions
-     * @return string|null
+     * Transform image using Imager-X with Imgix parameter compatibility
      */
     public function imagerX($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
             return null;
         }
 
-        // Check if Imager-X is available
         if (!Craft::$app->plugins->isPluginEnabled('imager-x')) {
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
 
-        // Translate service options (handle Imgix-specific parameters)
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
-
-        // Translate main options if needed
         $translatedOptions = $this->translateMainOptions($options, $image);
 
         try {
@@ -52,15 +40,9 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Auto-detect best available transform service
-     *
-     * @param $image
-     * @param array|null $options
-     * @param array|null $serviceOptions
-     * @return string|null
+     * Auto-select best available transform service
      */
     public function auto($image, $options = null, $serviceOptions = null) {
-        // Priority: Imager-X > Craft Native
         if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
             return $this->imagerX($image, $options, $serviceOptions);
         }
@@ -69,11 +51,7 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Translate service options from Imgix format to Imager-X
-     *
-     * @param array|null $serviceOptions
-     * @param array|null $mainOptions
-     * @return array
+     * Map Imgix service parameters to Imager-X format
      */
     public function translateServiceOptions($serviceOptions, $mainOptions) {
         if (empty($serviceOptions)) {
@@ -81,42 +59,70 @@ class ImgixCompatibilityHelper extends Component
         }
 
         $translatedOptions = [];
+        $effects = [];
 
-        // Map Imgix service options to Imager-X equivalents
         foreach ($serviceOptions as $key => $value) {
             switch ($key) {
                 case 'auto':
-                    // Handle auto=format,compress
                     if (is_string($value) && strpos($value, 'format') !== false) {
                         $translatedOptions['autoFormat'] = true;
                     }
                     if (is_string($value) && strpos($value, 'compress') !== false) {
                         $translatedOptions['autoCompress'] = true;
                     }
+                    if (is_string($value) && strpos($value, 'enhance') !== false) {
+                        $effects['enhance'] = true;
+                    }
                     break;
                 case 'fm':
-                    // Format mapping
                     $translatedOptions['format'] = $value;
                     break;
                 case 'q':
-                    // Quality
                     $translatedOptions['quality'] = $value;
                     break;
+                // Image adjustments
+                case 'blur':
+                    $effects['blur'] = $value;
+                    break;
+                case 'bri':
+                    $effects['brightness'] = $value;
+                    break;
+                case 'con':
+                    $effects['contrast'] = $value;
+                    break;
+                case 'sat':
+                    $effects['saturation'] = $value;
+                    break;
+                case 'hue':
+                    $effects['hue'] = $value;
+                    break;
+                case 'sharp':
+                    $effects['sharpen'] = $value;
+                    break;
+                case 'gam':
+                    $effects['gamma'] = $value;
+                    break;
+                // Background and padding
+                case 'bg':
+                    $translatedOptions['bgColor'] = $value;
+                    break;
+                case 'pad':
+                    $translatedOptions['allowUpscale'] = (bool)$value;
+                    break;
                 default:
-                    // Pass through other options
                     $translatedOptions[$key] = $value;
             }
+        }
+
+        if (!empty($effects)) {
+            $translatedOptions['effects'] = $effects;
         }
 
         return $translatedOptions;
     }
 
     /**
-     * Translate main transform options from Imgix format to Imager-X
-     *
-     * @param array|null $options
-     * @param $image
-     * @return array
+     * Map Imgix transform parameters to Imager-X format
      */
     public function translateMainOptions($options, $image) {
         if (empty($options)) {
@@ -125,7 +131,6 @@ class ImgixCompatibilityHelper extends Component
 
         $translatedOptions = [];
 
-        // Map Imgix main options to Imager-X equivalents
         foreach ($options as $key => $value) {
             switch ($key) {
                 case 'w':
@@ -135,7 +140,6 @@ class ImgixCompatibilityHelper extends Component
                     $translatedOptions['height'] = $value;
                     break;
                 case 'fit':
-                    // Map Imgix fit modes to Imager-X modes
                     switch ($value) {
                         case 'crop':
                             $translatedOptions['mode'] = 'crop';
@@ -158,17 +162,43 @@ class ImgixCompatibilityHelper extends Component
                     break;
                 case 'crop':
                     if (is_string($value) && strpos($value, 'focalpoint') !== false) {
-                        // Use asset focal point if available
                         if (isset($image->focalPoint)) {
                             $translatedOptions['position'] = $this->focalPointToPosition($image->focalPoint);
                         }
                     } else {
-                        // Direct position mapping
                         $translatedOptions['position'] = $value;
                     }
                     break;
+                case 'rect':
+                    if (is_string($value) && strpos($value, ',') !== false) {
+                        $parts = explode(',', $value);
+                        if (count($parts) === 4) {
+                            $translatedOptions['cropZoom'] = [
+                                'x' => (int)$parts[0],
+                                'y' => (int)$parts[1],
+                                'width' => (int)$parts[2],
+                                'height' => (int)$parts[3]
+                            ];
+                        }
+                    }
+                    break;
+                case 'flip':
+                    if ($value === 'h') {
+                        $translatedOptions['flipHorizontally'] = true;
+                    } elseif ($value === 'v') {
+                        $translatedOptions['flipVertically'] = true;
+                    } elseif ($value === 'hv' || $value === 'vh') {
+                        $translatedOptions['flipHorizontally'] = true;
+                        $translatedOptions['flipVertically'] = true;
+                    }
+                    break;
+                case 'rot':
+                    $translatedOptions['rotate'] = (int)$value;
+                    break;
+                case 'dpr':
+                    $translatedOptions['ratio'] = (float)$value;
+                    break;
                 default:
-                    // Pass through other options
                     $translatedOptions[$key] = $value;
             }
         }
@@ -178,9 +208,6 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Convert focal point coordinates to position string
-     *
-     * @param array $focalPoint
-     * @return string
      */
     public function focalPointToPosition($focalPoint) {
         if (!is_array($focalPoint) || !isset($focalPoint['x']) || !isset($focalPoint['y'])) {
@@ -190,7 +217,6 @@ class ImgixCompatibilityHelper extends Component
         $x = $focalPoint['x'];
         $y = $focalPoint['y'];
 
-        // Convert to left/center/right and top/center/bottom
         $xPos = $x < 0.33 ? 'left' : ($x > 0.66 ? 'right' : 'center');
         $yPos = $y < 0.33 ? 'top' : ($y > 0.66 ? 'bottom' : 'center');
 
@@ -199,21 +225,14 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Fallback to Craft's native image transforms
-     *
-     * @param $image
-     * @param array|null $options
-     * @param array|null $serviceOptions
-     * @return string|null
      */
     public function fallbackToCraft($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
             return null;
         }
 
-        // Convert Imgix options to Craft transform parameters
         $transformParams = [];
 
-        // Handle width and height
         if (isset($options['w'])) {
             $transformParams['width'] = $options['w'];
         }
@@ -221,7 +240,6 @@ class ImgixCompatibilityHelper extends Component
             $transformParams['height'] = $options['h'];
         }
 
-        // Handle fit/crop mode
         if (isset($options['fit'])) {
             switch ($options['fit']) {
                 case 'crop':
@@ -233,17 +251,19 @@ class ImgixCompatibilityHelper extends Component
                 case 'scale':
                     $transformParams['mode'] = 'stretch';
                     break;
+                case 'max':
+                    $transformParams['mode'] = 'max';
+                    break;
+                case 'min':
+                    $transformParams['mode'] = 'min';
+                    break;
                 default:
                     $transformParams['mode'] = 'crop';
             }
-        } else {
-            // Default to crop if width and height are specified
-            if (isset($transformParams['width']) && isset($transformParams['height'])) {
-                $transformParams['mode'] = 'crop';
-            }
+        } elseif (isset($transformParams['width']) && isset($transformParams['height'])) {
+            $transformParams['mode'] = 'crop';
         }
 
-        // Handle position/crop
         if (isset($options['crop'])) {
             if ($options['crop'] === 'focalpoint' && isset($image->focalPoint)) {
                 $transformParams['position'] = $this->focalPointToPosition($image->focalPoint);
@@ -252,18 +272,19 @@ class ImgixCompatibilityHelper extends Component
             }
         }
 
-        // Handle format
+        if (isset($options['rot'])) {
+            $transformParams['rotate'] = (int)$options['rot'];
+        }
+
         if (isset($serviceOptions['fm'])) {
             $transformParams['format'] = $serviceOptions['fm'];
         }
 
-        // Handle quality
         if (isset($serviceOptions['q'])) {
             $transformParams['quality'] = $serviceOptions['q'];
         }
 
         try {
-            // Apply transform using Craft's native transform
             $transformedImage = $image->getUrl($transformParams);
             return $transformedImage;
         } catch (\Exception $e) {
