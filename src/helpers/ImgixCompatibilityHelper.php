@@ -7,12 +7,28 @@ use Craft;
 /**
  * ImgixCompatibilityHelper
  * 
- * Maps Imgix parameters to Imager-X for seamless transition between services
+ * Maps Imgix parameters to Imager-X for seamless transition between services.
+ * This helper class provides compatibility between Imgix and Imager-X, allowing
+ * you to use Imgix-style parameters with the Imager-X plugin or fall back to
+ * Craft's native transforms if Imager-X is not available.
+ *
+ * @package astuteo\astuteotoolkit\helpers
+ * @since 6.0.0
  */
 class ImgixCompatibilityHelper extends Component
 {
     /**
-     * Transform image using Imager-X with Imgix parameter compatibility
+     * Transform image using Imager-X with Imgix parameter compatibility.
+     * 
+     * This method takes an image asset and transforms it using Imager-X, translating
+     * Imgix-style parameters to the format expected by Imager-X. If Imager-X is not
+     * available, it falls back to Craft's native transform functionality.
+     * 
+     * @param mixed $image The image asset to transform
+     * @param array|null $options Main transform options (width, height, fit, etc.)
+     * @param array|null $serviceOptions Additional service-specific options (format, quality, effects, etc.)
+     * @return string|null The URL of the transformed image, or null if transformation failed
+     * @throws \Exception If the transformation fails (caught internally)
      */
     public function imagerX($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
@@ -53,7 +69,16 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Auto-select best available transform service
+     * Auto-select best available transform service.
+     * 
+     * This method automatically selects the best available image transform service.
+     * If Imager-X is available, it will use that; otherwise, it falls back to
+     * Craft's native transform functionality.
+     * 
+     * @param mixed $image The image asset to transform
+     * @param array|null $options Main transform options (width, height, fit, etc.)
+     * @param array|null $serviceOptions Additional service-specific options (format, quality, effects, etc.)
+     * @return string|null The URL of the transformed image, or null if transformation failed
      */
     public function auto($image, $options = null, $serviceOptions = null) {
         if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
@@ -64,9 +89,17 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Map Imgix service parameters to Imager-X format
+     * Map Imgix service parameters to Imager-X format.
+     * 
+     * This method translates Imgix service-specific parameters (like auto, fm, q, etc.)
+     * to the format expected by Imager-X. It handles various image adjustments,
+     * background settings, and special cases like trim=auto.
+     * 
+     * @param array|null $serviceOptions The Imgix service options to translate
+     * @param array|null $mainOptions The main transform options (used for context in some translations)
+     * @return array The translated options in Imager-X format
      */
-    public function translateServiceOptions($serviceOptions, $mainOptions) {
+    private function translateServiceOptions($serviceOptions, $mainOptions) {
         if (empty($serviceOptions)) {
             return [];
         }
@@ -147,9 +180,17 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Map Imgix transform parameters to Imager-X format
+     * Map Imgix transform parameters to Imager-X format.
+     * 
+     * This method translates the main Imgix transform parameters (like w, h, fit, etc.)
+     * to the format expected by Imager-X. It handles dimensions, cropping modes,
+     * positioning, flipping, rotation, and other transform-specific options.
+     * 
+     * @param array|null $options The Imgix transform options to translate
+     * @param mixed $image The image asset (used for focal point information)
+     * @return array The translated options in Imager-X format
      */
-    public function translateMainOptions($options, $image) {
+    private function translateMainOptions($options, $image) {
         if (empty($options)) {
             return [];
         }
@@ -232,9 +273,16 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Convert focal point coordinates to position string
+     * Convert focal point coordinates to position string.
+     * 
+     * This method converts the focal point coordinates (x, y values between 0 and 1)
+     * to a position string in the format 'top-left', 'center-center', 'bottom-right', etc.
+     * This is used for positioning crops based on the focal point of an image.
+     * 
+     * @param array|null $focalPoint The focal point coordinates with 'x' and 'y' keys
+     * @return string The position string in the format 'vertical-horizontal'
      */
-    public function focalPointToPosition($focalPoint) {
+    private function focalPointToPosition($focalPoint) {
         if (!is_array($focalPoint) || !isset($focalPoint['x']) || !isset($focalPoint['y'])) {
             return 'center-center';
         }
@@ -249,9 +297,19 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
-     * Fallback to Craft's native image transforms
+     * Fallback to Craft's native image transforms.
+     * 
+     * This method is used when Imager-X is not available or when the Imager-X transform fails.
+     * It translates Imgix-style parameters to Craft's native transform parameters and
+     * applies the transform using Craft's built-in functionality.
+     * 
+     * @param mixed $image The image asset to transform
+     * @param array|null $options Main transform options (width, height, fit, etc.)
+     * @param array|null $serviceOptions Additional service-specific options (format, quality, etc.)
+     * @return string|null The URL of the transformed image, or null if transformation failed
+     * @throws \Exception If the transformation fails (caught internally)
      */
-    public function fallbackToCraft($image, $options = null, $serviceOptions = null) {
+    private function fallbackToCraft($image, $options = null, $serviceOptions = null) {
         if (empty($image)) {
             return null;
         }
