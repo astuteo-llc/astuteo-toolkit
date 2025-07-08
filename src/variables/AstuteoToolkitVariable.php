@@ -1,6 +1,7 @@
 <?php
 namespace astuteo\astuteotoolkit\variables;
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\helpers\ImgixCompatibilityHelper;
 use astuteo\astuteotoolkit\services\CookieService;
 use astuteo\astuteotoolkit\services\LocationService;
 use astuteo\astuteotoolkit\services\ToolkitService;
@@ -9,7 +10,6 @@ use astuteo\astuteotoolkit\services\VideoEmbedService;
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
-use craft\helpers\Json;
 
 class AstuteoToolkitVariable
 {
@@ -40,6 +40,10 @@ class AstuteoToolkitVariable
     }
     public function imgixUpgradeSettings($settings) {
         return (new TransformService)->imgixUpgradeSettings($settings);
+    }
+
+    public function transformImagerX($image, $options = null, $serviceOptions = null) {
+        return (new ImgixCompatibilityHelper)->imagerX($image, $options, $serviceOptions);
     }
 
     public function imgixParams($options, $serviceOptions = null) {
