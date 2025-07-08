@@ -3,7 +3,7 @@
 3. Project Variables - [projectVars](docs/project-vars.md)
 4. Country and States Listing - [countries and states](docs/country-states.md)
 5. Future Events - [futureEvents](docs/future-events.md)
-6. Image - [imgixTransformMap](docs/imgix-map.md)
+6. Image - [imgixTransformMap](docs/imgix-map.md) and [ImgixCompatibilityHelper](docs/imgix-compatibility.md)
 7. Video Embed Helper - [getVideoEmbedInfo](docs/video-embed.md)
 8. [Admin Helpers](docs/admin-helpers.md)
 9. Area to Dimensions - [areaToDimensions](docs/area-to-dimensions.md)

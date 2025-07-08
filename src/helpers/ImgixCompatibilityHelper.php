@@ -35,7 +35,12 @@ class ImgixCompatibilityHelper extends Component
         }
 
         try {
-            $transformedImage = Craft::$app->plugins->getPlugin('imager-x')->imager->transformImage(
+            // Use getPluginInstance() for Craft 4/5 compatibility, fallback to getPlugin() for Craft 3
+            $plugin = method_exists(Craft::$app->plugins, 'getPluginInstance') 
+                ? Craft::$app->plugins->getPluginInstance('imager-x') 
+                : Craft::$app->plugins->getPlugin('imager-x');
+
+            $transformedImage = $plugin->imager->transformImage(
                 $image,
                 $translatedOptions,
                 $translatedServiceOptions
