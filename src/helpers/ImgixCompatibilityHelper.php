@@ -30,7 +30,8 @@ class ImgixCompatibilityHelper extends Component
      * @return string|null The URL of the transformed image, or null if transformation failed
      * @throws \Exception If the transformation fails (caught internally)
      */
-    public function imagerX($image, $options = null, $serviceOptions = null) {
+    public function imagerX(mixed $image, array $options = null, array $serviceOptions = null): ?string
+    {
         if (empty($image)) {
             return null;
         }
@@ -80,7 +81,7 @@ class ImgixCompatibilityHelper extends Component
      * @param array|null $serviceOptions Additional service-specific options (format, quality, effects, etc.)
      * @return string|null The URL of the transformed image, or null if transformation failed
      */
-    public function auto($image, $options = null, $serviceOptions = null) {
+    public function auto(mixed $image, array $options = null, array $serviceOptions = null) {
         if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
             return $this->imagerX($image, $options, $serviceOptions);
         }
@@ -99,7 +100,8 @@ class ImgixCompatibilityHelper extends Component
      * @param array|null $mainOptions The main transform options (used for context in some translations)
      * @return array The translated options in Imager-X format
      */
-    private function translateServiceOptions($serviceOptions, $mainOptions) {
+    private function translateServiceOptions(?array $serviceOptions, ?array $mainOptions): array
+    {
         if (empty($serviceOptions)) {
             return [];
         }
@@ -110,13 +112,13 @@ class ImgixCompatibilityHelper extends Component
         foreach ($serviceOptions as $key => $value) {
             switch ($key) {
                 case 'auto':
-                    if (is_string($value) && strpos($value, 'format') !== false) {
+                    if (is_string($value) && str_contains($value, 'format')) {
                         $translatedOptions['autoFormat'] = true;
                     }
-                    if (is_string($value) && strpos($value, 'compress') !== false) {
+                    if (is_string($value) && str_contains($value, 'compress')) {
                         $translatedOptions['autoCompress'] = true;
                     }
-                    if (is_string($value) && strpos($value, 'enhance') !== false) {
+                    if (is_string($value) && str_contains($value, 'enhance')) {
                         $effects['enhance'] = true;
                     }
                     break;
@@ -190,7 +192,8 @@ class ImgixCompatibilityHelper extends Component
      * @param mixed $image The image asset (used for focal point information)
      * @return array The translated options in Imager-X format
      */
-    private function translateMainOptions($options, $image) {
+    private function translateMainOptions(?array $options, mixed $image): array
+    {
         if (empty($options)) {
             return [];
         }
@@ -236,7 +239,7 @@ class ImgixCompatibilityHelper extends Component
                     }
                     break;
                 case 'rect':
-                    if (is_string($value) && strpos($value, ',') !== false) {
+                    if (is_string($value) && str_contains($value, ',')) {
                         $parts = explode(',', $value);
                         if (count($parts) === 4) {
                             $translatedOptions['cropZoom'] = [
@@ -282,7 +285,8 @@ class ImgixCompatibilityHelper extends Component
      * @param array|null $focalPoint The focal point coordinates with 'x' and 'y' keys
      * @return string The position string in the format 'vertical-horizontal'
      */
-    private function focalPointToPosition($focalPoint) {
+    private function focalPointToPosition(?array $focalPoint): string
+    {
         if (!is_array($focalPoint) || !isset($focalPoint['x']) || !isset($focalPoint['y'])) {
             return 'center-center';
         }
@@ -309,7 +313,8 @@ class ImgixCompatibilityHelper extends Component
      * @return string|null The URL of the transformed image, or null if transformation failed
      * @throws \Exception If the transformation fails (caught internally)
      */
-    private function fallbackToCraft($image, $options = null, $serviceOptions = null) {
+    private function fallbackToCraft(mixed $image, array $options = null, array $serviceOptions = null): ?string
+    {
         if (empty($image)) {
             return null;
         }
