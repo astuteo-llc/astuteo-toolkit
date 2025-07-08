@@ -26,6 +26,14 @@ class ImgixCompatibilityHelper extends Component
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
         $translatedOptions = $this->translateMainOptions($options, $image);
 
+        // Merge options, prioritizing mode from serviceOptions if trim=auto was detected
+        if (isset($translatedServiceOptions['mode']) && 
+            isset($serviceOptions['trim']) && $serviceOptions['trim'] === 'auto') {
+            $translatedOptions['mode'] = $translatedServiceOptions['mode'];
+            // Remove mode from serviceOptions to avoid duplication
+            unset($translatedServiceOptions['mode']);
+        }
+
         try {
             $transformedImage = Craft::$app->plugins->getPlugin('imager-x')->imager->transformImage(
                 $image,
@@ -108,6 +116,18 @@ class ImgixCompatibilityHelper extends Component
                     break;
                 case 'pad':
                     $translatedOptions['allowUpscale'] = (bool)$value;
+                    break;
+                case 'trim':
+                    // CraftTransformer::trim() expects a float, convert or use default
+                    if (is_numeric($value)) {
+                        $translatedOptions['trim'] = (float)$value;
+                    } elseif ($value === 'auto') {
+                        // Use a gentler trim value for 'auto'
+                        $translatedOptions['trim'] = 0.02; // Gentle fuzz value for white backgrounds
+                        // When trim=auto is used, we want to use 'fit' mode to maintain aspect ratio
+                        $translatedOptions['mode'] = 'fit';
+                    }
+                    // If not numeric and not 'auto', don't pass the parameter
                     break;
                 default:
                     $translatedOptions[$key] = $value;
