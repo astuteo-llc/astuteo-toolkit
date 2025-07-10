@@ -5,6 +5,7 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 use craft\base\Component;
 use Craft;
 use craft\elements\Asset;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 use astuteo\astuteotoolkit\helpers\UploadHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
@@ -19,8 +20,10 @@ class VideoEmbedService extends Component {
     public static function getEmbedInfo($url): ?array {
         $settings = AstuteoToolkit::$plugin->getSettings();
         if($settings->cacheVideoEmbeds && Craft::$app->cache->exists($url)) {
+            LoggerHelper::info('Retrieved video embed info from cache for: ' . $url);
             return Craft::$app->cache->get($url);
         }
+        LoggerHelper::info('Fetching new video embed info for: ' . $url);
 
         return match (true) {
             self::isYouTube($url) => self::getYouTubeEmbedInfo($url, $settings),
@@ -141,6 +144,7 @@ class VideoEmbedService extends Component {
                 return $url;
             }
         } catch (GuzzleException $e) {
+            LoggerHelper::error('Failed to check if thumbnail exists at ' . $url . ': ' . $e->getMessage());
             return false;
         }
         return false;
@@ -167,6 +171,7 @@ class VideoEmbedService extends Component {
             $string = StringHelper::toString($body);
             return Json::decodeIfJson($string);
         } catch (GuzzleException $e) {
+            LoggerHelper::error('Failed to get Vimeo API data for ID ' . $id . ': ' . $e->getMessage());
             return false;
         }
     }
@@ -191,8 +196,15 @@ class VideoEmbedService extends Component {
         $tempPath = Craft::$app->path->getTempPath();
         $tempFilePath = (new UploadHelper)->downloadFile($url, $tempPath . '/' . $filename);
         if($tempFilePath) {
-            return (new UploadHelper)->uploadToVolume($volumeId,  $tempFilePath, $filename);
+            $result = (new UploadHelper)->uploadToVolume($volumeId, $tempFilePath, $filename);
+            if (!$result) {
+                LoggerHelper::error('Failed to upload thumbnail to volume: ' . $filename);
+            } else {
+                LoggerHelper::info('Successfully stored thumbnail for video ID: ' . $id);
+            }
+            return $result;
         }
+        LoggerHelper::error('Failed to download thumbnail from: ' . $url);
         return false;
     }
 
@@ -255,12 +267,15 @@ class VideoEmbedService extends Component {
     {
         preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/|youtube.com/c/.*?/live)([^"&?/ ]{11})%i', $url, $match);
         if (isset($match[1])) {
+            LoggerHelper::info('Successfully extracted YouTube ID: ' . $match[1] . ' from URL: ' . $url);
             return $match[1];
         }
         preg_match('/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/', $url, $matchesLive);
         if (isset($matchesLive[1])) {
+            LoggerHelper::info('Successfully extracted YouTube ID (live): ' . $matchesLive[1] . ' from URL: ' . $url);
             return $matchesLive[1];
         }
+        LoggerHelper::warning('Failed to extract YouTube ID from URL: ' . $url);
         return false;
     }
 
@@ -283,15 +298,18 @@ class VideoEmbedService extends Component {
     {
         preg_match('%^https?://(?:www\.|player\.)?vimeo.com/(?:channels/(?:\w+/)?|groups/([^/]*)/videos/|album/(\d+)/video/|video/|)(\d+)(?:$|/|\?)(?:[?]?.*)$%im', $url, $matches);
         if (isset($matches[3])) {
+            LoggerHelper::info('Successfully extracted Vimeo ID: ' . $matches[3] . ' from URL: ' . $url);
             return $matches[3];
         }
 
         // A simpler fallback to handle any other possible Vimeo URL formats.
         preg_match('/vimeo.*\/(\d+)/i', $url, $fallbackMatches);
         if (isset($fallbackMatches[1])) {
+            LoggerHelper::info('Successfully extracted Vimeo ID (fallback): ' . $fallbackMatches[1] . ' from URL: ' . $url);
             return $fallbackMatches[1];
         }
 
+        LoggerHelper::warning('Failed to extract Vimeo ID from URL: ' . $url);
         return false;
     }
 
@@ -308,15 +326,18 @@ class VideoEmbedService extends Component {
         // Handle formats like: https://yoursite.wistia.com/medias/1n5odqzvb9
         preg_match('/wistia\.com\/medias\/([a-zA-Z0-9]+)/', $url, $matches);
         if (isset($matches[1])) {
+            LoggerHelper::info('Successfully extracted Wistia ID: ' . $matches[1] . ' from URL: ' . $url);
             return $matches[1];
         }
-        
+
         // Handle formats like: https://fast.wistia.net/embed/iframe/1n5odqzvb9
         preg_match('/wistia\.net\/embed\/iframe\/([a-zA-Z0-9]+)/', $url, $matches);
         if (isset($matches[1])) {
+            LoggerHelper::info('Successfully extracted Wistia ID (iframe): ' . $matches[1] . ' from URL: ' . $url);
             return $matches[1];
         }
-        
+
+        LoggerHelper::warning('Failed to extract Wistia ID from URL: ' . $url);
         return false;
     }
 }
