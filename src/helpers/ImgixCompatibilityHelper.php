@@ -3,6 +3,7 @@ namespace astuteo\astuteotoolkit\helpers;
 
 use craft\base\Component;
 use Craft;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 
 /**
  * ImgixCompatibilityHelper
@@ -64,7 +65,7 @@ class ImgixCompatibilityHelper extends Component
             );
             return $transformedImage->url ?? $image->url;
         } catch (\Exception $e) {
-            Craft::error('Imager-X transform failed: ' . $e->getMessage(), __METHOD__);
+            LoggerHelper::error('Imager-X transform failed: ' . $e->getMessage());
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
     }
@@ -376,7 +377,7 @@ class ImgixCompatibilityHelper extends Component
             $transformedImage = $image->getUrl($transformParams);
             return $transformedImage;
         } catch (\Exception $e) {
-            Craft::error('Craft native transform failed: ' . $e->getMessage(), __METHOD__);
+            LoggerHelper::error('Craft native transform failed: ' . $e->getMessage());
             return $image->url ?? null;
         }
     }
