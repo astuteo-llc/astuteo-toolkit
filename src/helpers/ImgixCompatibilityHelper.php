@@ -38,6 +38,7 @@ class ImgixCompatibilityHelper extends Component
         }
 
         if (!Craft::$app->plugins->isPluginEnabled('imager-x')) {
+            LoggerHelper::error('Imager-X is not installed or enabled');
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
 
@@ -84,6 +85,7 @@ class ImgixCompatibilityHelper extends Component
      */
     public function auto(mixed $image, array $options = null, array $serviceOptions = null) {
         if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
+            LoggerHelper::error('Imager-X is installed and enabled');
             return $this->imagerX($image, $options, $serviceOptions);
         }
 
