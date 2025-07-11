@@ -3,7 +3,6 @@ namespace astuteo\astuteotoolkit\helpers;
 
 use craft\base\Component;
 use Craft;
-use astuteo\astuteotoolkit\helpers\LoggerHelper;
 
 /**
  * ImgixCompatibilityHelper
@@ -44,6 +43,8 @@ class ImgixCompatibilityHelper extends Component
 
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
         $translatedOptions = $this->translateMainOptions($options, $image);
+        
+
 
         // Merge options, prioritizing mode from serviceOptions if trim=auto was detected
         if (isset($translatedServiceOptions['mode']) && 
@@ -59,10 +60,15 @@ class ImgixCompatibilityHelper extends Component
                 ? Craft::$app->plugins->getPluginInstance('imager-x') 
                 : Craft::$app->plugins->getPlugin('imager-x');
 
+            // Merge the translated options and service options to match the expected interface
+            // Service options should not override main transform options like width/height
+            $transforms = array_merge($translatedServiceOptions, $translatedOptions);
+
+            LoggerHelper::info('Imager-X transform options: ' . print_r($transforms, true));;
+
             $transformedImage = $plugin->imager->transformImage(
                 $image,
-                $translatedOptions,
-                $translatedServiceOptions
+                $transforms
             );
             return $transformedImage->url ?? $image->url;
         } catch (\Exception $e) {
@@ -112,7 +118,16 @@ class ImgixCompatibilityHelper extends Component
         $translatedOptions = [];
         $effects = [];
 
+        // List of supported Imgix service params that map to Imager X
+        $supportedKeys = [
+            'auto', 'fm', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
+        ];
+
         foreach ($serviceOptions as $key => $value) {
+            if (!in_array($key, $supportedKeys, true)) {
+                LoggerHelper::warning("Ignoring unsupported Imgix parameter for Imager X: '{$key}'");
+                continue;
+            }
             switch ($key) {
                 case 'auto':
                     if (is_string($value) && str_contains($value, 'format')) {
@@ -158,10 +173,16 @@ class ImgixCompatibilityHelper extends Component
                     $translatedOptions['bgColor'] = $value;
                     break;
                 case 'pad':
-                    $translatedOptions['allowUpscale'] = (bool)$value;
+                    $translatedOptions['pad'] = (int)$value;
+                    break;
+                case 'fill':
+                    $translatedOptions['fill'] = $value;
+                    break;
+                case 'fill-color':
+                    $translatedOptions['fill-color'] = $value;
                     break;
                 case 'trim':
-                    // CraftTransformer::trim() expects a float, convert or use default
+                    // Handle different trim values
                     if (is_numeric($value)) {
                         $translatedOptions['trim'] = (float)$value;
                     } elseif ($value === 'auto') {
@@ -169,8 +190,11 @@ class ImgixCompatibilityHelper extends Component
                         $translatedOptions['trim'] = 0.02; // Gentle fuzz value for white backgrounds
                         // When trim=auto is used, we want to use 'fit' mode to maintain aspect ratio
                         $translatedOptions['mode'] = 'fit';
+                    } elseif ($value === 'color') {
+                        // For trim=color, use a small trim value to remove color edges
+                        $translatedOptions['trim'] = 0.01;
                     }
-                    // If not numeric and not 'auto', don't pass the parameter
+                    // If not numeric, 'auto', or 'color', don't pass the parameter
                     break;
                 default:
                     $translatedOptions[$key] = $value;
@@ -212,12 +236,15 @@ class ImgixCompatibilityHelper extends Component
                     $translatedOptions['height'] = $value;
                     break;
                 case 'fit':
+                case 'mode':
                     switch ($value) {
                         case 'crop':
                             $translatedOptions['mode'] = 'crop';
                             break;
                         case 'clip':
+                        case 'fit':
                             $translatedOptions['mode'] = 'fit';
+                            $translatedOptions['position'] = 'center-center';
                             break;
                         case 'scale':
                             $translatedOptions['mode'] = 'stretch';
@@ -227,6 +254,11 @@ class ImgixCompatibilityHelper extends Component
                             break;
                         case 'min':
                             $translatedOptions['mode'] = 'min';
+                            break;
+                        case 'fill':
+                        case 'fillmax':
+                            $translatedOptions['mode'] = 'letterbox';
+                            // Use letterbox mode to fit image within dimensions and fill remaining space with background
                             break;
                         default:
                             $translatedOptions['mode'] = $value;
