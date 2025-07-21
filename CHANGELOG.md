@@ -4,6 +4,15 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [6.5.4](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.5.3...v6.5.4) (2025-07-21)
+
+### Bug Fixes
+
+* Rounding issue and work more like imgix ([d11c7e](https://github.com/astuteo-llc/astuteo-toolkit/commit/d11c7e9aa0e9406c7da5e1f1f7137a1bf05cc1a5))
+
+
+---
+
 ## [6.5.3](https://github.com/astuteo-llc/astuteo-toolkit/compare/v6.5.2...v6.5.3) (2025-07-11)
 
 
