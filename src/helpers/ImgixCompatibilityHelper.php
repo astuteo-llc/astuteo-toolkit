@@ -18,6 +18,19 @@ use Craft;
 class ImgixCompatibilityHelper extends Component
 {
     /**
+     * Rounds a numeric value to ensure consistent integer dimensions.
+     * 
+     * This method ensures compatibility with Imgix by rounding dimension values
+     * to integers, which is important for consistent image transformations.
+     * 
+     * @param mixed $value The value to round
+     * @return int The rounded value
+     */
+    private function handleUnit($value): int
+    {
+        return round($value);
+    }
+    /**
      * Transform image using Imager-X with Imgix parameter compatibility.
      * 
      * This method takes an image asset and transforms it using Imager-X, translating
@@ -37,8 +50,12 @@ class ImgixCompatibilityHelper extends Component
         }
 
         if (!Craft::$app->plugins->isPluginEnabled('imager-x')) {
-            LoggerHelper::error('Imager-X is not installed or enabled');
             return $this->fallbackToCraft($image, $options, $serviceOptions);
+        }
+
+        // Calculate dimensions based on ratio if needed
+        if ($options) {
+            $options = $this->calculateDimensionsFromRatio($options);
         }
 
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
@@ -64,15 +81,15 @@ class ImgixCompatibilityHelper extends Component
             // Service options should not override main transform options like width/height
             $transforms = array_merge($translatedServiceOptions, $translatedOptions);
 
-            LoggerHelper::info('Imager-X transform options: ' . print_r($transforms, true));;
-
             $transformedImage = $plugin->imager->transformImage(
                 $image,
                 $transforms
             );
-            return $transformedImage->url ?? $image->url;
+            
+            $finalUrl = $transformedImage->url ?? $image->url;
+            
+            return $finalUrl;
         } catch (\Exception $e) {
-            LoggerHelper::error('Imager-X transform failed: ' . $e->getMessage());
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
     }
@@ -91,7 +108,6 @@ class ImgixCompatibilityHelper extends Component
      */
     public function auto(mixed $image, array $options = null, array $serviceOptions = null) {
         if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
-            LoggerHelper::error('Imager-X is installed and enabled');
             return $this->imagerX($image, $options, $serviceOptions);
         }
 
@@ -125,7 +141,6 @@ class ImgixCompatibilityHelper extends Component
 
         foreach ($serviceOptions as $key => $value) {
             if (!in_array($key, $supportedKeys, true)) {
-                LoggerHelper::warning("Ignoring unsupported Imgix parameter for Imager X: '{$key}'");
                 continue;
             }
             switch ($key) {
@@ -230,10 +245,10 @@ class ImgixCompatibilityHelper extends Component
         foreach ($options as $key => $value) {
             switch ($key) {
                 case 'w':
-                    $translatedOptions['width'] = $value;
+                    $translatedOptions['width'] = $this->handleUnit($value);
                     break;
                 case 'h':
-                    $translatedOptions['height'] = $value;
+                    $translatedOptions['height'] = $this->handleUnit($value);
                     break;
                 case 'fit':
                 case 'mode':
@@ -311,6 +326,48 @@ class ImgixCompatibilityHelper extends Component
     }
 
     /**
+     * Calculate dimensions based on ratio if one dimension is missing.
+     * 
+     * This method calculates the missing dimension (width or height) based on the provided ratio.
+     * If both width and height are provided, or if no ratio is provided, the options are returned unchanged.
+     * Uses round() to ensure compatibility with Imgix and Imager.
+     * 
+     * @param array $options The options array containing width, height, and ratio
+     * @return array The options array with calculated dimensions
+     */
+    private function calculateDimensionsFromRatio(array $options): array
+    {
+        // Check if we need to calculate a dimension based on ratio
+        $hasRatio = isset($options['ratio']) && is_numeric($options['ratio']);
+        
+        if (!$hasRatio) {
+            return $options;
+        }
+        
+        // Check for both Imgix-style ('w') and Imager-X style ('width') parameters
+        $width = isset($options['w']) && is_numeric($options['w']) ? $options['w'] : 
+               (isset($options['width']) && is_numeric($options['width']) ? $options['width'] : null);
+        $height = isset($options['h']) && is_numeric($options['h']) ? $options['h'] : 
+                (isset($options['height']) && is_numeric($options['height']) ? $options['height'] : null);
+        
+        // Calculate missing dimension if ratio is provided
+        if ($width && !$height) {
+            $rawCalculatedHeight = $width * $options['ratio'];
+            $calculatedHeight = $this->handleUnit($rawCalculatedHeight);
+            
+            $options['h'] = $calculatedHeight;
+            $options['height'] = $calculatedHeight;
+        } elseif (!$width && $height) {
+            $rawCalculatedWidth = $height / $options['ratio'];
+            $calculatedWidth = $this->handleUnit($rawCalculatedWidth);
+            $options['w'] = $calculatedWidth;
+            $options['width'] = $calculatedWidth;
+        }
+        
+        return $options;
+    }
+
+    /**
      * Convert focal point coordinates to position string.
      * 
      * This method converts the focal point coordinates (x, y values between 0 and 1)
@@ -353,14 +410,18 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
+        
+        if ($options) {
+            $options = $this->calculateDimensionsFromRatio($options);
+        }
 
         $transformParams = [];
 
         if (isset($options['w'])) {
-            $transformParams['width'] = $options['w'];
+            $transformParams['width'] = $this->handleUnit($options['w']);
         }
         if (isset($options['h'])) {
-            $transformParams['height'] = $options['h'];
+            $transformParams['height'] = $this->handleUnit($options['h']);
         }
 
         if (isset($options['fit'])) {
@@ -411,7 +472,6 @@ class ImgixCompatibilityHelper extends Component
             $transformedImage = $image->getUrl($transformParams);
             return $transformedImage;
         } catch (\Exception $e) {
-            LoggerHelper::error('Craft native transform failed: ' . $e->getMessage());
             return $image->url ?? null;
         }
     }

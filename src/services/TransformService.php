@@ -24,12 +24,13 @@ class TransformService extends Component {
         if (empty($image)) {
             return null;
         }
+        
         $path = $this->prepUrl($image, AstuteoToolkit::$plugin->getSettings()->imgixUrl);
-        $mappedOptions = $this->imgixMap($options,$serviceOptions,$image->focalPoint);
-        return $path . $mappedOptions;
+        $mappedOptions = $this->imgixMap($options, $serviceOptions, $image->focalPoint);
+        $finalUrl = $path . $mappedOptions;
+        
+        return $finalUrl;
     }
-
-    // Processes Imgix to Craft Native where possible
 
     /**
      * @param $options
@@ -42,9 +43,7 @@ class TransformService extends Component {
         if(!$options) {
             return false;
         }
-        /*
-         * Mirror Craft's default transform mode: 'crop', if not set;
-         */
+        
         $mode = array_key_exists('mode', $options) ? $options['mode'] : 'crop';
         $options['mode'] = $mode;
 
@@ -72,11 +71,15 @@ class TransformService extends Component {
                     break;
                 case 'ratio':
                     if(key_exists('width', $options)) {
-                        $imgixParam = 'h=' . self::handleUnit($option * $options['width']);
+                        $rawHeight = $option * $options['width'];
+                        $roundedHeight = self::handleUnit($rawHeight);
+                        $imgixParam = 'h=' . $roundedHeight;
                         break;
                     }
                     if(key_exists('height', $options)) {
-                        $imgixParam = 'w=' . self::handleUnit($option * $options['height']);
+                        $rawWidth = $option * $options['height'];
+                        $roundedWidth = self::handleUnit($rawWidth);
+                        $imgixParam = 'w=' . $roundedWidth;
                         break;
                     }
                     break;
@@ -109,7 +112,8 @@ class TransformService extends Component {
 
 
     public static function handleUnit($value) {
-        return round($value);
+        $rounded = round($value);
+        return $rounded;
     }
 
     /**
@@ -119,31 +123,31 @@ class TransformService extends Component {
         if(!isset($image['width']) || !isset($image['height'])) {
             return false;
         }
+        
         $ratio = $image['width'] / $image['height'];
         $y = sqrt($area/$ratio);
+        
         $height = round($y);
         $width = round($ratio * $y);
 
         if($maxWidth && $maxWidth < $width) {
             $scale = $maxWidth / $width;
             $height = round($height * $scale);
-            $width =  round($width * $scale);
+            $width = round($width * $scale);
         }
+        
         if($maxHeight && $maxHeight < $height) {
             $scale = $maxHeight / $height;
             $height = round($height * $scale);
-            $width =  round($width * $scale);
+            $width = round($width * $scale);
         }
+        
         return [
             'width' => $width,
             'height' => $height
         ];
     }
 
-    /*
-     * Takes the older format string and converts it to
-     * an object that our image map expects
-     */
     public static function imgixUpgradeSettings($settings) {
         if(!is_string($settings)) {
             return [];
@@ -161,7 +165,6 @@ class TransformService extends Component {
 
     /**
      * @param $focalPoint
-     * Function to return cropped with focal point mapped
      * @return string
      */
     private static function imgixMapCrop($focalPoint) {
