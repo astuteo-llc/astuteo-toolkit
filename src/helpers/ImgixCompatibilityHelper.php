@@ -245,9 +245,11 @@ class ImgixCompatibilityHelper extends Component
         foreach ($options as $key => $value) {
             switch ($key) {
                 case 'w':
+                case 'width':
                     $translatedOptions['width'] = $this->handleUnit($value);
                     break;
                 case 'h':
+                case 'height':
                     $translatedOptions['height'] = $this->handleUnit($value);
                     break;
                 case 'fit':
@@ -278,6 +280,18 @@ class ImgixCompatibilityHelper extends Component
                         default:
                             $translatedOptions['mode'] = $value;
                     }
+                    break;
+                case 'trim':
+                    if (is_numeric($value)) {
+                        $translatedOptions['trim'] = (float)$value;
+                    } elseif ($value === 'auto') {
+                        // Mirror service option handling: gentle auto trim and fit mode
+                        $translatedOptions['trim'] = 0.02;
+                        $translatedOptions['mode'] = 'fit';
+                    } elseif ($value === 'color') {
+                        $translatedOptions['trim'] = 0.01;
+                    }
+                    // If not recognized, do not pass 'trim' through as a string
                     break;
                 case 'crop':
                     if (is_string($value) && strpos($value, 'focalpoint') !== false) {
