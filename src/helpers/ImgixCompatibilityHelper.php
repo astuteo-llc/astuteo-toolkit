@@ -3,6 +3,7 @@ namespace astuteo\astuteotoolkit\helpers;
 
 use craft\base\Component;
 use Craft;
+use craft\helpers\App;
 
 /**
  * ImgixCompatibilityHelper
@@ -17,6 +18,9 @@ use Craft;
  */
 class ImgixCompatibilityHelper extends Component
 {
+    // Default fuzz values for trim operations mapped from Imgix semantics
+    private const TRIM_AUTO_FUZZ = 0.02;   // Gentle fuzz value for white backgrounds
+    private const TRIM_COLOR_FUZZ = 0.01;  // Small fuzz value to remove color edges
     /**
      * Rounds a numeric value to ensure consistent integer dimensions.
      * 
@@ -48,6 +52,8 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
+
+        App::maxPowerCaptain();
 
         if (!Craft::$app->plugins->isPluginEnabled('imager-x')) {
             return $this->fallbackToCraft($image, $options, $serviceOptions);
@@ -202,12 +208,12 @@ class ImgixCompatibilityHelper extends Component
                         $translatedOptions['trim'] = (float)$value;
                     } elseif ($value === 'auto') {
                         // Use a gentler trim value for 'auto'
-                        $translatedOptions['trim'] = 0.02; // Gentle fuzz value for white backgrounds
+                        $translatedOptions['trim'] = self::TRIM_AUTO_FUZZ; // Gentle fuzz value for white backgrounds
                         // When trim=auto is used, we want to use 'fit' mode to maintain aspect ratio
                         $translatedOptions['mode'] = 'fit';
                     } elseif ($value === 'color') {
                         // For trim=color, use a small trim value to remove color edges
-                        $translatedOptions['trim'] = 0.01;
+                        $translatedOptions['trim'] = self::TRIM_COLOR_FUZZ;
                     }
                     // If not numeric, 'auto', or 'color', don't pass the parameter
                     break;
@@ -286,10 +292,10 @@ class ImgixCompatibilityHelper extends Component
                         $translatedOptions['trim'] = (float)$value;
                     } elseif ($value === 'auto') {
                         // Mirror service option handling: gentle auto trim and fit mode
-                        $translatedOptions['trim'] = 0.02;
+                        $translatedOptions['trim'] = self::TRIM_AUTO_FUZZ;
                         $translatedOptions['mode'] = 'fit';
                     } elseif ($value === 'color') {
-                        $translatedOptions['trim'] = 0.01;
+                        $translatedOptions['trim'] = self::TRIM_COLOR_FUZZ;
                     }
                     // If not recognized, do not pass 'trim' through as a string
                     break;
@@ -424,6 +430,8 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
+        
+        App::maxPowerCaptain();
         
         if ($options) {
             $options = $this->calculateDimensionsFromRatio($options);
