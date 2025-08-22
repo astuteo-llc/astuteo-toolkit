@@ -15,11 +15,8 @@ class Settings extends Model
      * Accepts float or ENV var string.
      */
     public $trimAutoFuzz = '0.02';
-    /**
-     * Default fuzz value used when trim=color (0..1). Can be overridden per-project.
-     * Accepts float or ENV var string.
-     */
     public $trimColorFuzz = '0.01';
+
     public $cacheBustDev = false;
     public $loadCpTweaks = false;
     public $devCpNav = true;
@@ -29,6 +26,7 @@ class Settings extends Model
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
     // https://docs.imgix.com/tutorials/improved-compression-auto-content-negotiation
+    // no longer use imgix in projects
     public $imgixDefaultParams =  [
         "auto" => "format",
         "lossless" => "1",
