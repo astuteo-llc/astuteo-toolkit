@@ -10,6 +10,16 @@ use craft\helpers\App;
 class Settings extends Model
 {
     public $assetPath = '/site-assets/';
+    /**
+     * Default fuzz value used when trim=auto (0..1). Can be overridden per-project.
+     * Accepts float or ENV var string.
+     */
+    public $trimAutoFuzz = '0.02';
+    /**
+     * Default fuzz value used when trim=color (0..1). Can be overridden per-project.
+     * Accepts float or ENV var string.
+     */
+    public $trimColorFuzz = '0.01';
     public $cacheBustDev = false;
     public $loadCpTweaks = false;
     public $devCpNav = true;
@@ -339,6 +349,7 @@ class Settings extends Model
         return [
             [['loadCpTweaks', 'includeFeEdit', 'devCpNav', 'validateDomain'], 'boolean'],
             [['ipLookupToken', 'ipControllerToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
+            [['trimAutoFuzz', 'trimColorFuzz'], 'number', 'min' => 0, 'max' => 1],
         ];
     }
 
@@ -391,5 +402,25 @@ class Settings extends Model
     public function setIpLookupProvider(string $provider): void
     {
         $this->ipLookupProvider = $provider;
+    }
+
+    /**
+     * Get the configured trim auto fuzz (0..1), clamped and parsed from ENV.
+     */
+    public function getTrimAutoFuzz(): float
+    {
+        $value = App::parseEnv($this->trimAutoFuzz);
+        $num = is_numeric($value) ? (float)$value : 0.02;
+        return max(0.0, min(1.0, $num));
+    }
+
+    /**
+     * Get the configured trim color fuzz (0..1), clamped and parsed from ENV.
+     */
+    public function getTrimColorFuzz(): float
+    {
+        $value = App::parseEnv($this->trimColorFuzz);
+        $num = is_numeric($value) ? (float)$value : 0.01;
+        return max(0.0, min(1.0, $num));
     }
 }
