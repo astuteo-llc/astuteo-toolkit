@@ -8,7 +8,7 @@ use astuteo\astuteotoolkit\AstuteoToolkit;
 
 /**
  * ImgixCompatibilityHelper
- * 
+ *
  * Maps Imgix parameters to Imager-X for seamless transition between services.
  * This helper class provides compatibility between Imgix and Imager-X, allowing
  * you to use Imgix-style parameters with the Imager-X plugin or fall back to
@@ -50,10 +50,10 @@ class ImgixCompatibilityHelper extends Component
     }
     /**
      * Rounds a numeric value to ensure consistent integer dimensions.
-     * 
+     *
      * This method ensures compatibility with Imgix by rounding dimension values
      * to integers, which is important for consistent image transformations.
-     * 
+     *
      * @param mixed $value The value to round
      * @return int The rounded value
      */
@@ -63,11 +63,11 @@ class ImgixCompatibilityHelper extends Component
     }
     /**
      * Transform image using Imager-X with Imgix parameter compatibility.
-     * 
+     *
      * This method takes an image asset and transforms it using Imager-X, translating
      * Imgix-style parameters to the format expected by Imager-X. If Imager-X is not
      * available, it falls back to Craft's native transform functionality.
-     * 
+     *
      * @param mixed $image The image asset to transform
      * @param array|null $options Main transform options (width, height, fit, etc.)
      * @param array|null $serviceOptions Additional service-specific options (format, quality, effects, etc.)
@@ -79,10 +79,11 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
-
+        $settings = AstuteoToolkit::$plugin->getSettings();
         App::maxPowerCaptain();
 
-        if (!Craft::$app->plugins->isPluginEnabled('imager-x')) {
+        if (!Craft::$app->plugins->isPluginEnabled('imager-x') || $settings->getPreferNativeTransforms()) {
+            LoggerHelper::warning('Skipping Imgix, either preferNativeTransforms is true, or Imager-x is not installed');
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
 
@@ -93,11 +94,11 @@ class ImgixCompatibilityHelper extends Component
 
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
         $translatedOptions = $this->translateMainOptions($options, $image);
-        
+
 
 
         // Merge options, prioritizing mode from serviceOptions if trim=auto was detected
-        if (isset($translatedServiceOptions['mode']) && 
+        if (isset($translatedServiceOptions['mode']) &&
             isset($serviceOptions['trim']) && $serviceOptions['trim'] === 'auto') {
             $translatedOptions['mode'] = $translatedServiceOptions['mode'];
             // Remove mode from serviceOptions to avoid duplication
@@ -106,8 +107,8 @@ class ImgixCompatibilityHelper extends Component
 
         try {
             // Use getPluginInstance() for Craft 4/5 compatibility, fallback to getPlugin() for Craft 3
-            $plugin = method_exists(Craft::$app->plugins, 'getPluginInstance') 
-                ? Craft::$app->plugins->getPluginInstance('imager-x') 
+            $plugin = method_exists(Craft::$app->plugins, 'getPluginInstance')
+                ? Craft::$app->plugins->getPluginInstance('imager-x')
                 : Craft::$app->plugins->getPlugin('imager-x');
 
             // Merge the translated options and service options to match the expected interface
@@ -118,9 +119,9 @@ class ImgixCompatibilityHelper extends Component
                 $image,
                 $transforms
             );
-            
+
             $finalUrl = $transformedImage->url ?? $image->url;
-            
+
             return $finalUrl;
         } catch (\Exception $e) {
             return $this->fallbackToCraft($image, $options, $serviceOptions);
@@ -129,31 +130,40 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Auto-select best available transform service.
-     * 
+     *
      * This method automatically selects the best available image transform service.
      * If Imager-X is available, it will use that; otherwise, it falls back to
      * Craft's native transform functionality.
-     * 
+     *
      * @param mixed $image The image asset to transform
      * @param array|null $options Main transform options (width, height, fit, etc.)
      * @param array|null $serviceOptions Additional service-specific options (format, quality, effects, etc.)
      * @return string|null The URL of the transformed image, or null if transformation failed
      */
     public function auto(mixed $image, array $options = null, array $serviceOptions = null) {
-        if (Craft::$app->plugins->isPluginEnabled('imager-x')) {
+        // Allow opting out of Imager-X via plugin settings
+        $settings = AstuteoToolkit::$plugin->getSettings();
+        $preferNative = false;
+        if ($settings && method_exists($settings, 'getPreferNativeTransforms')) {
+            LoggerHelper::warning('preferNativeTransforms is true');
+            $preferNative = (bool)$settings->getPreferNativeTransforms();
+        }
+
+        if (!$preferNative && Craft::$app->plugins->isPluginEnabled('imager-x')) {
             return $this->imagerX($image, $options, $serviceOptions);
         }
 
+        // Either Imager-X is not enabled or settings prefer Craft native transforms
         return $this->fallbackToCraft($image, $options, $serviceOptions);
     }
 
     /**
      * Map Imgix service parameters to Imager-X format.
-     * 
+     *
      * This method translates Imgix service-specific parameters (like auto, fm, q, etc.)
      * to the format expected by Imager-X. It handles various image adjustments,
      * background settings, and special cases like trim=auto.
-     * 
+     *
      * @param array|null $serviceOptions The Imgix service options to translate
      * @param array|null $mainOptions The main transform options (used for context in some translations)
      * @return array The translated options in Imager-X format
@@ -258,11 +268,11 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Map Imgix transform parameters to Imager-X format.
-     * 
+     *
      * This method translates the main Imgix transform parameters (like w, h, fit, etc.)
      * to the format expected by Imager-X. It handles dimensions, cropping modes,
      * positioning, flipping, rotation, and other transform-specific options.
-     * 
+     *
      * @param array|null $options The Imgix transform options to translate
      * @param mixed $image The image asset (used for focal point information)
      * @return array The translated options in Imager-X format
@@ -374,11 +384,11 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Calculate dimensions based on ratio if one dimension is missing.
-     * 
+     *
      * This method calculates the missing dimension (width or height) based on the provided ratio.
      * If both width and height are provided, or if no ratio is provided, the options are returned unchanged.
      * Uses round() to ensure compatibility with Imgix and Imager.
-     * 
+     *
      * @param array $options The options array containing width, height, and ratio
      * @return array The options array with calculated dimensions
      */
@@ -386,22 +396,22 @@ class ImgixCompatibilityHelper extends Component
     {
         // Check if we need to calculate a dimension based on ratio
         $hasRatio = isset($options['ratio']) && is_numeric($options['ratio']);
-        
+
         if (!$hasRatio) {
             return $options;
         }
-        
+
         // Check for both Imgix-style ('w') and Imager-X style ('width') parameters
-        $width = isset($options['w']) && is_numeric($options['w']) ? $options['w'] : 
+        $width = isset($options['w']) && is_numeric($options['w']) ? $options['w'] :
                (isset($options['width']) && is_numeric($options['width']) ? $options['width'] : null);
-        $height = isset($options['h']) && is_numeric($options['h']) ? $options['h'] : 
+        $height = isset($options['h']) && is_numeric($options['h']) ? $options['h'] :
                 (isset($options['height']) && is_numeric($options['height']) ? $options['height'] : null);
-        
+
         // Calculate missing dimension if ratio is provided
         if ($width && !$height) {
             $rawCalculatedHeight = $width * $options['ratio'];
             $calculatedHeight = $this->handleUnit($rawCalculatedHeight);
-            
+
             $options['h'] = $calculatedHeight;
             $options['height'] = $calculatedHeight;
         } elseif (!$width && $height) {
@@ -410,17 +420,17 @@ class ImgixCompatibilityHelper extends Component
             $options['w'] = $calculatedWidth;
             $options['width'] = $calculatedWidth;
         }
-        
+
         return $options;
     }
 
     /**
      * Convert focal point coordinates to position string.
-     * 
+     *
      * This method converts the focal point coordinates (x, y values between 0 and 1)
      * to a position string in the format 'top-left', 'center-center', 'bottom-right', etc.
      * This is used for positioning crops based on the focal point of an image.
-     * 
+     *
      * @param array|null $focalPoint The focal point coordinates with 'x' and 'y' keys
      * @return string The position string in the format 'vertical-horizontal'
      */
@@ -441,11 +451,11 @@ class ImgixCompatibilityHelper extends Component
 
     /**
      * Fallback to Craft's native image transforms.
-     * 
+     *
      * This method is used when Imager-X is not available or when the Imager-X transform fails.
      * It translates Imgix-style parameters to Craft's native transform parameters and
      * applies the transform using Craft's built-in functionality.
-     * 
+     *
      * @param mixed $image The image asset to transform
      * @param array|null $options Main transform options (width, height, fit, etc.)
      * @param array|null $serviceOptions Additional service-specific options (format, quality, etc.)
@@ -457,9 +467,9 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
-        
+
         App::maxPowerCaptain();
-        
+
         if ($options) {
             $options = $this->calculateDimensionsFromRatio($options);
         }

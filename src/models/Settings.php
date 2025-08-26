@@ -17,6 +17,12 @@ class Settings extends Model
     public $trimAutoFuzz = '0.02';
     public $trimColorFuzz = '0.01';
 
+    /**
+     * When true, always use Craft's native transforms even if Imager-X is installed.
+     * This allows opting out of Imager-X while keeping the same helper interface.
+     */
+    public bool $preferNativeTransforms = false;
+
     public $cacheBustDev = false;
     public $loadCpTweaks = false;
     public $devCpNav = true;
@@ -345,7 +351,7 @@ class Settings extends Model
     public function rules(): array
     {
         return [
-            [['loadCpTweaks', 'includeFeEdit', 'devCpNav', 'validateDomain'], 'boolean'],
+            [['loadCpTweaks', 'includeFeEdit', 'devCpNav', 'validateDomain', 'preferNativeTransforms'], 'boolean'],
             [['ipLookupToken', 'ipControllerToken', 'ipLookupProvider', 'devIpAddress'], 'string'],
             [['trimAutoFuzz', 'trimColorFuzz'], 'number', 'min' => 0, 'max' => 1],
         ];
@@ -379,6 +385,14 @@ class Settings extends Model
     public function getValidateDomain(): bool
     {
         return App::parseEnv($this->validateDomain) ?? true;
+    }
+
+    /**
+     * Whether to prefer Craft native transforms over Imager-X.
+     */
+    public function getPreferNativeTransforms(): bool
+    {
+        return (bool)(App::parseEnv($this->preferNativeTransforms) ?? false);
     }
 
     /**
