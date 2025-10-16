@@ -5,6 +5,7 @@ use craft\base\Component;
 use Craft;
 use craft\helpers\App;
 use astuteo\astuteotoolkit\AstuteoToolkit;
+use astuteo\astuteotoolkit\helpers\LoggerHelper;
 
 /**
  * ImgixCompatibilityHelper
