@@ -29,9 +29,19 @@ class ImgixCompatibilityHelper extends Component
         'auto', 'fm', 'format', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
     ];
 
+    /**
+     * Get plugin settings in a null-safe manner.
+     *
+     * @return mixed|null The plugin settings object, or null if the plugin is not initialized
+     */
+    private function getPluginSettings()
+    {
+        return AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
+    }
+
     private function getTrimAutoFuzzSetting(): float
     {
-        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
+        $settings = $this->getPluginSettings();
         if ($settings && method_exists($settings, 'getTrimAutoFuzz')) {
             $val = $settings->getTrimAutoFuzz();
             if (is_numeric($val)) {
@@ -44,7 +54,7 @@ class ImgixCompatibilityHelper extends Component
 
     private function getTrimColorFuzzSetting(): float
     {
-        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
+        $settings = $this->getPluginSettings();
         if ($settings && method_exists($settings, 'getTrimColorFuzz')) {
             $val = $settings->getTrimColorFuzz();
             if (is_numeric($val)) {
@@ -85,7 +95,7 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
-        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
+        $settings = $this->getPluginSettings();
         App::maxPowerCaptain();
 
         if (!Craft::$app->plugins->isPluginEnabled('imager-x') || ($settings && $settings->getPreferNativeTransforms())) {
@@ -136,7 +146,7 @@ class ImgixCompatibilityHelper extends Component
      */
     public function auto($image, $options = null, $serviceOptions = null) {
         // Allow opting out of Imager-X via plugin settings
-        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
+        $settings = $this->getPluginSettings();
         $preferNative = false;
         if ($settings && method_exists($settings, 'getPreferNativeTransforms')) {
             $preferNative = (bool)$settings->getPreferNativeTransforms();
