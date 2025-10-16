@@ -32,11 +32,13 @@
             "homepage": "https://astuteo.com"
         }
     ],
-    "require-dev": {
+    "require": {
         "craftcms/cms": "^3.5.0",
-        "marcocesarato/php-conventional-changelog": "^1.16",
         "ext-json": "*",
         "php": "^7.4.0"
+    },
+    "require-dev": {
+        "marcocesarato/php-conventional-changelog": "^1.16"
     },
     "autoload": {
         "psr-4": {
