@@ -181,7 +181,7 @@ class ImgixCompatibilityHelper extends Component
             }
             switch ($key) {
                 case 'auto':
-                    // PHP 7.4 compatible: use strpos instead of str_contains
+                    // For pre-PHP 8.0 compatibility: use strpos instead of str_contains
                     if (is_string($value) && strpos($value, 'format') !== false) {
                         $translatedOptions['autoFormat'] = true;
                     }
@@ -341,7 +341,7 @@ class ImgixCompatibilityHelper extends Component
                     }
                     break;
                 case 'rect':
-                    // PHP 7.4 compatible: use strpos instead of str_contains
+                    // For pre-PHP 8.0 compatibility: use strpos instead of str_contains
                     if (is_string($value) && strpos($value, ',') !== false) {
                         $parts = explode(',', $value);
                         if (count($parts) === 4) {
