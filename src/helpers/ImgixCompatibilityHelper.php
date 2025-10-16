@@ -106,22 +106,14 @@ class ImgixCompatibilityHelper extends Component
         }
 
         try {
-            // Use getPlugin() for Craft 3 compatibility
-            $plugin = Craft::$app->plugins->getPlugin('imager-x');
-
-            // Merge the translated options and service options to match the expected interface
-            // Service options should not override main transform options like width/height
-            $transforms = array_merge($translatedServiceOptions, $translatedOptions);
-
-            $transformedImage = $plugin->imager->transformImage(
+            $transformedImage = Craft::$app->plugins->getPlugin('imager-x')->imager->transformImage(
                 $image,
-                $transforms
+                $translatedOptions,
+                $translatedServiceOptions
             );
-
-            $finalUrl = $transformedImage->url ?? $image->url;
-
-            return $finalUrl;
+            return $transformedImage->url ?? $image->url;
         } catch (\Exception $e) {
+            Craft::error('Imager-X transform failed: ' . $e->getMessage(), __METHOD__);
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
     }
@@ -177,7 +169,7 @@ class ImgixCompatibilityHelper extends Component
 
         // List of supported Imgix service params that map to Imager X
         $supportedKeys = [
-            'auto', 'fm', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
+            'auto', 'fm', 'format', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
         ];
 
         foreach ($serviceOptions as $key => $value) {
@@ -198,6 +190,7 @@ class ImgixCompatibilityHelper extends Component
                     }
                     break;
                 case 'fm':
+                case 'format':
                     $translatedOptions['format'] = $value;
                     break;
                 case 'q':
@@ -230,7 +223,7 @@ class ImgixCompatibilityHelper extends Component
                     $translatedOptions['bgColor'] = $value;
                     break;
                 case 'pad':
-                    $translatedOptions['pad'] = (int)$value;
+                    $translatedOptions['allowUpscale'] = (bool)$value;
                     break;
                 case 'fill':
                     $translatedOptions['fill'] = $value;
@@ -519,7 +512,10 @@ class ImgixCompatibilityHelper extends Component
             $transformParams['rotate'] = (int)$options['rot'];
         }
 
-        if (isset($serviceOptions['fm'])) {
+        // Support both 'format' (native Craft) and 'fm' (Imgix-style)
+        if (isset($serviceOptions['format'])) {
+            $transformParams['format'] = $serviceOptions['format'];
+        } elseif (isset($serviceOptions['fm'])) {
             $transformParams['format'] = $serviceOptions['fm'];
         }
 
@@ -531,6 +527,7 @@ class ImgixCompatibilityHelper extends Component
             $transformedImage = $image->getUrl($transformParams);
             return $transformedImage;
         } catch (\Exception $e) {
+            Craft::error('Craft native transform failed: ' . $e->getMessage(), __METHOD__);
             return $image->url ?? null;
         }
     }
