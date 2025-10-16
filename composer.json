@@ -4,6 +4,16 @@
     "type": "craft-plugin",
     "prefer-stable": true,
     "version": "3.5.0",
+    "scripts": {
+      "changelog": "conventional-changelog",
+      "release": "conventional-changelog --commit",
+      "release:patch": "conventional-changelog --patch --commit",
+      "release:minor": "conventional-changelog --minor --commit",
+      "release:major": "conventional-changelog --major --commit",
+      "release:alpha": "conventional-changelog --alpha",
+      "release:beta": "conventional-changelog --beta",
+      "release:rc": "conventional-changelog --rc"
+    },
     "keywords": [
         "craft",
         "cms",
@@ -22,8 +32,9 @@
             "homepage": "https://astuteo.com"
         }
     ],
-    "require": {
+    "require-dev": {
         "craftcms/cms": "^3.5.0",
+        "marcocesarato/php-conventional-changelog": "^1.16",
         "ext-json": "*",
         "php": "^7.4.0"
     },
