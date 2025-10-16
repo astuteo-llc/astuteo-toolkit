@@ -96,8 +96,6 @@ class ImgixCompatibilityHelper extends Component
         $translatedServiceOptions = $this->translateServiceOptions($serviceOptions, $options);
         $translatedOptions = $this->translateMainOptions($options, $image);
 
-
-
         // Merge options, prioritizing mode from serviceOptions if trim=auto was detected
         if (isset($translatedServiceOptions['mode']) &&
             isset($serviceOptions['trim']) && $serviceOptions['trim'] === 'auto') {
