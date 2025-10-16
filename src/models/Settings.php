@@ -16,6 +16,9 @@ class Settings extends Model
     public $uploadVideoThumbs;
     public $uploadVideoThumbsVolumeId;
     public $imgixUrl = '';
+    public $preferNativeTransforms = false;
+    public $trimAutoFuzz = 0.02;
+    public $trimColorFuzz = 0.01;
     public $phoneFormat =  [
         'countryCode' => '+{number} ',
         'areaCode' => '({number}) ',
@@ -282,4 +285,34 @@ class Settings extends Model
         "ZM" => "Zambia",
         "ZW" => "Zimbabwe"
     ];
+
+    /**
+     * Get the preference for using native Craft transforms
+     *
+     * @return bool
+     */
+    public function getPreferNativeTransforms(): bool
+    {
+        return (bool)$this->preferNativeTransforms;
+    }
+
+    /**
+     * Get the trim auto fuzz value
+     *
+     * @return float
+     */
+    public function getTrimAutoFuzz(): float
+    {
+        return (float)$this->trimAutoFuzz;
+    }
+
+    /**
+     * Get the trim color fuzz value
+     *
+     * @return float
+     */
+    public function getTrimColorFuzz(): float
+    {
+        return (float)$this->trimColorFuzz;
+    }
 }
