@@ -24,6 +24,11 @@ class ImgixCompatibilityHelper extends Component
     private const TRIM_AUTO_FUZZ_DEFAULT = 0.02;   // Gentle fuzz value for white backgrounds
     private const TRIM_COLOR_FUZZ_DEFAULT = 0.01;  // Small fuzz value to remove color edges
 
+    // Supported Imgix service parameters that map to Imager-X
+    private const SUPPORTED_SERVICE_KEYS = [
+        'auto', 'fm', 'format', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
+    ];
+
     private function getTrimAutoFuzzSetting(): float
     {
         $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
@@ -168,13 +173,8 @@ class ImgixCompatibilityHelper extends Component
         $translatedOptions = [];
         $effects = [];
 
-        // List of supported Imgix service params that map to Imager X
-        $supportedKeys = [
-            'auto', 'fm', 'format', 'q', 'blur', 'bri', 'con', 'sat', 'hue', 'sharp', 'gam', 'bg', 'pad', 'trim', 'fill', 'fill-color'
-        ];
-
         foreach ($serviceOptions as $key => $value) {
-            if (!in_array($key, $supportedKeys, true)) {
+            if (!in_array($key, self::SUPPORTED_SERVICE_KEYS, true)) {
                 continue;
             }
             switch ($key) {
