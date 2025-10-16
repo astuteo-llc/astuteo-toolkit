@@ -3,7 +3,17 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "3.4.0",
+    "version": "3.5.0",
+    "scripts": {
+      "changelog": "conventional-changelog",
+      "release": "conventional-changelog --commit",
+      "release:patch": "conventional-changelog --patch --commit",
+      "release:minor": "conventional-changelog --minor --commit",
+      "release:major": "conventional-changelog --major --commit",
+      "release:alpha": "conventional-changelog --alpha",
+      "release:beta": "conventional-changelog --beta",
+      "release:rc": "conventional-changelog --rc"
+    },
     "keywords": [
         "craft",
         "cms",
@@ -26,6 +36,9 @@
         "craftcms/cms": "^3.5.0",
         "ext-json": "*",
         "php": "^7.4.0"
+    },
+    "require-dev": {
+        "marcocesarato/php-conventional-changelog": "^1.16"
     },
     "autoload": {
         "psr-4": {
