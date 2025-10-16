@@ -85,10 +85,10 @@ class ImgixCompatibilityHelper extends Component
         if (empty($image)) {
             return null;
         }
-        $settings = AstuteoToolkit::$plugin->getSettings();
+        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
         App::maxPowerCaptain();
 
-        if (!Craft::$app->plugins->isPluginEnabled('imager-x') || $settings->getPreferNativeTransforms()) {
+        if (!Craft::$app->plugins->isPluginEnabled('imager-x') || ($settings && $settings->getPreferNativeTransforms())) {
             LoggerHelper::warning('Skipping Imgix, either preferNativeTransforms is true, or Imager-x is not installed');
             return $this->fallbackToCraft($image, $options, $serviceOptions);
         }
@@ -136,7 +136,7 @@ class ImgixCompatibilityHelper extends Component
      */
     public function auto($image, $options = null, $serviceOptions = null) {
         // Allow opting out of Imager-X via plugin settings
-        $settings = AstuteoToolkit::$plugin->getSettings();
+        $settings = AstuteoToolkit::$plugin && AstuteoToolkit::$plugin->getSettings() ? AstuteoToolkit::$plugin->getSettings() : null;
         $preferNative = false;
         if ($settings && method_exists($settings, 'getPreferNativeTransforms')) {
             $preferNative = (bool)$settings->getPreferNativeTransforms();
