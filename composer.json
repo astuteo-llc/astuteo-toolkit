@@ -3,16 +3,16 @@
     "description": "Various tools that we use across client sites. Only useful for Astuteo projects",
     "type": "craft-plugin",
     "prefer-stable": true,
-    "version": "3.5.0",
+    "version": "6.5.8",
     "scripts": {
-      "changelog": "conventional-changelog",
-      "release": "conventional-changelog --commit",
-      "release:patch": "conventional-changelog --patch --commit",
-      "release:minor": "conventional-changelog --minor --commit",
-      "release:major": "conventional-changelog --major --commit",
-      "release:alpha": "conventional-changelog --alpha",
-      "release:beta": "conventional-changelog --beta",
-      "release:rc": "conventional-changelog --rc"
+        "changelog": "conventional-changelog",
+        "release": "conventional-changelog --commit",
+        "release:patch": "conventional-changelog --patch --commit",
+        "release:minor": "conventional-changelog --minor --commit",
+        "release:major": "conventional-changelog --major --commit",
+        "release:alpha": "conventional-changelog --alpha",
+        "release:beta": "conventional-changelog --beta",
+        "release:rc": "conventional-changelog --rc"
     },
     "keywords": [
         "craft",
@@ -42,7 +42,7 @@
     },
     "autoload": {
         "psr-4": {
-          "astuteo\\astuteotoolkit\\": "src/"
+            "astuteo\\astuteotoolkit\\": "src/"
         }
     },
     "extra": {
@@ -55,5 +55,11 @@
             "astuteoToolkitService": "astuteo\\astuteotoolkit\\services\\AstuteoToolkitService"
         },
         "class": "astuteo\\astuteotoolkit\\AstuteoToolkit"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
     }
 }
