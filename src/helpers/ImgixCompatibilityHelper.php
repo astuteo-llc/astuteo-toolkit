@@ -396,11 +396,19 @@ class ImgixCompatibilityHelper extends Component
         }
 
         // Check for both Imgix-style ('w') and Imager-X style ('width') parameters
-        $width = isset($options['w']) && is_numeric($options['w']) ? $options['w'] :
-               (isset($options['width']) && is_numeric($options['width']) ? $options['width'] : null);
-        $height = isset($options['h']) && is_numeric($options['h']) ? $options['h'] :
-                (isset($options['height']) && is_numeric($options['height']) ? $options['height'] : null);
+        $width = null;
+        if (isset($options['w']) && is_numeric($options['w'])) {
+            $width = $options['w'];
+        } elseif (isset($options['width']) && is_numeric($options['width'])) {
+            $width = $options['width'];
+        }
 
+        $height = null;
+        if (isset($options['h']) && is_numeric($options['h'])) {
+            $height = $options['h'];
+        } elseif (isset($options['height']) && is_numeric($options['height'])) {
+            $height = $options['height'];
+        }
         // Calculate missing dimension if ratio is provided
         if ($width && !$height) {
             $rawCalculatedHeight = $width * $options['ratio'];
