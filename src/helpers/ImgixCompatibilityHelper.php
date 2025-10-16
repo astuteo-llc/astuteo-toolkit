@@ -135,8 +135,10 @@ class ImgixCompatibilityHelper extends Component
         $settings = AstuteoToolkit::$plugin->getSettings();
         $preferNative = false;
         if ($settings && method_exists($settings, 'getPreferNativeTransforms')) {
-            LoggerHelper::warning('preferNativeTransforms is true');
             $preferNative = (bool)$settings->getPreferNativeTransforms();
+            if ($preferNative) {
+                LoggerHelper::warning('preferNativeTransforms is true');
+            }
         }
 
         if (!$preferNative && Craft::$app->plugins->isPluginEnabled('imager-x')) {
